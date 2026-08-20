@@ -42,9 +42,9 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
 
 ### 🔧 Configuración base (común)
-1. ⬜ Registrar las 6 apps en `INSTALLED_APPS` (`config/settings.py`).
-2. ⬜ Configurar la conexión a **PostgreSQL** en `settings.py`.
-3. ⬜ Ajustes de localización (`LANGUAGE_CODE = es-es`, `TIME_ZONE = Europe/Madrid`).
+1. 🔵 Registrar las 6 apps en `INSTALLED_APPS` (`config/settings.py`).
+2. 🔵 Configurar la conexión a **PostgreSQL** en `settings.py` (vía variables de entorno).
+3. 🔵 Ajustes de localización (`LANGUAGE_CODE = es-es`, `TIME_ZONE = Europe/Madrid`).
 4. ⬜ Crear carpetas `templates/` y `static/` y enlazarlas en `settings.py`.
 
 ### 🗄️ Modelos y base de datos
