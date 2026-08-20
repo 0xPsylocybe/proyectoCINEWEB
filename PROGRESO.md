@@ -90,7 +90,5 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-20 | Roles: sysadmin + gestores con permisos + visitantes anónimos. Compra de entradas y comida/bebida **sin login**. | Luizay & David |
 | 2026-08-20 | Naming: modelos PascalCase singular + `db_table` snake_case singular. Sesiones = modelo `Sesion` (tabla `sesion`). | Luizay & David |
 | 2026-08-20 | Consistencia en la escritura del código (nomenclatura, estilo) y en las tipologías/tipos de datos usados en los modelos. | Luizay & David |
-| 2026-08-20 | La BBDD la crean las **migraciones de Django** (`managed = True`); los triggers y el SQL a medida van en una migración con `RunSQL`. (Sustituye a la idea previa de script SQL externo + `managed = False`, para cumplir el requisito de migraciones del enunciado.) | David |
 | 2026-08-20 | Columnas con convención Django: **PK `id`**, **FK `<campo>_id`**; nombres de tabla vía `db_table` (snake_case singular). | Luizay & David |
-| 2026-08-20 | Plantillas en carpeta `templates/` en la **raíz** (subcarpetas por app), no dentro de cada app. | David |
 | 2026-08-20 | 🔵 **EN REVISIÓN** (pendiente de aprobar Luizay): guardar las imágenes en la **BBDD** usando Pillow, en vez de en el sistema de archivos. A decidir por Luizay. | David → Luizay |
