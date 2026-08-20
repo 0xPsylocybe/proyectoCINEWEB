@@ -40,6 +40,7 @@ proyectoCINEWEB/
 ├── manage.py
 ├── requirements.txt
 ├── .gitignore
+├── PROGRESO.md
 └── README.md
 ```
 
@@ -60,26 +61,35 @@ Pendiente de crear más adelante: `templates/`, `static/` y las migraciones.
 
 ---
 
-## 4. Entidades (tablas) previstas
+## 4. Modelos y tablas previstos
 
-| App            | Tablas                                                        |
-|----------------|--------------------------------------------------------------|
-| `peliculas`    | `peliculas`, `directores`, `genero`, `detalle_peliculas`     |
-| `cartelera`    | `sala`, `caracteristicas_sala`, `peliculas_en_sala`          |
-| `restauracion` | `productos`, `venta_productos`                               |
-| `reservas`     | `venta_entradas`                                             |
-| `usuarios`     | Roles con grupos/permisos nativos de Django                  |
-| `core`         | (sin modelos)                                               |
+**Convención de nombres:** los modelos se definen en **PascalCase singular** y el
+nombre de tabla se fija explícitamente con `db_table` en **snake_case singular**.
+
+| App            | Modelo               | Tabla (`db_table`)     |
+|----------------|----------------------|------------------------|
+| `peliculas`    | `Pelicula`           | `pelicula`             |
+| `peliculas`    | `Director`           | `director`             |
+| `peliculas`    | `Genero`             | `genero`               |
+| `peliculas`    | `DetallePelicula`    | `detalle_pelicula`     |
+| `cartelera`    | `Sala`               | `sala`                 |
+| `cartelera`    | `CaracteristicaSala` | `caracteristica_sala`  |
+| `cartelera`    | `Sesion`             | `sesion`               |
+| `restauracion` | `Producto`           | `producto`             |
+| `restauracion` | `VentaProducto`      | `venta_producto`       |
+| `reservas`     | `VentaEntrada`       | `venta_entrada`        |
+| `usuarios`     | (roles con grupos/permisos de Django) | —     |
+| `core`         | (sin modelos)        | —                      |
 
 Relaciones principales previstas:
 
-- `peliculas` — `directores`: una película tiene un director (N:1).
-- `peliculas` — `genero`: una película puede tener varios géneros (N:M).
-- `peliculas` — `detalle_peliculas`: información ampliada (1:1).
-- `peliculas_en_sala` — `peliculas` / `sala`: cada sesión referencia una película y una sala.
-- `caracteristicas_sala` — `sala`: una sala tiene varias características (N:M).
-- `venta_entradas` — `peliculas_en_sala`: entradas asociadas a una sesión.
-- `venta_productos` — `productos`: ventas asociadas a un producto.
+- `Pelicula` — `Director`: una película tiene un director (N:1).
+- `Pelicula` — `Genero`: cada película tiene un género (N:1).
+- `Pelicula` — `DetallePelicula`: información ampliada (1:1).
+- `Sesion` — `Pelicula` / `Sala`: cada sesión referencia una película y una sala (N:1 con cada una).
+- `Sala` — `CaracteristicaSala`: cada sala tiene una característica (N:1).
+- `VentaEntrada` — `Pelicula` / `Sala`: cada venta de entrada referencia una película y una sala.
+- `VentaProducto` — `Producto`: cada venta referencia un producto.
 
 ---
 
@@ -94,7 +104,7 @@ Roles acordados:
   consultar la cartelera y **comprar entradas y productos de restauración**.
 
 Por tanto, la compra de entradas y de productos es **anónima**: las tablas
-`venta_entradas` y `venta_productos` no guardan usuario. El sistema de
+`venta_entrada` y `venta_producto` no guardan usuario. El sistema de
 autenticación de Django (login/logout) se usa solo para **gestores** y **sysadmin**.
 
 > ⚠️ La gestión debe protegerse **a nivel de URL** (login + permisos), no solo

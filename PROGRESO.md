@@ -20,7 +20,7 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 | Fecha | Tarea | Estado | Notas / validación |
 |-------|-------|--------|--------------------|
 |       | App **core**: plantilla base, navbar, inicio, sobre el cine | ⬜ | |
-|       | App **peliculas**: modelos (peliculas, directores, genero, detalle_pelicula) | ⬜ | |
+|       | App **peliculas**: modelos (`Pelicula`, `Director`, `Genero`, `DetallePelicula`) | ⬜ | |
 |       | App **peliculas**: CRUD, búsqueda por título y filtrado por género | ⬜ | |
 |       | **cartelera** (visualización): listado y detalle de película | ⬜ | |
 
@@ -30,7 +30,7 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 |-------|-------|--------|--------------------|
 |       | App **usuarios**: autenticación (login/logout) | ⬜ | |
 |       | App **usuarios**: roles y permisos (grupos Usuario/Gestor) | ⬜ | |
-|       | **cartelera** (gestión): modelos sala, caracteristicas_salas, pelicula_en_sala | ⬜ | |
+|       | **cartelera** (gestión): modelos `Sala`, `CaracteristicaSala`, `Sesion` | ⬜ | |
 |       | App **reservas**: venta de entradas | ⬜ | |
 |       | App **restauracion**: productos y venta de productos | ⬜ | |
 |       | Lógica de la BBDD (triggers y demás) | ⬜ | |
@@ -70,14 +70,14 @@ Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
 17. ⬜ Permitir compra de entradas y productos **sin iniciar sesión** (anónima).
 
 ### ✏️ Gestión (CRUD)
-17. ⬜ CRUD de **películas** (formularios de Django).
-18. ⬜ CRUD de **sesiones** (pelicula_en_sala).
-19. ⬜ Mensajes de Django (creado / editado / eliminado / error).
+18. ⬜ CRUD de **películas** (formularios de Django).
+19. ⬜ CRUD de **sesiones** (`Sesion`).
+20. ⬜ Mensajes de Django (creado / editado / eliminado / error).
 
 ### ✅ Cierre
-20. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
-21. ⬜ Pruebas de instalación desde cero siguiendo el README.
-22. ⬜ Revisión cruzada del código del compañero.
+21. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
+22. ⬜ Pruebas de instalación desde cero siguiendo el README.
+23. ⬜ Revisión cruzada del código del compañero.
 
 ---
 
@@ -88,3 +88,4 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | Fecha | Decisión / validación | Quién |
 |-------|-----------------------|-------|
 | 2026-08-20 | Roles: sysadmin + gestores con permisos + visitantes anónimos. Compra de entradas y comida/bebida **sin login**. | Luizay & David |
+| 2026-08-20 | Naming: modelos PascalCase singular + `db_table` snake_case singular. Sesiones = modelo `Sesion` (tabla `sesion`). | Luizay & David |
