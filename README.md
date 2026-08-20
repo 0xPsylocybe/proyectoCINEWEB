@@ -84,16 +84,17 @@ Relaciones principales previstas:
 
 Reparto orientativo por responsabilidades, con revisión cruzada del código.
 
-### 👤 David
+### 👤 Luizay
 - App **core** (plantilla base, navbar, inicio, sobre el cine).
 - App **peliculas** (modelos, CRUD, búsqueda por título y filtrado por género).
 - **cartelera** (parte de visualización): listado y detalle.
 
-### 👤 Luizay
+### 👤 David
 - App **usuarios** (autenticación, roles y permisos).
 - **cartelera** (parte de gestión): salas, características y sesiones.
-- App **reservas** (venta de entradas).
-- App **restauracion** (productos y ventas).
+- App **reservas** (venta de entradas y productos).
+- App **restauracion** (productos).
+- Lógica de la BBDD (triggers y demás).
 
 ### Común
 - Configuración del proyecto `config` y del Django Admin.
