@@ -65,6 +65,10 @@ Pendiente de crear más adelante: `templates/`, `static/` y las migraciones.
 
 **Convención de nombres:** los modelos se definen en **PascalCase singular** y el
 nombre de tabla se fija explícitamente con `db_table` en **snake_case singular**.
+Las columnas siguen la convención de Django: **PK `id`** en cada tabla y **FK
+`<campo>_id`** (p. ej. `director_id`, `pelicula_id`). El esquema lo crean las
+**migraciones de Django** (`managed = True`); los triggers y el SQL a medida se
+añaden dentro de una migración con `RunSQL`.
 
 | App            | Modelo               | Tabla (`db_table`)     |
 |----------------|----------------------|------------------------|

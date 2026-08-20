@@ -48,8 +48,8 @@ Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
 4. ⬜ Crear carpetas `templates/` y `static/` y enlazarlas en `settings.py`.
 
 ### 🗄️ Modelos y base de datos
-5. ⬜ Escribir el **script SQL** que crea la BBDD y las tablas en PostgreSQL.
-6. ⬜ Definir los modelos según el esquema (con `db_table` y `managed = False`) y ejecutar `migrate` (solo crea las tablas internas de Django: auth, admin, sessions…).
+5. ⬜ Definir los modelos según el esquema (con `db_table`; PK `id`, FK `<campo>_id`).
+6. ⬜ `makemigrations` + `migrate` para crear el esquema; triggers/SQL a medida en una migración `RunSQL`.
 7. ⬜ Registrar los modelos en el **Django Admin**.
 8. ⬜ Crear superusuario y datos de prueba.
 
@@ -90,4 +90,5 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-20 | Roles: sysadmin + gestores con permisos + visitantes anónimos. Compra de entradas y comida/bebida **sin login**. | Luizay & David |
 | 2026-08-20 | Naming: modelos PascalCase singular + `db_table` snake_case singular. Sesiones = modelo `Sesion` (tabla `sesion`). | Luizay & David |
 | 2026-08-20 | Consistencia en la escritura del código (nomenclatura, estilo) y en las tipologías/tipos de datos usados en los modelos. | Luizay & David |
-| 2026-08-20 | La BBDD se crea con **script SQL directamente en PostgreSQL**; los modelos se definen con `managed = False` (Django no gestiona el esquema: no crea ni migra esas tablas). | David |
+| 2026-08-20 | La BBDD la crean las **migraciones de Django** (`managed = True`); los triggers y el SQL a medida van en una migración con `RunSQL`. (Sustituye a la idea previa de script SQL externo + `managed = False`, para cumplir el requisito de migraciones del enunciado.) | David |
+| 2026-08-20 | Columnas con convención Django: **PK `id`**, **FK `<campo>_id`**; nombres de tabla vía `db_table` (snake_case singular). | Luizay & David |
