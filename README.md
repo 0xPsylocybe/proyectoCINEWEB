@@ -16,31 +16,34 @@ Aplicación web para la gestión de la cartelera de un pequeño cine independien
 Un cine independiente necesita una aplicación web para gestionar su cartelera.
 La aplicación permitirá:
 
-- A los **visitantes**: consultar las películas disponibles, ver su detalle y las
-  sesiones, y buscar/filtrar películas por título y género.
+- A los **visitantes** (sin registro): consultar las películas disponibles, ver su
+  detalle y las sesiones, buscar/filtrar por título y género, y **comprar entradas
+  y productos de restauración sin necesidad de iniciar sesión**.
 - A los **gestores**: administrar la información (crear, modificar y eliminar
-  películas y sesiones) desde la web, con un sistema de roles y permisos.
+  películas, sesiones, productos, etc.) desde la web, con un sistema de roles y permisos.
 
 ---
 
 ## 2. Estructura del proyecto
 
-El proyecto Django se llamará **`config`** (aún por generar). Apps ya creadas:
+El proyecto Django se llama **`config`**. Estructura actual:
 
 ```
 proyectoCINEWEB/
+├── config/          # Proyecto Django (settings, urls, wsgi, asgi)
 ├── core/            # Páginas generales/estáticas (inicio, sobre el cine)
 ├── peliculas/       # Películas, directores, géneros, detalle
 ├── cartelera/       # Salas, características de sala, sesiones
 ├── usuarios/        # Autenticación y roles/permisos
 ├── reservas/        # Venta de entradas
 ├── restauracion/    # Productos y ventas de restauración
+├── manage.py
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-Pendiente de crear más adelante: proyecto `config/`, `manage.py`, `templates/`,
-`static/`, `requirements.txt` y las migraciones.
+Pendiente de crear más adelante: `templates/`, `static/` y las migraciones.
 
 ---
 
@@ -80,7 +83,26 @@ Relaciones principales previstas:
 
 ---
 
-## 5. Reparto del trabajo (Luizay & David)
+## 5. Usuarios y permisos
+
+Roles acordados:
+
+- **Sysadmin (superusuario):** acceso total, gestión desde el Django Admin.
+- **Gestores (usuarios con permisos):** pueden crear, modificar y eliminar
+  cartelera, películas, sesiones, productos, etc. desde la web.
+- **Visitantes anónimos:** no necesitan registrarse ni iniciar sesión; pueden
+  consultar la cartelera y **comprar entradas y productos de restauración**.
+
+Por tanto, la compra de entradas y de productos es **anónima**: las tablas
+`venta_entradas` y `venta_productos` no guardan usuario. El sistema de
+autenticación de Django (login/logout) se usa solo para **gestores** y **sysadmin**.
+
+> ⚠️ La gestión debe protegerse **a nivel de URL** (login + permisos), no solo
+> ocultando botones en la interfaz.
+
+---
+
+## 6. Reparto del trabajo (Luizay & David)
 
 Reparto orientativo por responsabilidades, con revisión cruzada del código.
 
@@ -102,7 +124,7 @@ Reparto orientativo por responsabilidades, con revisión cruzada del código.
 
 ---
 
-## 6. Próximos pasos
+## 7. Próximos pasos
 
 Estas secciones se completarán cuando exista código:
 

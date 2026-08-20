@@ -1,0 +1,90 @@
+# 📋 Seguimiento del proyecto CINEWEB
+
+Documento vivo para registrar **qué hace cada uno**, ir **validando** el trabajo y
+tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancéis.
+
+## Leyenda de estados
+
+| Símbolo | Estado |
+|---------|--------|
+| ⬜ | Pendiente |
+| 🟡 | En progreso |
+| 🔵 | Hecho, pendiente de validar por el compañero |
+| ✅ | Validado |
+| ⛔ | Bloqueado |
+
+---
+
+## Progreso — Luizay
+
+| Fecha | Tarea | Estado | Notas / validación |
+|-------|-------|--------|--------------------|
+|       | App **core**: plantilla base, navbar, inicio, sobre el cine | ⬜ | |
+|       | App **peliculas**: modelos (peliculas, directores, genero, detalle_pelicula) | ⬜ | |
+|       | App **peliculas**: CRUD, búsqueda por título y filtrado por género | ⬜ | |
+|       | **cartelera** (visualización): listado y detalle de película | ⬜ | |
+
+## Progreso — David
+
+| Fecha | Tarea | Estado | Notas / validación |
+|-------|-------|--------|--------------------|
+|       | App **usuarios**: autenticación (login/logout) | ⬜ | |
+|       | App **usuarios**: roles y permisos (grupos Usuario/Gestor) | ⬜ | |
+|       | **cartelera** (gestión): modelos sala, caracteristicas_salas, pelicula_en_sala | ⬜ | |
+|       | App **reservas**: venta de entradas | ⬜ | |
+|       | App **restauracion**: productos y venta de productos | ⬜ | |
+|       | Lógica de la BBDD (triggers y demás) | ⬜ | |
+
+---
+
+## Próximos puntos a trabajar
+
+Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
+
+### 🔧 Configuración base (común)
+1. ⬜ Registrar las 6 apps en `INSTALLED_APPS` (`config/settings.py`).
+2. ⬜ Configurar la conexión a **PostgreSQL** en `settings.py`.
+3. ⬜ Ajustes de localización (`LANGUAGE_CODE = es-es`, `TIME_ZONE = Europe/Madrid`).
+4. ⬜ Crear carpetas `templates/` y `static/` y enlazarlas en `settings.py`.
+
+### 🗄️ Modelos y base de datos
+5. ⬜ Definir modelos según el esquema acordado (ver tablas del README).
+6. ⬜ `makemigrations` + `migrate`.
+7. ⬜ Registrar los modelos en el **Django Admin**.
+8. ⬜ Crear superusuario y datos de prueba.
+
+### 🌐 URLs, vistas y plantillas
+9. ⬜ URLs modulares por app con `include()` y `app_name`.
+10. ⬜ Plantilla base con Bootstrap (navbar según estado del usuario).
+11. ⬜ Página de **cartelera** (cards con datos del ORM).
+12. ⬜ Página de **detalle** de película.
+13. ⬜ **Búsqueda** por título y **filtrado** por género (ORM).
+
+### 🔐 Usuarios y permisos
+> Decisión: **sysadmin** + **gestores** (con permisos) + **visitantes anónimos**.
+> La compra de entradas y productos es anónima (sin login). El login es solo para
+> gestores/sysadmin.
+14. ⬜ Login / logout con el sistema de auth de Django (para gestores/sysadmin).
+15. ⬜ Grupo de **gestores** con permisos para gestionar cartelera/películas/productos.
+16. ⬜ Proteger vistas de gestión a nivel de URL (no solo ocultando botones).
+17. ⬜ Permitir compra de entradas y productos **sin iniciar sesión** (anónima).
+
+### ✏️ Gestión (CRUD)
+17. ⬜ CRUD de **películas** (formularios de Django).
+18. ⬜ CRUD de **sesiones** (pelicula_en_sala).
+19. ⬜ Mensajes de Django (creado / editado / eliminado / error).
+
+### ✅ Cierre
+20. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
+21. ⬜ Pruebas de instalación desde cero siguiendo el README.
+22. ⬜ Revisión cruzada del código del compañero.
+
+---
+
+## Validaciones / decisiones
+
+Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — quién).
+
+| Fecha | Decisión / validación | Quién |
+|-------|-----------------------|-------|
+| 2026-08-20 | Roles: sysadmin + gestores con permisos + visitantes anónimos. Compra de entradas y comida/bebida **sin login**. | Luizay & David |
