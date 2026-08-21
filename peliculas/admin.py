@@ -36,11 +36,17 @@ class DirectorAdmin(admin.ModelAdmin):
     list_display = ("nombre",)
 
 
+class DetallePeliculaInline(admin.StackedInline): 
+    model = DetallePelicula
+    can_delete = False
+    verbose_name_plural = "Detalles de la película"
+
 @admin.register(Peliculas)
 class PeliculasAdmin(admin.ModelAdmin):
-    list_display = ("titulo", "duracion", "director", "genero", "sinopsis", "anio","imagen")
+    list_display = ("titulo", "duracion", "director", "genero", "sinopsis", "anio", "imagen")
     search_fields = ("titulo", "genero__nombre", "director__nombre")
     list_filter = ("genero", "director", "anio")
+    inlines = [DetallePeliculaInline] 
 
 
 @admin.register(DetallePelicula)

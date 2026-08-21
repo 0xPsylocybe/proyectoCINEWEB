@@ -6,5 +6,5 @@ def inicio(request):
 def sobrecine(request):
     return render(request, "core/sobrecine.html")
 
-def informacion(request):
-    return render(request, "core/informacion.html")
+def proximos_estrenos(request):
+    return render(request, "core/proximos_estrenos.html")
