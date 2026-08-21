@@ -37,3 +37,6 @@ class Sesion(models.Model):
 
     def __str__(self):
         return f"{self.pelicula.nombre} en {self.sala.identificador} ({self.horario.strftime('%d/%m/%Y %H:%M')})"
+    
+
+    
