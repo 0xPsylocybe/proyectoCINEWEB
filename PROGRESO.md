@@ -30,9 +30,9 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 |-------|-------|--------|--------------------|
 |       | App **usuarios**: autenticación (login/logout) | ⬜ | |
 |       | App **usuarios**: roles y permisos (grupos Usuario/Gestor) | ⬜ | |
-|       | **cartelera** (gestión): modelos `Sala`, `CaracteristicaSala`, `Sesion` | ⬜ | |
-|       | App **reservas**: venta de entradas | ⬜ | |
-|       | App **restauracion**: productos y venta de productos | ⬜ | |
+| 2026-08-21 | **cartelera** (gestión): modelos `Sala`, `CaracteristicaSala`, `Sesion` + admin | 🔵 | Modelos y admin escritos; pendiente `migrate` |
+| 2026-08-21 | App **reservas**: modelo `VentaEntrada` + admin (falta vistas/compra) | 🟡 | Modelo y admin hechos |
+| 2026-08-21 | App **restauracion**: modelos `Producto`/`VentaProducto` + admin (faltan vistas) | 🟡 | Modelos y admin hechos |
 |       | Lógica de la BBDD (triggers y demás) | ⬜ | |
 
 ---
@@ -48,9 +48,9 @@ Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
 4. 🟡 Crear `templates/` en raíz (subcarpetas por app) y enlazarla en `settings.py` — hecho; falta `static/`.
 
 ### 🗄️ Modelos y base de datos
-5. ⬜ Definir los modelos según el esquema (con `db_table`; PK `id`, FK `<campo>_id`).
-6. ⬜ `makemigrations` + `migrate` para crear el esquema; triggers/SQL a medida en una migración `RunSQL`.
-7. ⬜ Registrar los modelos en el **Django Admin**.
+5. 🟡 Definir los modelos según el esquema (con `db_table`; PK `id`, FK `<campo>_id`). — hechos cartelera/reservas/restauración; faltan los de `peliculas` (Luizay).
+6. ⬜ `makemigrations` + `migrate` para crear el esquema; triggers/SQL a medida en una migración `RunSQL`. — bloqueado hasta tener los modelos de `peliculas`.
+7. 🟡 Registrar los modelos en el **Django Admin**. — hecho para cartelera/reservas/restauración; falta `peliculas`.
 8. ⬜ Crear superusuario y datos de prueba.
 
 ### 🌐 URLs, vistas y plantillas
