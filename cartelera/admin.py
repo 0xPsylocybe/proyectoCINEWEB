@@ -1,9 +1,9 @@
 from django.contrib import admin
 from .models import CaracteristicasSala, Sala, PeliculasEnSala
 
-@admin.register(CaracteristicasSala)
-class CaracteristicasSalaAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "descripcion")
+@admin.register(CaracteristicaSala)
+class CaracteristicaSalaAdmin(admin.ModelAdmin):
+    list_display = ("nombre",)
     search_fields = ("nombre",)
 
 @admin.register(Sala)
@@ -21,3 +21,11 @@ class PeliculasEnSalaAdmin(admin.ModelAdmin):
     list_display = ("pelicula", "sala", "horario")
     list_filter = ("sala", "horario")
     search_fields = ("pelicula__titulo", "sala__identificador")
+from .models import CaracteristicaSala, Sala, Sesion
+
+
+@admin.register(Sesion)
+class SesionAdmin(admin.ModelAdmin):
+    list_display = ("id", "pelicula", "sala")
+    list_filter = ("sala",)
+    search_fields = ("pelicula__titulo",)

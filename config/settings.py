@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 
@@ -61,14 +62,14 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/'templates'],
+        'DIRS': [BASE_DIR / 'templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
@@ -77,8 +78,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
+# Database (PostgreSQL)
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# Las credenciales se leen de variables de entorno, con valores por defecto para
+# desarrollo local. Cómo crear la BBDD: ver README.
 
 DATABASES = {
     'default': {
@@ -88,6 +91,7 @@ DATABASES = {
         'USER':'postgres.xfmpfmxkcotatauumisr',
         'HOST': 'aws-1-eu-west-1.pooler.supabase.com',
         'PORT':'6543',
+
     }
 }
 
