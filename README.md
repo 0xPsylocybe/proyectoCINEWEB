@@ -111,3 +111,13 @@ Estas secciones se completarán cuando exista código:
 - Migraciones.
 - Creación de usuarios y configuración de permisos.
 - Ejecución del servidor.
+
+algunas anotaciones:
+- creé un entorno virtual: para que funcionara tuve que ;
+1.Presiona las teclas Ctrl + Shift + P para abrir la paleta de comandos.
+2.Escribe y selecciona: Python: Select Interpreter (Python: Seleccionar intérprete).
+3.Busca y elige la opción que apunta a tu entorno virtual local: ./venv/bin/python.
+
+- la base de datos esta en supabase: me parecio mejor asi dado que cada quien esta en su ordenador
+- no agregue el campo recaudacion, lo agregmos cuando tengamos esa app lista
+- superuser admin 123456hola

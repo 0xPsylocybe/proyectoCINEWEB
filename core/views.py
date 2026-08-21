@@ -1,3 +1,10 @@
 from django.shortcuts import render
 
-# Create your views here.
+def inicio(request):
+    return render(request, "core/inicio.html")
+
+def sobrecine(request):
+    return render(request, "core/sobrecine.html")
+
+def informacion(request):
+    return render(request, "core/informacion.html")

@@ -1,0 +1,31 @@
+{% load static %}
+<!-- Componente Navbar Superior -->
+<nav class="navbar navbar-expand-lg bg-white px-4 border-bottom fixed-top" style="height: 75px; z-index: 1020; margin-left: 80px; transition: margin-left 0.3s ease;">
+    <div class="container-fluid position-relative d-flex align-items-center">
+        
+        <!-- Espacio izquierdo (vacío para balancear flexbox) -->
+        <div class="d-none d-lg-block" style="width: 150px;"></div>
+
+        <!-- Logo centrado con mayor altura -->
+        <a class="navbar-brand position-absolute start-50 translate-middle-x m-0" href="#">
+            <img src="{% static 'logo2.png' %}" alt="Cines Lón Logo" style="height: 65px; width: auto; object-fit: contain;">
+        </a>
+
+
+    </div>
+</nav>
+
+<!-- Estilos específicos para el Navbar -->
+<style>
+    .btn-city-selector {
+        background-color: #720042;
+        border: none;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-city-selector:hover, .btn-city-selector:focus {
+        background-color: #5a0033;
+        color: white;
+    }
+</style>

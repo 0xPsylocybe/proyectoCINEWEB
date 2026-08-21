@@ -1,0 +1,102 @@
+{% load static %}
+<!-- Componente Sidebar Lateral con Bootstrap (Fondo blanco, hover morado) -->
+<div class="sidebar d-flex flex-column flex-shrink-0 p-2 bg-white vh-100 position-fixed top-0 start-0 shadow-sm border-end" style="z-index: 1030;">
+
+    <!-- Menú de navegación principal con iconos y texto expandible -->
+    <ul class="nav nav-pills flex-column mb-auto gap-2">
+        <li class="nav-item">
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Inicio">
+                <i class="bi bi-house-door fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Inicio</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Cartelera">
+                <i class="bi bi-film fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Cartelera</span>
+            </a>
+        </li>
+    
+        <li>
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Carmelería">
+                <i class="bi bi-cup-straw fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Snack bar</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Próximos Estrenos">
+                <i class="bi bi-bell fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Próximos Estrenos</span>
+            </a>
+        </li>>
+
+    </ul>
+
+    <hr class="text-muted my-2">
+
+    <!-- Enlaces inferiores -->
+    <ul class="nav nav-pills flex-column gap-2 mb-2">
+        <li>
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Contacto">
+                <i class="bi bi-question-circle fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Contacto</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Iniciar sesión">
+                <i class="bi bi-box-arrow-in-left fs-5 flex-shrink-0"></i>
+                <span class="ms-3 sidebar-text">Iniciar sesión</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<style>
+    /* Comportamiento y animación de expansión del sidebar */
+    .sidebar {
+        width: 80px; 
+        transition: width 0.3s ease; 
+        overflow: hidden; 
+        white-space: nowrap;
+    }
+
+    /* Se expande al pasar el mouse por encima del menú */
+    .sidebar:hover {
+        width: 240px;
+    }
+
+    /* Color por defecto para los enlaces (morado) */
+    .text-sidebar {
+        color: #720042 !important;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Al pasar el mouse sobre cada enlace: fondo morado y texto/icono blanco */
+    .nav-pills .text-sidebar:hover {
+        background-color: #720042 !important;
+        color: #ffffff !important;
+    }
+
+    /* Ocultar el texto por defecto cuando está colapsado */
+    .sidebar-text {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    /* Mostrar el texto al expandir el sidebar */
+    .sidebar:hover .sidebar-text {
+        opacity: 1;
+    }
+
+    /* Ajuste del contenido principal para que no quede detrás del menú fijo */
+    main {
+        margin-left: 100px;
+        transition: margin-left 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            margin-left: 0;
+        }
+    }
+</style>
