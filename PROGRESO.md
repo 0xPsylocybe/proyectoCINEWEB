@@ -19,10 +19,10 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 
 | Fecha | Tarea | Estado | Notas / validación |
 |-------|-------|--------|--------------------|
-|       | App **core**: plantilla base, navbar, inicio, sobre el cine | ⬜ | |
-|       | App **peliculas**: modelos (`Pelicula`, `Director`, `Genero`, `DetallePelicula`) | ⬜ | |
-|       | App **peliculas**: CRUD, búsqueda por título y filtrado por género | ⬜ | |
-|       | **cartelera** (visualización): listado y detalle de película | ⬜ | |
+|       | App **core**: plantilla base, navbar, inicio, sobre el cine | 🟡| |
+|       | App **peliculas**: modelos (`Pelicula`, `Director`, `Genero`, `DetallePelicula`) | 🟡| |
+|       | App **peliculas**: CRUD, búsqueda por título y filtrado por género | 🟡 | |
+|       | **cartelera** (visualización): listado y detalle de película | 🟡 | |
 
 ## Progreso — David
 

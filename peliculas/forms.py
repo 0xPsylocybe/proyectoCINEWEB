@@ -1,5 +1,5 @@
 from django import forms
-from .models import Peliculas
+from .models import Peliculas,Director,Genero
 
 class PeliculasForm(forms.ModelForm):
     class Meta:
@@ -13,3 +13,19 @@ class PeliculasForm(forms.ModelForm):
             "anio",
             "imagen",  
         ]
+
+class DirectorForm(forms.ModelForm):
+    class Meta:
+        model = Director
+        fields = ['nombre',]
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'})
+        }
+        
+class GeneroForm(forms.ModelForm):
+    class Meta:
+        model = Genero
+        fields = ['nombre',]
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'})
+        }

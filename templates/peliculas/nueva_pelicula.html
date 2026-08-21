@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+CINES LEÓN - Nueva Pelicula
+{% endblock %}
+
+{% block contenido %}
+
+<style>
+    /* Estilo personalizado para el color de marca en bordes y focos de los inputs */
+    .custom-brand-border:focus {
+        border-color: #720042 !important;
+        box-shadow: 0 0 0 0.25rem rgba(114, 0, 66, 0.25) !important;
+    }
+</style>
+
+<div class="container my-4">
+    <h2 class="mb-4" style="color: #720042; font-weight: bold;">Nueva Película</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-4 align-items-start">
+            <!-- COLUMNA IZQUIERDA: Presentación visual / Imagen -->
+            <div class="col-md-4 text-center">
+                <div class="card shadow-sm border-0 p-3 bg-light">
+                    <h5 class="text-muted small mb-3">Vista previa del póster</h5>
+                    <div id="preview-container" class="mb-3 d-flex justify-content-center align-items-center border rounded bg-white" style="height: 300px; overflow: hidden;">
+                        <img id="img-preview" src="#" alt="Vista previa" class="img-fluid rounded d-none" style="max-height: 100%; object-fit: cover;">
+                        <span id="placeholder-text" class="text-muted small">Sin imagen seleccionada</span>
+                    </div>
+                    <p class="text-muted small text-start mb-0">Sube una imagen de póster en formato vertical para una mejor visualización en el catálogo.</p>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Campos del Formulario -->
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0 p-4 bg-white">
+                    <div class="card-body">
+                        
+                        <!-- Renderizado personalizado de campos de Django con estilos aplicados -->
+                        {% for field in formulario %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold" style="color: #720042;">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn text-white px-4" style="background-color: #720042;">
+                                Guardar
+                            </button>
+                            <a href="{% url 'lista_peliculas' %}" class="btn btn-outline-secondary px-4">
+                                Cancelar
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Script opcional para mostrar la vista previa de la imagen si el formulario incluye un input de tipo archivo -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(event) {
+                const [file] = event.target.files;
+                if (file) {
+                    const imgPreview = document.getElementById('img-preview');
+                    const placeholder = document.getElementById('placeholder-text');
+                    
+                    imgPreview.src = URL.createObjectURL(file);
+                    imgPreview.classList.remove('d-none');
+                    placeholder.classList.add('d-none');
+                }
+            });
+        }
+
+        // Añadir clases de Bootstrap y el borde personalizado a los inputs generados por Django
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control') && !input.classList.contains('form-check-input')) {
+                input.classList.add('form-control', 'custom-brand-border');
+            }
+        });
+    });
+</script>
+
+{% endblock %}

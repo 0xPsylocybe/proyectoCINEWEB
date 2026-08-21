@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import PeliculasForm
-from .models import Peliculas
+from django.contrib import messages
+from .forms import PeliculasForm, GeneroForm,DirectorForm
+from .models import Peliculas,Director,Genero
 
 
 def crear_pelicula(request):
@@ -9,6 +10,7 @@ def crear_pelicula(request):
 
         if formulario.is_valid():
             formulario.save()
+            messages.success(request, "¡Película creada correctamente!")
             return redirect("lista_peliculas")
     else:
         formulario = PeliculasForm()
@@ -17,9 +19,29 @@ def crear_pelicula(request):
 
 
 def lista_peliculas(request):
-    peliculas = Peliculas.objects.all()
+    if request.method == 'POST' and 'guardar_genero' in request.POST:
+        genero_form = GeneroForm(request.POST)
+        if genero_form.is_valid():
+            genero_form.save()
+            messages.success(request, "¡Género creado correctamente!")  # <-- Mensaje de éxito
+            return redirect('lista_peliculas')
+    
+    elif request.method == 'POST' and 'guardar_director' in request.POST:
+        director_form = DirectorForm(request.POST)
+        if director_form.is_valid():
+            director_form.save()
+            messages.success(request, "¡Director creado correctamente!")  # <-- Mensaje de éxito
+            return redirect('lista_peliculas')
 
-    contexto = {"peliculas": peliculas}
+    peliculas = Peliculas.objects.all()
+    genero_form = GeneroForm()
+    director_form = DirectorForm()
+
+    contexto = {
+        "peliculas": peliculas,
+        "genero_form": genero_form,
+        "director_form": director_form,
+    }
 
     return render(request, "peliculas/lista_peliculas.html", contexto)
 
@@ -32,6 +54,7 @@ def editar_peliculas(request, pk):
 
         if formulario.is_valid():
             formulario.save()
+            messages.success(request, "Pelicula editada")
             return redirect("lista_peliculas")
     else:
         formulario = PeliculasForm(instance=pelicula)
@@ -44,6 +67,7 @@ def eliminar_pelicula(request, pk):
 
     if request.method == "POST":
         pelicula.delete()
+        messages.warning(request, "Pelicula eliminada")
         return redirect("lista_peliculas")
 
     return render(
