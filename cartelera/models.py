@@ -25,26 +25,15 @@ class Sala(models.Model):
     def __str__(self):
         return self.identificador
 
-class PeliculasEnSala(models.Model):
-    pelicula = models.ForeignKey(Peliculas, on_delete=models.CASCADE, related_name="peliculas_en_sala")
-    sala = models.ForeignKey(Sala, on_delete=models.CASCADE, related_name="peliculas_en_sala")
-    horario = models.DateTimeField("Horario de Sesión")
-
-    class Meta:
-        verbose_name = "Película en Sala (Sesión)"
-        verbose_name_plural = "Películas en Sala (Sesiones)"
-
-    def __str__(self):
-        return f"{self.pelicula.nombre} en {self.sala.identificador} ({self.horario})"
-
-
 class Sesion(models.Model):
-    pelicula = models.ForeignKey("peliculas.Pelicula",on_delete=models.CASCADE,related_name="sesiones",)
-    sala = models.ForeignKey(Sala,on_delete=models.PROTECT,related_name="sesiones",)
+    pelicula = models.ForeignKey(Peliculas, on_delete=models.CASCADE, related_name="sesiones",verbose_name="Película")
+    sala = models.ForeignKey(Sala, on_delete=models.PROTECT, related_name="sesiones",verbose_name="Sala")
+    horario = models.DateTimeField("Horario de Sesión")
 
     class Meta:
         verbose_name = "Sesión"
         verbose_name_plural = "Sesiones"
+        ordering = ["horario"]
 
     def __str__(self):
-        return f"{self.pelicula} en {self.sala}"
+        return f"{self.pelicula.nombre} en {self.sala.identificador} ({self.horario.strftime('%d/%m/%Y %H:%M')})"
