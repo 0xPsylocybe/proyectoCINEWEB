@@ -67,18 +67,20 @@ CINES LEÓN - {{ pelicula.titulo }}
             <!-- Selector de fechas (Estilo Tarjetas/Pills con scroll horizontal en móviles) -->
             <div class="d-flex flex-row gap-2 mb-4 overflow-auto pb-2 scrollbar-none">
                 {% for fecha in fechas_disponibles %}
-                <a href="?fecha={{ fecha|date:'Y-m-d' }}" class="text-decoration-none">
-                    <div class="card border text-center p-2 rounded-3 {% if forloop.first %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
-                        style="min-width: 75px; {% if forloop.first %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
+                {% with fecha_str=fecha|date:"Y-m-d" %}
+                <a href="?fecha={{ fecha_str }}" class="text-decoration-none">
+                    <div class="card border text-center p-2 rounded-3 {% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
+                        style="min-width: 75px; {% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
                         <span class="small text-uppercase fw-semibold"
-                            style="{% if forloop.first %}color: #720042;{% endif %}">{{ fecha|date:"D" }}.</span>
+                            style="{% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}color: #720042;{% endif %}">{{ fecha|date:"D" }}.</span>
                         <span class="small text-muted" style="font-size: 0.75rem;">{{ fecha|date:"M" }}</span>
                         <span class="fw-bold fs-4"
-                            style="{% if forloop.first %}color: #720042;{% else %}color: #6c757d;{% endif %}">
+                            style="{% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}color: #720042;{% else %}color: #6c757d;{% endif %}">
                             {{fecha|date:"d" }}
                         </span>
                     </div>
                 </a>
+                {% endwith %}
                 {% empty %}
                 <p class="text-muted small">No hay fechas disponibles.</p>
                 {% endfor %}
@@ -95,12 +97,10 @@ CINES LEÓN - {{ pelicula.titulo }}
             </div>
 
             <!-- Listado de sesiones agrupadas por Sala -->
-            {% regroup pelicula.sesiones.all by sala as salas_list %}
-
-            {% for sala_group in salas_list %}
+            {% for sala, sesiones in salas_con_sesiones %}
             <div class="card border shadow-sm mb-4">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0 fw-bold text-dark">{{ sala_group.grouper.identificador }}</h5>
+                    <h5 class="mb-0 fw-bold text-dark">{{ sala.identificador }}</h5>
                     {% if pelicula.detalles.clasificacion %}
                     <span class="badge" style="background-color: #f8d7da; color: #720042; font-weight: bold;">
                         B+{{ pelicula.detalles.get_clasificacion_display }}
@@ -112,7 +112,7 @@ CINES LEÓN - {{ pelicula.titulo }}
                         <!-- Contenedor de sesiones (flex-grow para ocupar espacio) -->
                         <div class="flex-grow-1">
                             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-                                {% for sesion in sala_group.list %}
+                                {% for sesion in sesiones %}
                                 <div class="col">
                                     <!-- Tarjeta de sesión (clickeable) -->
                                     <div class="sesion-card card border p-3 text-center shadow-sm cursor-pointer transition-all h-100"
@@ -134,7 +134,7 @@ CINES LEÓN - {{ pelicula.titulo }}
                         <!-- Botón Comprar ÚNICO a la derecha -->
                         <div class="d-flex align-items-center">
                             <button type="button" class="btn btn-comprar btn-lg" disabled
-                                data-sala-id="{{ sala_group.grouper.id }}"
+                                data-sala-id="{{ sala.id }}"
                                 style="white-space: nowrap; min-width: 120px;">
                                 Comprar
                             </button>

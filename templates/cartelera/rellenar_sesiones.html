@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Rellenar Sesiones{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 px-3">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2 class="mb-4 fw-bold" style="color: #720042;">Rellenar Sesiones Automáticamente</h2>
+
+            <div class="card border shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+
+                        <!-- Películas -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3" style="color: #720042;">Películas</h5>
+                            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                                {% for checkbox in form.peliculas %}
+                                    <div class="form-check mb-2">
+                                        {{ checkbox.tag }}
+                                        <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                            {{ checkbox.choice_label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.peliculas.errors %}
+                                <small class="text-danger d-block mt-2">{{ form.peliculas.errors }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Salas -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3" style="color: #720042;">Salas</h5>
+                            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                                {% for checkbox in form.salas %}
+                                    <div class="form-check mb-2">
+                                        {{ checkbox.tag }}
+                                        <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                            {{ checkbox.choice_label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.salas.errors %}
+                                <small class="text-danger d-block mt-2">{{ form.salas.errors }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fechas -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-2" for="{{ form.fecha_inicio.id_for_label }}">{{ form.fecha_inicio.label }}</label>
+                                {{ form.fecha_inicio }}
+                                {% if form.fecha_inicio.errors %}
+                                    <small class="text-danger d-block mt-2">{{ form.fecha_inicio.errors }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-2" for="{{ form.fecha_fin.id_for_label }}">{{ form.fecha_fin.label }}</label>
+                                {{ form.fecha_fin }}
+                                {% if form.fecha_fin.errors %}
+                                    <small class="text-danger d-block mt-2">{{ form.fecha_fin.errors }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Opción borrar -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.borrar_existentes }}
+                                <label class="form-check-label" for="{{ form.borrar_existentes.id_for_label }}">
+                                    {{ form.borrar_existentes.label }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
+                                Generar Sesiones
+                            </button>
+                            <a href="{% url 'cartelera:lista_sesiones' %}" class="btn btn-lg btn-outline-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
