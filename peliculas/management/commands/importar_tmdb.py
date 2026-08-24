@@ -148,9 +148,9 @@ class Command(BaseCommand):
             if not ensayo:
                 self.aplicar(pelicula, ficha, solo_carteles, opciones["conservar_titulos"])
 
-            self.stdout.write("    %s · %s · %s min · %s" % (
+            self.stdout.write("    %s · %s · %s min · %s · nota %s" % (
                 ficha["anio"], ficha["director"] or "?", ficha["duracion"] or "?",
-                ficha["genero"] or "?"))
+                ficha["genero"] or "?", ficha["puntuacion"] or "?"))
             self.stdout.write("    cartel: %s" % (ficha["poster"] or "NO HAY"))
 
             aciertos += 1
@@ -198,10 +198,15 @@ class Command(BaseCommand):
             "director": director,
             "genero": generos[0]["name"] if generos else None,
             "poster": detalle.get("poster_path"),
+            # Nota media de TMDB sobre 10 (no es la de IMDb, que TMDB no expone)
+            "puntuacion": round(detalle.get("vote_average") or 0, 1),
         }
 
     def aplicar(self, pelicula, ficha, solo_carteles, conservar_titulos=False):
         if not solo_carteles:
+            # La puntuación se actualiza siempre: no es un dato que corrijamos a mano
+            if ficha["puntuacion"]:
+                pelicula.puntuacion = ficha["puntuacion"]
             if not conservar_titulos:
                 pelicula.titulo = ficha["titulo"]
             if ficha["sinopsis"]:

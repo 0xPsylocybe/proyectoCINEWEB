@@ -47,10 +47,10 @@ convendría repasar:
 4. ⬜ **La portada muestra las 35 películas**, también las que no están en
    cartelera. `core/views.py` usa `Peliculas.objects.all()`. La cartelera ya
    filtra por `en_cartelera`; la portada quizá debería hacer lo mismo.
-5. ⬜ **`/proximos_estrenos/` sale vacía**: filtra por `fecha_estreno` futura y,
-   con las fechas reales importadas de TMDB, ninguna lo cumple. En la cartelera
-   se acordó otro criterio (todo lo que no esté en cartelera). **Hay que
-   unificar**, porque ahora las dos pantallas dicen cosas distintas.
+5. ✅ **`/proximos_estrenos/` salía vacía**: filtraba por `fecha_estreno` futura
+   y, con las fechas reales de TMDB, ninguna lo cumplía. Unificado el
+   2026-08-25: ahora usa el mismo criterio y el mismo orden que la cartelera
+   (todo lo que no esté en cartelera, por puntuación descendente).
 6. ⬜ Los **mensajes de commit** son casi todos "actualizaciones", lo que hace
    difícil seguir qué cambió en cada uno.
 
@@ -149,3 +149,4 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-25 | Las butacas se **bloquean 30 minutos** desde que se eligen. El bloqueo caducado se libera solo; no hace falta cron. | David |
 | 2026-08-25 | *Próximos estrenos* = todas las películas que **no** estén en cartelera (sin mirar la fecha de estreno). ⚠️ La página `/proximos_estrenos/` del menú aún usa el criterio antiguo (no en cartelera **y** fecha futura) y sale vacía: **falta unificar**. | David |
 | 2026-08-25 | Los **carteles** no se versionan (`media/` está en `.gitignore`): cada uno los genera con `importar_tmdb`. | David |
+| 2026-08-25 | *Próximos estrenos* se ordena por **puntuación** descendente. La nota es la de **TMDB**, no la de IMDb (TMDB no la expone; haría falta OMDb con otra clave). Campo `Peliculas.puntuacion`. | David |

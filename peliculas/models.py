@@ -32,6 +32,7 @@ class Peliculas(models.Model):
   anio = models.IntegerField("Año", null=True, blank=True)
   imagen = models.ImageField("Póster", upload_to="peliculas/posters/", null=True, blank=True)
   recaudacion = models.DecimalField("Recaudación", max_digits=10, decimal_places=2, default=0, help_text="Se actualiza automáticamente con las ventas de entradas")
+  puntuacion = models.DecimalField("Puntuación", max_digits=3, decimal_places=1, default=0, help_text="Nota media sobre 10. La importa importar_tmdb desde TMDB")
 
   class Meta:
       verbose_name='Pelicula'

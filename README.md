@@ -182,6 +182,11 @@ algunas anotaciones:
 - ✅ Catálogo de 35 películas (14 en cartelera, 21 fuera)
 - ✅ `Peliculas.recaudacion` — solo lectura en el admin, la actualizará un
   trigger en la BBDD a partir de las ventas de entradas
+- ✅ `Peliculas.puntuacion` — nota media sobre 10, la importa `importar_tmdb`.
+  ⚠️ Es la puntuación de **TMDB**, no la de IMDb: TMDB no expone la nota de
+  IMDb por su API (solo el `imdb_id`); para esa haría falta OMDb y otra clave.
+  El campo tiene nombre neutro, así que cambiar de fuente solo afecta al
+  importador, no a las vistas ni a las plantillas
 - ✅ **Fichas corregidas**: la carga inicial había dejado 8 títulos inventados y
   varios directores mal asignados (*La zona de interés* figuraba como de Nolan,
   *Vidas pasadas* de Chazelle...). Comando `corregir_peliculas`
@@ -216,6 +221,10 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - ✅ **Nuevo:** `Sala.filas` y `Sala.columnas` — rejilla del mapa de butacas
 - ✅ **Nuevo:** Cartelera dividida en dos secciones: **Cartelera** (películas
   marcadas `en_cartelera`) y **Próximos estrenos** (el resto)
+- ✅ **Nuevo:** Próximos estrenos ordenados por **puntuación**, de mejor a peor.
+  Ambas secciones muestran la nota (⭐) sobre el póster
+- ✅ **Nuevo:** `/proximos_estrenos/` usa ya el mismo criterio y el mismo orden
+  que la sección de la cartelera
 
 #### **App Usuarios**
 - ✅ Autenticación con las vistas genéricas de Django (login/logout)
@@ -291,9 +300,6 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
   para que una anulación reste
 - **Búsqueda por título y filtrado por género** en películas (estaba previsto y
   no está implementado)
-- **Unificar el criterio de "próximos estrenos"**: la cartelera muestra todo lo
-  que no está en cartelera, pero la página `/proximos_estrenos/` exige además
-  fecha futura y por eso sale vacía
 - **`detalle_pelicula`**: la vista existe pero no tiene URL ni plantilla
 - **`templates/restauracion/snack_bar.html`** está vacío y duplica el catálogo
 - La **portada** muestra las 35 películas, también las que no están en cartelera

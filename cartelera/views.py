@@ -14,11 +14,11 @@ def lista_cartelera(request):
                  .select_related("detalles")
                  .order_by("titulo"))
 
-    # Próximos estrenos: todo lo que no está en cartelera, lo más reciente primero
+    # Próximos estrenos: todo lo que no está en cartelera, mejor valorado primero
     proximos = (Peliculas.objects
                 .filter(detalles__en_cartelera=False)
                 .select_related("detalles")
-                .order_by("-detalles__fecha_estreno"))
+                .order_by("-puntuacion", "titulo"))
 
     contexto = {
         "cartelera": cartelera,

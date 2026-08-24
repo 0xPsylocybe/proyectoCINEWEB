@@ -18,7 +18,7 @@ CINES LEÓN - Cartelera
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         {% for pelicula in cartelera %}
-            {% include "cartelera/_tarjeta_pelicula.html" %}
+            {% include "cartelera/_tarjeta_pelicula.html" with mostrar_nota=True %}
         {% empty %}
         <div class="col-12">
             <p class="text-muted">No hay películas disponibles en este momento.</p>
@@ -33,7 +33,7 @@ CINES LEÓN - Cartelera
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         {% for pelicula in proximos %}
-            {% include "cartelera/_tarjeta_pelicula.html" with mostrar_estreno=True %}
+            {% include "cartelera/_tarjeta_pelicula.html" with mostrar_estreno=True mostrar_nota=True %}
         {% empty %}
         <div class="col-12">
             <p class="text-muted">Todavía no hay estrenos anunciados.</p>

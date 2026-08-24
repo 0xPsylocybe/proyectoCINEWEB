@@ -20,11 +20,12 @@ def sobrecine(request):
     return render(request, "core/sobrecine.html")
 
 def proximos_estrenos(request):
-    # Filtramos las películas que NO están en cartelera y cuya fecha es futura o actual
-    estrenos = DetallePelicula.objects.filter(
-        en_cartelera=False, 
-        fecha_estreno__gte=timezone.now().date()
-    ).order_by('fecha_estreno')
+    # Todo lo que no está en cartelera, mejor valorado primero.
+    # Mismo criterio que la sección "Próximos estrenos" de la cartelera.
+    estrenos = (DetallePelicula.objects
+                .filter(en_cartelera=False)
+                .select_related('pelicula')
+                .order_by('-pelicula__puntuacion', 'pelicula__titulo'))
 
     context = {
         'estrenos': estrenos
