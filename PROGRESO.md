@@ -28,56 +28,77 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 
 | Fecha | Tarea | Estado | Notas / validación |
 |-------|-------|--------|--------------------|
-|       | App **usuarios**: autenticación (login/logout) | ⬜ | |
-|       | App **usuarios**: roles y permisos (grupos Usuario/Gestor) | ⬜ | |
-| 2026-08-21 | **cartelera** (gestión): modelos `Sala`, `CaracteristicaSala`, `Sesion` + admin | 🔵 | Modelos y admin escritos; pendiente `migrate` |
-| 2026-08-21 | App **reservas**: modelo `VentaEntrada` + admin (falta vistas/compra) | 🟡 | Modelo y admin hechos |
-| 2026-08-21 | App **restauracion**: modelos `Producto`/`VentaProducto` + admin (faltan vistas) | 🟡 | Modelos y admin hechos |
-|       | Lógica de la BBDD (triggers y demás) | ⬜ | |
+| 2026-08-21 | App **usuarios**: autenticación (login/logout) | 🔵 | |
+| 2026-08-21 | App **usuarios**: roles y permisos + decorador `@gestor_required` | 🔵 | Protegido a nivel de URL, no solo ocultando botones |
+| 2026-08-21 | **cartelera** (gestión): modelos `Sala`, `Sesion` + admin | 🔵 | Migrado y en uso |
+| 2026-08-23 | **cartelera**: CRUD de sesiones + generación automática | 🔵 | `regenerar_sesiones` y vista "rellenar" |
+| 2026-08-23 | **cartelera**: validación de solapamientos entre sesiones | 🔵 | 15 min publicidad + película + 20 min limpieza |
+| 2026-08-24 | **cartelera**: `Sala.precio_entrada` — el precio depende de la sala | 🔵 | Editable desde el listado del admin |
+| 2026-08-24 | **peliculas**: campo `recaudacion` (solo lectura) | 🔵 | Lo actualizará el trigger |
+| 2026-08-24 | **restauracion**: modelo `Categoria` + FK en `Producto` | 🔵 | 5 categorías, 29 productos |
+| 2026-08-24 | **restauracion**: catálogo público del Snack Bar | 🔵 | Falta que el botón ➕ añada al carrito |
+| 2026-08-24 | App **reservas**: carrito → confirmación → compra | 🔵 | `VentaEntrada` pasa a referenciar la sesión |
+| 2026-08-24 | **reservas**: pago con validación de tarjeta (Luhn) | 🔵 | No se persiste ningún dato de tarjeta |
+| 2026-08-25 | **reservas**: selección de butacas + reserva de 30 min | 🔵 | `UniqueConstraint` en BBDD contra doble venta |
+| 2026-08-25 | **peliculas**: corregir fichas y traer carteles de TMDB | 🔵 | `corregir_peliculas` + `importar_tmdb` |
+| 2026-08-25 | **cartelera**: dividir en *Cartelera* y *Próximos estrenos* | 🔵 | |
+|       | Lógica de la BBDD (trigger de recaudación) | 🟡 | Lo lleva David |
 
 ---
 
 ## Próximos puntos a trabajar
 
-Orden sugerido (de la base hacia arriba). Marcad con quién lo coge y su estado.
+Marcad con quién lo coge y su estado.
 
 ### 🔧 Configuración base (común)
-1. 🔵 Registrar las 6 apps en `INSTALLED_APPS` (`config/settings.py`).
-2. 🔵 Configurar la conexión a **PostgreSQL** en `settings.py` (vía variables de entorno).
-3. 🔵 Ajustes de localización (`LANGUAGE_CODE = es-es`, `TIME_ZONE = Europe/Madrid`).
-4. 🟡 Crear `templates/` en raíz (subcarpetas por app) y enlazarla en `settings.py` — hecho; falta `static/`.
+1. ✅ Registrar las 6 apps en `INSTALLED_APPS` (`config/settings.py`).
+2. ✅ Configurar la conexión a **PostgreSQL** (Supabase).
+3. ✅ Ajustes de localización (`LANGUAGE_CODE = es-es`, `TIME_ZONE = Europe/Madrid`).
+4. ✅ `templates/` y `static/` en raíz, enlazadas en `settings.py`.
 
 ### 🗄️ Modelos y base de datos
-5. 🟡 Definir los modelos según el esquema (con `db_table`; PK `id`, FK `<campo>_id`). — hechos cartelera/reservas/restauración; faltan los de `peliculas` (Luizay).
-6. ⬜ `makemigrations` + `migrate` para crear el esquema; triggers/SQL a medida en una migración `RunSQL`. — bloqueado hasta tener los modelos de `peliculas`.
-7. 🟡 Registrar los modelos en el **Django Admin**. — hecho para cartelera/reservas/restauración; falta `peliculas`.
-8. ⬜ Crear superusuario y datos de prueba.
+5. ✅ Modelos de las cinco apps, migrados.
+6. 🟡 Triggers/SQL a medida en una migración `RunSQL` — pendiente el de recaudación.
+7. ✅ Modelos registrados en el **Django Admin**.
+8. ✅ Superusuario, grupo *Gestores* y datos de prueba.
 
 ### 🌐 URLs, vistas y plantillas
-9. ⬜ URLs modulares por app con `include()` y `app_name`.
-10. ⬜ Plantilla base con Bootstrap (navbar según estado del usuario).
-11. ⬜ Página de **cartelera** (cards con datos del ORM).
-12. ⬜ Página de **detalle** de película.
-13. ⬜ **Búsqueda** por título y **filtrado** por género (ORM).
+9. ✅ URLs modulares por app con `include()`.
+10. ✅ Plantilla base con Bootstrap, navbar y sidebar.
+11. ✅ Página de **cartelera**, ya dividida en *Cartelera* y *Próximos estrenos*.
+12. ✅ Página de **detalle** de película con horarios y filtro por tipo de sala.
+13. ⬜ **Búsqueda** por título y **filtrado** por género (Luizay).
 
 ### 🔐 Usuarios y permisos
 > Decisión: **sysadmin** + **gestores** (con permisos) + **visitantes anónimos**.
-> La compra de entradas y productos es anónima (sin login). El login es solo para
-> gestores/sysadmin.
-14. ⬜ Login / logout con el sistema de auth de Django (para gestores/sysadmin).
-15. ⬜ Grupo de **gestores** con permisos para gestionar cartelera/películas/productos.
-16. ⬜ Proteger vistas de gestión a nivel de URL (no solo ocultando botones).
-17. ⬜ Permitir compra de entradas y productos **sin iniciar sesión** (anónima).
+> La compra de entradas y productos es anónima (sin login).
+14. ✅ Login / logout para gestores y sysadmin.
+15. ✅ Grupo de **gestores** con sus permisos.
+16. ✅ Vistas de gestión protegidas a nivel de URL con `@gestor_required`.
+17. ✅ Compra de entradas y productos **sin iniciar sesión**.
 
 ### ✏️ Gestión (CRUD)
-18. ⬜ CRUD de **películas** (formularios de Django).
-19. ⬜ CRUD de **sesiones** (`Sesion`).
-20. ⬜ Mensajes de Django (creado / editado / eliminado / error).
+18. ✅ CRUD de **películas**.
+19. ✅ CRUD de **sesiones**, más generación automática.
+20. ✅ Mensajes de Django (creado / editado / eliminado / error).
+
+### 🎟️ Venta (David)
+21. ✅ Carrito, confirmación y compra realizada.
+22. ✅ Butacas con reserva temporal de 30 minutos.
+23. ⬜ Que el botón ➕ del Snack Bar añada el producto al carrito.
+24. ⬜ Mostrar en "compra realizada" qué se ha comprado (con las butacas).
+25. ⬜ Trigger de recaudación (contemplando el `DELETE` para las anulaciones).
+
+### 🗂️ Gestión de sesiones (David)
+26. ⬜ Filtrar por película en `/cartelera/sesiones/`.
+27. ⬜ Filtrar por fecha.
+28. ⬜ Mostrar la fecha de la sesión en la tabla.
 
 ### ✅ Cierre
-21. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
-22. ⬜ Pruebas de instalación desde cero siguiendo el README.
-23. ⬜ Revisión cruzada del código del compañero.
+29. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
+30. ⬜ Pruebas de instalación desde cero siguiendo el README.
+31. ⬜ Revisión cruzada del código del compañero.
+32. ⬜ Tests unitarios y de integración.
 
 ---
 
@@ -92,3 +113,9 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-20 | Consistencia en la escritura del código (nomenclatura, estilo) y en las tipologías/tipos de datos usados en los modelos. | Luizay & David |
 | 2026-08-20 | Columnas con convención Django: **PK `id`**, **FK `<campo>_id`**; nombres de tabla vía `db_table` (snake_case singular). | Luizay & David |
 | 2026-08-20 | 🔵 **EN REVISIÓN** (pendiente de aprobar Luizay): guardar las imágenes en la **BBDD** usando Pillow, en vez de en el sistema de archivos. A decidir por Luizay. | David → Luizay |
+| 2026-08-24 | El **precio de la entrada depende de la sala** (`Sala.precio_entrada`), no de la película. | David |
+| 2026-08-24 | La compra **no tiene pasarela de pago real**: se validan los datos de la tarjeta pero no se guardan ni se envían a ningún sitio. | David |
+| 2026-08-25 | Una **entrada = una butaca**. Desaparece el campo "cantidad de entradas" del carrito: la cantidad sale del número de butacas elegidas. | David |
+| 2026-08-25 | Las butacas se **bloquean 30 minutos** desde que se eligen. El bloqueo caducado se libera solo; no hace falta cron. | David |
+| 2026-08-25 | *Próximos estrenos* = todas las películas que **no** estén en cartelera (sin mirar la fecha de estreno). ⚠️ La página `/proximos_estrenos/` del menú aún usa el criterio antiguo (no en cartelera **y** fecha futura) y sale vacía: **falta unificar**. | David |
+| 2026-08-25 | Los **carteles** no se versionan (`media/` está en `.gitignore`): cada uno los genera con `importar_tmdb`. | David |

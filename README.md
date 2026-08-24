@@ -5,9 +5,9 @@ Aplicación web para la gestión de la cartelera de un pequeño cine independien
 **Autores:** Luizay & David
 **Stack previsto:** Python · Django · PostgreSQL · Bootstrap
 
-> ⚠️ Estado: **estructura inicial**. Las apps están creadas pero vacías; todavía
-> no hay código (modelos, vistas, plantillas...). Este README recoge la fase de
-> análisis y el plan de trabajo.
+> ✅ Estado: **en desarrollo activo**. Funcionan películas, cartelera, sesiones,
+> usuarios, el Snack Bar y la compra de entradas con selección de butacas.
+> El detalle del avance está en la sección 8 y en `PROGRESO.md`.
 
 ---
 
@@ -82,8 +82,16 @@ añaden dentro de una migración con `RunSQL`.
 | `restauracion` | `Producto`           | `producto`             |
 | `restauracion` | `VentaProducto`      | `venta_producto`       |
 | `reservas`     | `VentaEntrada`       | `venta_entrada`        |
+| `reservas`     | `EntradaButaca`      | `entrada_butaca`       |
+| `reservas`     | `ReservaButaca`      | `reserva_butaca`       |
+| `restauracion` | `Categoria`          | `categoria`            |
 | `usuarios`     | (roles con grupos/permisos de Django) | —     |
 | `core`         | (sin modelos)        | —                      |
+
+> ⚠️ La convención de `db_table` se aplicó en `reservas` y `restauracion`, pero
+> los modelos de `peliculas` y `cartelera` se quedaron con el nombre por defecto
+> de Django (`peliculas_peliculas`, `cartelera_sesion`, `cartelera_sala`).
+> Tenedlo en cuenta al escribir SQL a mano o triggers.
 
 Relaciones principales previstas:
 
@@ -170,16 +178,43 @@ algunas anotaciones:
 #### **App Películas**
 - ✅ Modelos: `Pelicula`, `Director`, `Genero`, `DetallePelicula`
 - ✅ CRUD completo con validaciones
-- ✅ Carga de datos: 37 películas (15 en cartelera, 22 archivadas)
-- ✅ Datos realistas con directores y géneros españoles/internacionales
+- ✅ Catálogo de 35 películas (14 en cartelera, 21 fuera)
+- ✅ `Peliculas.recaudacion` — solo lectura en el admin, la actualizará un
+  trigger en la BBDD a partir de las ventas de entradas
+- ✅ **Fichas corregidas**: la carga inicial había dejado 8 títulos inventados y
+  varios directores mal asignados (*La zona de interés* figuraba como de Nolan,
+  *Vidas pasadas* de Chazelle...). Comando `corregir_peliculas`
+- ✅ **Carteles**: las 35 películas tienen póster, importado de TMDB junto con
+  sinopsis, duración y año. Comando `importar_tmdb`
+
+##### Comandos de datos
+
+```bash
+python manage.py corregir_peliculas --dry-run   # ensayo, no toca nada
+python manage.py corregir_peliculas             # aplica las correcciones
+
+python manage.py importar_tmdb --conservar-titulos   # carteles + fichas de TMDB
+```
+
+`importar_tmdb` necesita una clave de TMDB en un fichero `.env` de la raíz
+(`TMDB_API_KEY=...`, ignorado por git). Acepta tanto la API key v3 como el
+token v4. Con `--conservar-titulos` mantiene título, género y director de la
+BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
+
+> ⚠️ Los carteles van a `media/`, que **está en `.gitignore`**. Al clonar o
+> hacer pull no vienen: hay que generarlos en cada equipo con ese comando.
 
 #### **App Cartelera**
 - ✅ Modelos: `Sala` (7 salas con tipos: 2D, 3D, IMAX x2, LASER, 4DX, VIP)
 - ✅ Modelo `Sesion` con validaciones de solapamiento
 - ✅ Cálculo automático de tiempos: publicidad (15 min) + película + limpieza (20 min)
-- ✅ Generación de 749 sesiones: 14 días x horarios variables por día
-- ✅ **Nuevo:** Filtrado de sesiones por "día de cine" (12:00-02:59 del día siguiente)
-- ✅ **Nuevo:** Selector de fechas dinámico que destaca día seleccionado
+- ✅ Generación de sesiones: 14 días x horarios variables por día
+- ✅ Filtrado de sesiones por "día de cine" (12:00-02:59 del día siguiente)
+- ✅ Selector de fechas dinámico que destaca día seleccionado
+- ✅ **Nuevo:** `Sala.precio_entrada` — el precio de la entrada depende de la sala
+- ✅ **Nuevo:** `Sala.filas` y `Sala.columnas` — rejilla del mapa de butacas
+- ✅ **Nuevo:** Cartelera dividida en dos secciones: **Cartelera** (películas
+  marcadas `en_cartelera`) y **Próximos estrenos** (el resto)
 
 #### **App Usuarios**
 - ✅ Autenticación (login/logout)
@@ -201,6 +236,27 @@ algunas anotaciones:
   - Opción de borrar sesiones existentes
   - Generación automática con click
 
+#### **App Restauración (Snack Bar)**
+- ✅ Modelo `Categoria` y FK `categoria` en `Producto`
+- ✅ 5 categorías y 29 productos (bebidas, palomitas, golosinas, snacks, chocolate)
+- ✅ Catálogo público en `/restauracion/`, con las tarjetas en rejilla irregular
+
+#### **App Reservas (compra de entradas)**
+- ✅ `VentaEntrada` referencia la **sesión** (antes iba a película + sala suelta)
+- ✅ Flujo en tres pasos: **carrito → confirmación → compra realizada**
+- ✅ **Selección de butacas** sobre el mapa de la sala
+- ✅ **Reserva temporal de 30 minutos** entre elegir butaca y confirmar:
+  - `ReservaButaca` guarda el bloqueo con su fecha de caducidad
+  - `UniqueConstraint (sesion, fila, numero)` en `EntradaButaca` y en
+    `ReservaButaca`: **la propia BBDD impide vender dos veces la misma butaca**,
+    aunque dos personas compren a la vez
+  - Los bloqueos caducados se liberan solos al consultar el mapa (sin cron)
+  - Si alguien se adelanta, se avisa y se vuelve al mapa; nunca un error 500
+- ✅ Productos del Snack Bar añadibles durante la compra de entradas
+- ✅ Formulario de pago con validación de tarjeta (algoritmo de Luhn, caducidad
+  y CVC). **No se guarda ningún dato de la tarjeta**: no hay pasarela de pago,
+  es solo la simulación del proceso
+
 #### **UI/UX**
 - ✅ Detalle de película con tabs (Horarios / Detalles)
 - ✅ Selector de fechas con scroll horizontal y highlight del día
@@ -208,29 +264,34 @@ algunas anotaciones:
 - ✅ Botón "Comprar" con estados: deshabilitado/habilitado/hover/active
 - ✅ Responsive: mobile, tablet, desktop
 - ✅ Estilos Bootstrap 5 + CSS personalizado
-- ✅ **Nuevo:** Filtrado visual de 54 sesiones por día (en lugar de ~750)
-
-### 🔄 En progreso
-- Agrupación final de salas en template (regroup vs diccionario)
-- UI de gestión unificada (películas + sesiones) en panel admin
+- ✅ Filtrado visual de las sesiones por día (en lugar de las ~750)
+- ✅ **Nuevo:** Mapa de butacas con pantalla, leyenda y estados (libre / tuya /
+  ocupada), y cuenta atrás de la reserva en la pantalla de confirmación
 
 ### ⏳ Pendiente
-- **Gestión de Sesiones:**
-  - 🔍 Filtrado por películas en pantalla `/cartelera/sesiones/`
-  - 📅 Filtrado por fechas en pantalla `/cartelera/sesiones/`
-  - 📋 Mostrar fecha de inicio de sesión en tabla de sesiones
-- **App Restauración:** Productos y ventas
-- **App Reservas:** Carrito y checkout de entradas
+- **Gestión de Sesiones** (pantalla `/cartelera/sesiones/`):
+  - 🔍 Filtrar por película
+  - 📅 Filtrar por fecha
+  - 📋 Mostrar la fecha de la sesión en la tabla
+- **Snack Bar:** el botón ➕ del catálogo todavía no añade nada al carrito
+- **Compra realizada:** mostrar el resumen de lo comprado (película, hora, sala
+  y butacas), que ahora solo dice que la compra fue bien
+- **Trigger de recaudación** en la BBDD (lo lleva David):
+  `venta_entrada → sesion → pelicula.recaudacion`. Debe contemplar el `DELETE`
+  para que una anulación reste
+- **Limpieza:** quedan 8 directores sin ninguna película tras corregir las fichas
+- `regenerar_sesiones --borrar` deja la web sin sesiones varios minutos mientras
+  reinserta; debería ir en una transacción
 - **Búsqueda avanzada** en películas
-- **Sistema de pagos**
 - **Reportes y estadísticas**
 - **Tests unitarios e integración**
 
 ### Datos actuales en BD
-- 37 películas (15 en cartelera)
-- 7 salas con características reales
-- 749 sesiones generadas
-- 15+ directores y 10 géneros
+- 35 películas (14 en cartelera, 21 en próximos estrenos), todas con cartel
+- 7 salas con precio propio y rejilla de butacas
+- ~530 sesiones generadas
+- 38 directores y 13 géneros
+- 5 categorías y 29 productos de restauración
 
 ### Stack actual
 - **Backend:** Python 3.x, Django 5.2

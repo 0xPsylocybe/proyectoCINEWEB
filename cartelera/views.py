@@ -7,9 +7,22 @@ from .models import Sesion
 from .forms import SesionForm
 
 def lista_cartelera(request):
-    cartelera = Peliculas.objects.all()
+    """Cartelera en dos bloques: lo que se puede ver ya y lo que está por llegar."""
+
+    cartelera = (Peliculas.objects
+                 .filter(detalles__en_cartelera=True)
+                 .select_related("detalles")
+                 .order_by("titulo"))
+
+    # Próximos estrenos: todo lo que no está en cartelera, lo más reciente primero
+    proximos = (Peliculas.objects
+                .filter(detalles__en_cartelera=False)
+                .select_related("detalles")
+                .order_by("-detalles__fecha_estreno"))
+
     contexto = {
-        "cartelera": cartelera
+        "cartelera": cartelera,
+        "proximos": proximos,
     }
     return render(
         request,

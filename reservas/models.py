@@ -15,8 +15,6 @@ class VentaEntrada(models.Model):
         on_delete=models.PROTECT,
         related_name="entradas_vendidas",
         verbose_name="Sesión",
-        null=True,
-        blank=True,
     )
     cantidad = models.PositiveIntegerField(default=1, verbose_name="Cantidad de entradas")
     precio_unitario = models.DecimalField(max_digits=8, decimal_places=2, default=10.00, verbose_name="Precio unitario")
