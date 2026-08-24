@@ -315,8 +315,7 @@ CINES LEÓN - {{ pelicula.titulo }}
             btn.addEventListener('click', function () {
                 const sesionId = this.dataset.sesionId;
                 if (sesionId) {
-                    console.log('Comprando entrada para sesión:', sesionId);
-                    // TODO: Implementar lógica de compra
+                    window.location.href = "{% url 'reservas:carrito_pelicula' pelicula.pk %}?sesion=" + sesionId;
                 }
             });
         });

@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carrito de Compra{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 px-3">
+    <h1 class="mb-5 fw-bold" style="color: #720042;">🎫 Carrito de Compra</h1>
+
+    <div class="row g-4">
+        <!-- COLUMNA IZQUIERDA: Información de sesión (DESTACADA) -->
+        <div class="col-lg-5 order-lg-2">
+            <div class="card shadow-lg border-0 mb-4" style="background-color: #720042; color: white;">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">📽️ Tu Sesión</h3>
+
+                    {% if sesion_preseleccionada %}
+                        {% with sesion=sesion_preseleccionada %}
+                        <div class="mb-3">
+                            <small class="text-white-50">PELÍCULA</small>
+                            <h5 class="fw-bold mb-0">{{ sesion.pelicula.titulo }}</h5>
+                        </div>
+                        <hr class="border-white-50">
+                        <div class="mb-3">
+                            <small class="text-white-50">FECHA Y HORA</small>
+                            <h6 class="fw-bold mb-0">
+                                {{ sesion.horario|date:"d/m/Y" }} · {{ sesion.horario|time:"H:i" }}
+                            </h6>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">SALA</small>
+                            <h6 class="fw-bold mb-0">{{ sesion.sala.identificador }} - {{ sesion.sala.tipo }}</h6>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">CAPACIDAD</small>
+                            <h6 class="fw-bold mb-0">{{ sesion.sala.capacidad }} asientos</h6>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <p class="text-white-50">Selecciona una sesión a continuación</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Resumen de precios (DESTACADO) -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Resumen</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Entradas</span>
+                        <span class="fw-bold" id="entradas-total">€0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                        <span>Productos</span>
+                        <span class="fw-bold" id="productos-total">€0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="h5 fw-bold">Total</span>
+                        <span class="h5 fw-bold" style="color: #720042;" id="total-compra">€0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Formulario de compra -->
+        <div class="col-lg-7 order-lg-1">
+            <form method="POST" id="form-carrito">
+                {% csrf_token %}
+
+                <!-- SELECCIÓN DE SESIÓN -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-bold">Selecciona tu Sesión</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-0">
+                            <label for="{{ form_entradas.sesion.id_for_label }}" class="form-label fw-bold">Sesión</label>
+                            {{ form_entradas.sesion }}
+                            {% if form_entradas.sesion.errors %}
+                            <small class="text-danger d-block mt-2">{{ form_entradas.sesion.errors }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAPA DE BUTACAS -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">💺 Elige tus butacas</h5>
+                        <span class="badge rounded-pill" style="background-color: #720042;">
+                            <span id="contador-butacas">0</span> seleccionadas
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        {% if mapa_butacas %}
+                        <p class="text-muted small">
+                            Se te reservan durante {{ minutos_reserva }} minutos para que termines la compra.
+                        </p>
+
+                        <div class="pantalla-cine">PANTALLA</div>
+
+                        <div class="mapa-butacas">
+                            {% for fila in mapa_butacas.filas %}
+                            <div class="butaca-fila">
+                                <span class="butaca-letra">{{ fila.letra }}</span>
+                                {% for butaca in fila.butacas %}
+                                    {% if butaca.estado == 'ocupada' %}
+                                    <span class="butaca ocupada" title="{{ butaca.etiqueta }} · ocupada"></span>
+                                    {% else %}
+                                    <label class="butaca libre" title="{{ butaca.etiqueta }}">
+                                        <input type="checkbox" name="butacas" value="{{ butaca.fila }}-{{ butaca.numero }}"
+                                               {% if butaca.estado == 'seleccionada' %}checked{% endif %}>
+                                        <span>{{ butaca.numero }}</span>
+                                    </label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="butacas-leyenda">
+                            <span><span class="butaca muestra libre"></span> Libre</span>
+                            <span><span class="butaca muestra elegida"></span> Tuya</span>
+                            <span><span class="butaca muestra ocupada"></span> Ocupada</span>
+                        </div>
+                        {% else %}
+                        <p class="text-muted mb-0">Elige primero una sesión para ver el mapa de la sala.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE PRODUCTOS (DESTACADA) -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-bold">🍿 Añade algo para picar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="productos-container">
+                            {% for categoria, campos in form_productos.campos_por_categoria %}
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-muted mb-3">{{ categoria }}</h6>
+                                <div class="row g-2">
+                                    {% for field in campos %}
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm producto-fila">
+                                            <label class="input-group-text flex-grow-1 text-truncate d-block text-start" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted mb-0">No hay productos disponibles</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
+                        ✓ Confirmar Compra
+                    </button>
+                    <a href="{% url 'cartelera' %}" class="btn btn-lg btn-outline-secondary">
+                        ✕ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const formCarrito = document.getElementById('form-carrito');
+    const sesionSelect = document.getElementById('{{ form_entradas.sesion.id_for_label }}');
+
+    function recalcularTotales() {
+        // Subtotal de productos
+        let totalProductos = 0;
+        document.querySelectorAll('.producto-cantidad').forEach(input => {
+            const cantidad = parseInt(input.value) || 0;
+            const precio = parseFloat(input.dataset.price) || 0;
+            totalProductos += cantidad * precio;
+        });
+
+        // Una entrada por butaca marcada
+        const butacas = document.querySelectorAll('input[name="butacas"]:checked').length;
+        document.getElementById('contador-butacas').textContent = butacas;
+
+        // El precio va en el texto de la opción de sesión: "(€10.00)"
+        let totalEntradas = 0;
+        if (sesionSelect && sesionSelect.value) {
+            const texto = sesionSelect.options[sesionSelect.selectedIndex].text;
+            const precioMatch = texto.match(/€([\d.]+)/);
+            const precioEntrada = precioMatch ? parseFloat(precioMatch[1]) : 0;
+            totalEntradas = precioEntrada * butacas;
+        }
+
+        document.getElementById('entradas-total').textContent = '€' + totalEntradas.toFixed(2);
+        document.getElementById('productos-total').textContent = '€' + totalProductos.toFixed(2);
+        document.getElementById('total-compra').textContent = '€' + (totalEntradas + totalProductos).toFixed(2);
+    }
+
+    formCarrito.addEventListener('change', recalcularTotales);
+    formCarrito.addEventListener('input', recalcularTotales);
+    recalcularTotales();
+
+    // Cambiar de sesión recarga el mapa de esa sala
+    if (sesionSelect) {
+        sesionSelect.addEventListener('change', function () {
+            if (this.value) {
+                window.location.search = '?sesion=' + this.value;
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}¡Compra Exitosa!{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 px-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <!-- Icono de éxito -->
+            <div class="mb-4" style="font-size: 4rem;">✅</div>
+
+            <h1 class="fw-bold mb-3" style="color: #720042;">¡Compra Confirmada!</h1>
+
+            <p class="text-muted mb-4">
+                Tu compra ha sido procesada correctamente.
+                <br>
+                Disfruta de tu película y tus productos.
+            </p>
+
+            <!-- Información útil -->
+            <div class="alert alert-light border mb-4">
+                <p class="mb-2">
+                    <strong>💡 Próximos pasos:</strong>
+                </p>
+                <ul class="text-start small mb-0">
+                    <li>Presenta tu confirmación en la taquilla</li>
+                    <li>Recoge tus productos en el snack bar</li>
+                    <li>¡Que disfrutes la película!</li>
+                </ul>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-grid gap-2">
+                <a href="{% url 'cartelera' %}" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
+                    ← Volver a Cartelera
+                </a>
+                <a href="{% url 'restauracion:catalogo' %}" class="btn btn-lg btn-outline-secondary">
+                    🍿 Ver más productos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

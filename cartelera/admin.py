@@ -4,7 +4,8 @@ from .models import Sala, Sesion
 
 @admin.register(Sala)
 class SalaAdmin(admin.ModelAdmin):
-    list_display = ("identificador", "capacidad", "tiempo_max", "tipo")
+    list_display = ("identificador", "tipo", "capacidad", "filas", "columnas", "precio_entrada")
+    list_editable = ("filas", "columnas", "precio_entrada")
 
 
 

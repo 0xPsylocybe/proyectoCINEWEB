@@ -215,6 +215,10 @@ algunas anotaciones:
 - UI de gestión unificada (películas + sesiones) en panel admin
 
 ### ⏳ Pendiente
+- **Gestión de Sesiones:**
+  - 🔍 Filtrado por películas en pantalla `/cartelera/sesiones/`
+  - 📅 Filtrado por fechas en pantalla `/cartelera/sesiones/`
+  - 📋 Mostrar fecha de inicio de sesión en tabla de sesiones
 - **App Restauración:** Productos y ventas
 - **App Reservas:** Carrito y checkout de entradas
 - **Búsqueda avanzada** en películas

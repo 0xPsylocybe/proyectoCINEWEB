@@ -1,12 +1,29 @@
 from django.db import models
 
 
+class Categoria(models.Model):
+    """Categoría de productos de restauración."""
+
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True)
+
+    class Meta:
+        db_table = "categoria"
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías"
+        ordering = ["nombre"]
+
+    def __str__(self):
+        return self.nombre
+
+
 class Producto(models.Model):
     """Producto de restauración (palomitas, refrescos, snacks...)."""
 
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True)
     precio = models.DecimalField(max_digits=6, decimal_places=2)
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name="productos", verbose_name="Categoría", null=True, blank=True)
 
     class Meta:
         db_table = "producto"

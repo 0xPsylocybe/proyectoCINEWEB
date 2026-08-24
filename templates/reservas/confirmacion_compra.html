@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirmación de Compra{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 px-3">
+    <h1 class="mb-5 fw-bold" style="color: #720042;">✓ Resumen de tu Compra</h1>
+
+    <div class="row g-4">
+        <!-- COLUMNA IZQUIERDA: Detalles -->
+        <div class="col-lg-7">
+            <!-- ENTRADAS -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">🎫 Tus Entradas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">PELÍCULA</small>
+                        <h6 class="fw-bold mb-0">{{ sesion.pelicula.titulo }}</h6>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">FECHA Y HORA</small>
+                            <h6 class="fw-bold mb-0">
+                                {{ sesion.horario|date:"d/m/Y" }} · {{ sesion.horario|time:"H:i" }}
+                            </h6>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">SALA</small>
+                            <h6 class="fw-bold mb-0">{{ sesion.sala.identificador }} - {{ sesion.sala.tipo }}</h6>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <small class="text-muted">Cantidad de entradas</small>
+                            <h6 class="fw-bold mb-0">{{ cantidad_entradas }} entrada{% if cantidad_entradas != 1 %}s{% endif %}</h6>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Precio unitario</small>
+                            <h6 class="fw-bold mb-0">€{{ precio_entrada }}</h6>
+                        </div>
+                    </div>
+
+                    <small class="text-muted">BUTACAS</small>
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        {% for butaca in butacas %}
+                        <span class="badge rounded-pill px-3 py-2" style="background-color: #720042;">
+                            💺 {{ butaca.etiqueta }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- AVISO DE CADUCIDAD -->
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+                <span style="font-size: 1.4rem;">⏳</span>
+                <div>
+                    Tus butacas están reservadas
+                    <strong><span id="cuenta-atras" data-expira="{{ expira_en|date:'c' }}">--:--</span></strong>
+                    más. Pasado ese tiempo vuelven a estar disponibles para otros.
+                </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTOS -->
+            {% if productos_carrito %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-bold">🍿 Tus Productos</h5>
+                </div>
+                <div class="card-body">
+                    {% for producto in productos_carrito %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ producto.nombre }}</h6>
+                            <small class="text-muted">{{ producto.cantidad }} x €{{ producto.precio }}</small>
+                        </div>
+                        <span class="fw-bold">€{{ producto.total }}</span>
+                    </div>
+                    {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- COLUMNA DERECHA: Total y Pago -->
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Método de Pago</h5>
+
+                    <form method="POST" id="form-pago">
+                        {% csrf_token %}
+
+                        <!-- Datos de Tarjeta -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Titular de la tarjeta</label>
+                            <input type="text" class="form-control" id="titular" placeholder="Juan Pérez" required>
+                            <small class="text-danger d-none" id="error-titular"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Número de tarjeta</label>
+                            <input type="text" class="form-control" id="numero-tarjeta" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" required>
+                            <small class="text-danger d-none" id="error-numero"></small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label fw-bold small">Fecha (MM/AA)</label>
+                                <input type="text" class="form-control" id="fecha-expiracion" placeholder="12/25" inputmode="numeric" maxlength="5" required>
+                                <small class="text-danger d-none" id="error-fecha"></small>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold small">CVC</label>
+                                <input type="text" class="form-control" id="cvc" placeholder="123" inputmode="numeric" maxlength="3" required>
+                                <small class="text-danger d-none" id="error-cvc"></small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Resumen de pago -->
+                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                            <span>{{ cantidad_entradas }} Entrada{% if cantidad_entradas != 1 %}s{% endif %}</span>
+                            <span class="fw-bold">€{{ total_entradas }}</span>
+                        </div>
+
+                        {% if productos_carrito %}
+                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                            <span>Productos</span>
+                            <span class="fw-bold">€{{ total_productos }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="h5 fw-bold">Total</span>
+                            <span class="h4 fw-bold" style="color: #720042;">€{{ total_compra }}</span>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <button type="submit" class="btn btn-lg w-100 fw-bold mb-2" style="background-color: #720042; color: white;">
+                            ✓ Confirmar Compra
+                        </button>
+                    </form>
+
+                    <a href="{% url 'reservas:carrito' %}" class="btn btn-lg btn-outline-secondary w-100">
+                        ✕ Volver al Carrito
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Cuenta atrás de la reserva de butacas
+    const cuentaAtras = document.getElementById('cuenta-atras');
+    if (cuentaAtras) {
+        const expira = new Date(cuentaAtras.dataset.expira);
+
+        function pintarCuentaAtras() {
+            const restante = Math.floor((expira - new Date()) / 1000);
+
+            if (restante <= 0) {
+                cuentaAtras.textContent = '0:00';
+                cuentaAtras.closest('.alert').classList.replace('alert-warning', 'alert-danger');
+                cuentaAtras.closest('.alert').lastElementChild.innerHTML =
+                    'La reserva ha caducado. <a href="{% url "reservas:carrito" %}">Vuelve a elegir butacas</a>.';
+                return;
+            }
+
+            const minutos = Math.floor(restante / 60);
+            const segundos = String(restante % 60).padStart(2, '0');
+            cuentaAtras.textContent = minutos + ':' + segundos;
+            setTimeout(pintarCuentaAtras, 1000);
+        }
+
+        pintarCuentaAtras();
+    }
+
+    const formPago = document.getElementById('form-pago');
+    const titularInput = document.getElementById('titular');
+    const numeroInput = document.getElementById('numero-tarjeta');
+    const fechaInput = document.getElementById('fecha-expiracion');
+    const cvcInput = document.getElementById('cvc');
+
+    // Formatear número de tarjeta (espacios cada 4 dígitos)
+    numeroInput.addEventListener('input', function() {
+        let valor = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formateado = valor.match(/.{1,4}/g)?.join(' ') || valor;
+        this.value = formateado;
+    });
+
+    // Formatear fecha (MM/AA)
+    fechaInput.addEventListener('input', function() {
+        let valor = this.value.replace(/\D/g, '');
+        if (valor.length >= 2) {
+            valor = valor.slice(0, 2) + '/' + valor.slice(2, 4);
+        }
+        this.value = valor;
+    });
+
+    // Solo números en CVC
+    cvcInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    });
+
+    // Validar formulario al enviar
+    formPago.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        let valido = true;
+
+        // Validar titular
+        if (titularInput.value.trim().length < 3) {
+            document.getElementById('error-titular').textContent = 'El nombre debe tener al menos 3 caracteres';
+            document.getElementById('error-titular').classList.remove('d-none');
+            valido = false;
+        } else {
+            document.getElementById('error-titular').classList.add('d-none');
+        }
+
+        // Validar número de tarjeta (Luhn algorithm)
+        let numero = numeroInput.value.replace(/\s+/g, '');
+        if (!validarTarjeta(numero)) {
+            document.getElementById('error-numero').textContent = 'Número de tarjeta inválido';
+            document.getElementById('error-numero').classList.remove('d-none');
+            valido = false;
+        } else {
+            document.getElementById('error-numero').classList.add('d-none');
+        }
+
+        // Validar fecha
+        let fecha = fechaInput.value.split('/');
+        if (fecha.length !== 2 || fecha[0].length !== 2 || fecha[1].length !== 2) {
+            document.getElementById('error-fecha').textContent = 'Formato: MM/AA';
+            document.getElementById('error-fecha').classList.remove('d-none');
+            valido = false;
+        } else {
+            let mes = parseInt(fecha[0]);
+            let año = parseInt('20' + fecha[1]);
+            let ahora = new Date();
+            if (mes < 1 || mes > 12 || (año === ahora.getFullYear() && mes < ahora.getMonth() + 1) || año < ahora.getFullYear()) {
+                document.getElementById('error-fecha').textContent = 'Tarjeta expirada';
+                document.getElementById('error-fecha').classList.remove('d-none');
+                valido = false;
+            } else {
+                document.getElementById('error-fecha').classList.add('d-none');
+            }
+        }
+
+        // Validar CVC
+        if (cvcInput.value.length !== 3) {
+            document.getElementById('error-cvc').textContent = 'CVC debe tener 3 dígitos';
+            document.getElementById('error-cvc').classList.remove('d-none');
+            valido = false;
+        } else {
+            document.getElementById('error-cvc').classList.add('d-none');
+        }
+
+        // Si todo es válido, enviar formulario
+        if (valido) {
+            formPago.submit();
+        }
+    });
+
+    // Validación de tarjeta con algoritmo de Luhn
+    function validarTarjeta(numero) {
+        if (!/^\d{13,19}$/.test(numero)) return false;
+
+        let suma = 0;
+        let esSegundo = false;
+
+        for (let i = numero.length - 1; i >= 0; i--) {
+            let digito = parseInt(numero.charAt(i), 10);
+
+            if (esSegundo) {
+                digito *= 2;
+                if (digito > 9) digito -= 9;
+            }
+
+            suma += digito;
+            esSegundo = !esSegundo;
+        }
+
+        return suma % 10 === 0;
+    }
+</script>
+{% endblock %}

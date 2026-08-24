@@ -25,13 +25,14 @@ class Director(models.Model):
 
 class Peliculas(models.Model):
   titulo = models.CharField("Titulo", max_length=100)
-  duracion = models.DurationField("Duracion") 
+  duracion = models.DurationField("Duracion")
   director = models.ForeignKey(Director, on_delete=models.CASCADE, related_name="peliculas")
   genero = models.ForeignKey(Genero, on_delete=models.CASCADE, related_name="peliculas")
   sinopsis = models.CharField("Sinopsis", max_length=300)
   anio = models.IntegerField("Año", null=True, blank=True)
   imagen = models.ImageField("Póster", upload_to="peliculas/posters/", null=True, blank=True)
-  
+  recaudacion = models.DecimalField("Recaudación", max_digits=10, decimal_places=2, default=0, help_text="Se actualiza automáticamente con las ventas de entradas")
+
   class Meta:
       verbose_name='Pelicula'
       verbose_name_plural='Peliculas'

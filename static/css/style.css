@@ -109,6 +109,133 @@
         }
     }
 
+/* ==========================================================
+   CARRITO: filas de productos (label ancho + contador estrecho)
+   ========================================================== */
+.producto-fila {
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+/* El ancho lo reparten las utilidades de Bootstrap (flex-grow-1 / w-auto);
+   aquí solo se evita que el nombre largo del producto empuje al desplegable. */
+.producto-fila .input-group-text {
+    min-width: 0;
+}
+
+/* ==========================================================
+   CARRITO: mapa de butacas
+   ========================================================== */
+.pantalla-cine {
+    margin: 0 auto 1.75rem;
+    padding: 0.35rem;
+    max-width: 70%;
+    border-radius: 0 0 60% 60% / 0 0 100% 100%;
+    background: linear-gradient(#dee2e6, #f8f9fa);
+    color: #6c757d;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-align: center;
+}
+
+.mapa-butacas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.butaca-fila {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.butaca-letra {
+    width: 1.2rem;
+    color: #adb5bd;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.butaca {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border-radius: 5px 5px 3px 3px;
+    font-size: 0.6rem;
+    line-height: 22px;
+    text-align: center;
+}
+
+/* Libre: seleccionable. El checkbox real queda oculto. */
+.butaca.libre {
+    background-color: #e9ecef;
+    color: #adb5bd;
+    cursor: pointer;
+    margin-bottom: 0;
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.butaca.libre:hover {
+    background-color: #d3d9df;
+    transform: scale(1.15);
+}
+
+.butaca.libre input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Elegida por el propio comprador */
+.butaca.libre:has(input:checked) {
+    background-color: #720042;
+    color: #fff;
+}
+
+.butaca.ocupada {
+    background-color: #f1c9c9;
+    cursor: not-allowed;
+}
+
+.butacas-leyenda {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.butacas-leyenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.butaca.muestra {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+}
+
+.butaca.muestra.elegida {
+    background-color: #720042;
+}
+
+@media (max-width: 576px) {
+    .butaca {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        line-height: 17px;
+        font-size: 0.5rem;
+    }
+}
+
     /* Estilos de colores corporativos */
     .text-sidebar {
         color: #720042 !important;

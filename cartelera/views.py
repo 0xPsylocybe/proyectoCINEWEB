@@ -91,7 +91,7 @@ def crear_sesion(request):
                 sesion.full_clean()
                 sesion.save()
                 messages.success(request, 'Sesión creada exitosamente.')
-                return redirect('cartelera:lista_sesiones')
+                return redirect('sesiones_lista')
             except Exception as e:
                 messages.error(request, f'Error al crear la sesión: {str(e)}')
     else:
@@ -113,7 +113,7 @@ def editar_sesion(request, pk):
                 form_sesion.full_clean()
                 form_sesion.save()
                 messages.success(request, 'Sesión actualizada exitosamente.')
-                return redirect('cartelera:lista_sesiones')
+                return redirect('sesiones_lista')
             except Exception as e:
                 messages.error(request, f'Error al actualizar la sesión: {str(e)}')
     else:
@@ -130,7 +130,7 @@ def eliminar_sesion(request, pk):
     if request.method == 'POST':
         sesion.delete()
         messages.success(request, 'Sesión eliminada exitosamente.')
-        return redirect('cartelera:lista_sesiones')
+        return redirect('sesiones_lista')
 
     contexto = {'sesion': sesion}
     return render(request, 'cartelera/sesion_confirmar_eliminar.html', contexto)
@@ -195,7 +195,7 @@ def rellenar_sesiones(request):
                 fecha_actual += timedelta(days=1)
 
             messages.success(request, f'✓ {sesiones_creadas} sesiones generadas correctamente.')
-            return redirect('cartelera:sesiones_lista')
+            return redirect('sesiones_lista')
     else:
         form = RellenarSesionesForm()
 

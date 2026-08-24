@@ -43,9 +43,10 @@ class DetallePeliculaInline(admin.StackedInline):
 
 @admin.register(Peliculas)
 class PeliculasAdmin(admin.ModelAdmin):
-    list_display = ("titulo", "duracion", "director", "genero", "sinopsis", "anio", "imagen")
+    list_display = ("titulo", "duracion", "director", "genero", "anio", "recaudacion")
     search_fields = ("titulo", "genero__nombre", "director__nombre")
     list_filter = ("genero", "director", "anio")
+    readonly_fields = ("recaudacion",)
     inlines = [DetallePeliculaInline] 
 
 

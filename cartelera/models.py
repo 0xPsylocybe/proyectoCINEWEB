@@ -14,7 +14,11 @@ class Sala(models.Model):
     identificador = models.CharField("Identificador", max_length=50)
     capacidad = models.IntegerField("Capacidad")
     tiempo_max = models.IntegerField("Tiempo Máximo")
-    tipo=models.CharField( "Tipo de sala",choices=TIPO_SALA_CHOICES,null=True,blank=True, )
+    tipo = models.CharField("Tipo de sala", choices=TIPO_SALA_CHOICES, null=True, blank=True)
+    precio_entrada = models.DecimalField("Precio entrada", max_digits=6, decimal_places=2, default=10.00, help_text="Precio base de entrada para esta sala")
+    filas = models.PositiveIntegerField("Filas", default=10, help_text="Filas del mapa de butacas")
+    columnas = models.PositiveIntegerField("Butacas por fila", default=15)
+
     class Meta:
         verbose_name = "Sala"
         verbose_name_plural = "Salas"
