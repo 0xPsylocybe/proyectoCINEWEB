@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0">{{ titulo }}</h3>
+                </div>
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="alert alert-info mb-4">
+                        <strong>ℹ️ Instrucciones:</strong><br>
+                        Ingresa la hora de <strong>apertura de la sala</strong> (15 min antes de que inicie la película).
+                        <br>El sistema calculará automáticamente: publicidad (15 min) + película + limpieza (20 min).
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.pelicula.id_for_label }}" class="form-label">
+                                Película <span class="text-danger">*</span>
+                            </label>
+                            {{ form.pelicula }}
+                            {% if form.pelicula.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.pelicula.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.sala.id_for_label }}" class="form-label">
+                                Sala <span class="text-danger">*</span>
+                            </label>
+                            {{ form.sala }}
+                            {% if form.sala.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.sala.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.horario.id_for_label }}" class="form-label">
+                                Hora de apertura de sala <span class="text-danger">*</span>
+                            </label>
+                            {{ form.horario }}
+                            <small class="form-text text-muted d-block mt-2">
+                                Ejemplo: si la película empieza a las 18:00, ingresa 17:45<br>
+                                (publicidad 17:45-18:00, película 18:00-20:00, limpieza 20:00-20:20)
+                            </small>
+                            {% if form.horario.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.horario.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'lista_sesiones' %}" class="btn btn-secondary">
+                                ← Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                💾 Guardar Sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

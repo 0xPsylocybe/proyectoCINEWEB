@@ -107,16 +107,31 @@ CINES LEÓN - {{ pelicula.titulo }}
                     {% endif %}
                 </div>
                 <div class="card-body">
-                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                         {% for sesion in sala_group.list %}
                         <div class="col">
-                            <div class="card border h-100 p-3 text-center shadow-sm">
-                                <h5 class="fw-bold mb-1 text-dark">
-                                    {{ sesion.horario|date:"H:i" }}
-                                    <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
-                                </h5>
-                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
-                                    Sala {{ sesion.sala.identificador }}
+                            <div class="d-flex gap-2 align-items-stretch h-100">
+                                <!-- Tarjeta de sesión (clickeable) -->
+                                <div class="sesion-card flex-grow-1 card border p-3 text-center shadow-sm cursor-pointer transition-all"
+                                    data-sesion-id="{{ sesion.id }}"
+                                    style="border-color: #dee2e6; cursor: pointer;">
+                                    <h5 class="fw-bold mb-1 text-dark">
+                                        {{ sesion.horario|date:"H:i" }}
+                                        <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
+                                    </h5>
+                                    <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                                        {{ sesion.sala.identificador }}
+                                    </div>
+                                </div>
+
+                                <!-- Botón Comprar -->
+                                <div class="d-flex align-items-center">
+                                    <button type="button" class="btn btn-comprar btn-sm"
+                                        data-sesion-id="{{ sesion.id }}"
+                                        disabled
+                                        style="background-color: #720042; color: white; white-space: nowrap;">
+                                        Comprar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -202,5 +217,63 @@ CINES LEÓN - {{ pelicula.titulo }}
             margin-left: 0;
         }
     }
+
+    /* Estilos para sesiones */
+    .sesion-card {
+        transition: all 0.3s ease;
+        border-width: 2px !important;
+    }
+
+    .sesion-card:hover {
+        border-color: #720042 !important;
+        box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.1) !important;
+    }
+
+    .sesion-card.seleccionada {
+        border-color: #720042 !important;
+        background-color: #fff5f8 !important;
+        box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.2) !important;
+    }
+
+    .btn-comprar:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-comprar:not(:disabled) {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-comprar:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.3);
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sesionCards = document.querySelectorAll('.sesion-card');
+
+        sesionCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const sesionId = this.dataset.sesionId;
+
+                // Desseleccionar todas las sesiones
+                sesionCards.forEach(c => c.classList.remove('seleccionada'));
+
+                // Deshabilitar todos los botones
+                document.querySelectorAll('.btn-comprar').forEach(btn => {
+                    btn.disabled = true;
+                });
+
+                // Seleccionar esta sesión
+                this.classList.add('seleccionada');
+
+                // Habilitar botón correspondiente
+                document.querySelector(`[data-sesion-id="${sesionId}"].btn-comprar`).disabled = false;
+            });
+        });
+    });
+</script>
 {% endblock %}

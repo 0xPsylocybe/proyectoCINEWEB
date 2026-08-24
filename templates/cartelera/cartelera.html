@@ -12,38 +12,40 @@ CINES LEÓN - Cartelera
     <div class="mb-2">
         <a href="{%url 'inicio' %}" class="text-decoration-none text-muted small">&larr; Regresar</a>
     </div>
-    
+
     <!-- Título principal con estilo y color -->
     <h2 class="fw-bold mb-4" style="color: #720042; font-weight: bold;">Cartelera</h2>
 
     <!-- Cuadrícula de películas -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         {% for pelicula in cartelera %}
-            <div class="col">
-                <a href="{% url 'detalle_cartelera' pelicula.pk %}" class="card-pelicula text-decoration-none d-block h-100">
-                    <!-- Contenedor de la imagen con tamaño fijo de póster y zoom -->
-                    <div class="overflow-hidden rounded shadow-sm bg-dark mb-2" style="height: 350px;">
-                        {% if pelicula.imagen %}
-                            <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover transition-zoom" alt="{{ pelicula.nombre }}">
-                        {% else %}
-                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white">
-                                Sin imagen
-                            </div>
-                        {% endif %}
+        <div class="col">
+            <a href="{% url 'detalle_cartelera' pelicula.pk %}"
+                class="card-pelicula text-decoration-none d-block h-100">
+                <!-- Contenedor de la imagen con tamaño fijo de póster y zoom -->
+                <div class="overflow-hidden rounded shadow-sm bg-dark mb-2" style="height: 350px;">
+                    {% if pelicula.imagen %}
+                    <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover transition-zoom"
+                        alt="{{ pelicula.nombre }}">
+                    {% else %}
+                    <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white">
+                        Sin imagen
                     </div>
-                    
-                    <!-- Título de la película debajo de la imagen -->
-                    <div class="text-center px-1">
-                        <span class="text-muted small d-block text-truncate">
-                            {{ pelicula.titulo }}
-                        </span>
-                    </div>
-                </a>
-            </div>
+                    {% endif %}
+                </div>
+
+                <!-- Título de la película debajo de la imagen -->
+                <div class="text-center px-1">
+                    <span class="text-muted small d-block text-truncate">
+                        {{ pelicula.titulo }}
+                    </span>
+                </div>
+            </a>
+        </div>
         {% empty %}
-            <div class="col-12">
-                <p class="text-muted">No hay películas disponibles en este momento.</p>
-            </div>
+        <div class="col-12">
+            <p class="text-muted">No hay películas disponibles en este momento.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
