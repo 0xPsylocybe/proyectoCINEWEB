@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+CINES LEÓN - {{ pelicula.titulo }}
+{% endblock %}
+
+{% block contenido %}
+<!-- Imagen principal / Banner superior estilo Cines Unidos (Sin icono de video) -->
+<div class="position-relative w-100 mb-4" style="max-height: 450px; overflow: hidden; background-color: #111;">
+    {% if pelicula.imagen %}
+    <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover opacity-75" alt="{{ pelicula.titulo }}"
+        style="max-height: 450px;">
+    {% else %}
+    <div class="d-flex align-items-center justify-content-center text-white" style="height: 300px;">
+        <span>Sin imagen de portada</span>
+    </div>
+    {% endif %}
+</div>
+
+<div class="container my-4 px-3 px-md-4">
+    <!-- Botón Regresar -->
+    <div class="mb-2">
+        <a href="{% url 'cartelera' %}" class="text-decoration-none text-muted small">&larr; Regresar a Cartelera</a>
+    </div>
+
+    <!-- Cabecera de la película con título, duración y género (Adaptable a móvil) -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <h1 class="fw-bold mb-0" style="color: #212529; font-size: 2rem;">{{ pelicula.titulo }}</h1>
+        <div class="d-flex gap-2">
+            {% if pelicula.duracion %}
+            <div class="bg-light text-secondary rounded px-3 py-2 fw-semibold" style="font-size: 0.95rem;">
+                {{ pelicula.duracion }}
+            </div>
+            {% endif %}
+            {% if pelicula.genero %}
+            <div class="bg-light text-secondary rounded px-3 py-2 fw-semibold" style="font-size: 0.95rem;">
+                {{ pelicula.genero.nombre }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Pestañas de navegación (Tabs) -->
+    <ul class="nav nav-tabs mb-4 border-bottom" id="peliculaTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold px-0 me-4 pb-2" id="horarios-tab" data-bs-toggle="tab"
+                data-bs-target="#horarios" type="button" role="tab" aria-controls="horarios" aria-selected="true"
+                style="color: #720042;">Horarios</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold text-muted px-0 pb-2" id="detalles-tab" data-bs-toggle="tab"
+                data-bs-target="#detalles" type="button" role="tab" aria-controls="detalles"
+                aria-selected="false">Detalles de la película</button>
+        </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content" id="peliculaTabContent">
+
+        <!-- PESTAÑA 1: HORARIOS -->
+        <div class="tab-pane fade show active" id="horarios" role="tabpanel" aria-labelledby="horarios-tab">
+            <h4 class="fw-bold mb-3 text-dark fs-5">Selecciona la fecha y formato de la película</h4>
+
+
+            <!-- Selector de fechas (Estilo Tarjetas/Pills con scroll horizontal en móviles) -->
+            <div class="d-flex flex-row gap-2 mb-4 overflow-auto pb-2 scrollbar-none">
+                {% for fecha in fechas_disponibles %}
+                <a href="?fecha={{ fecha|date:'Y-m-d' }}" class="text-decoration-none">
+                    <div class="card border text-center p-2 rounded-3 {% if forloop.first %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
+                        style="min-width: 75px; {% if forloop.first %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
+                        <span class="small text-uppercase fw-semibold"
+                            style="{% if forloop.first %}color: #720042;{% endif %}">{{ fecha|date:"D" }}.</span>
+                        <span class="small text-muted" style="font-size: 0.75rem;">{{ fecha|date:"M" }}</span>
+                        <span class="fw-bold fs-4"
+                            style="{% if forloop.first %}color: #720042;{% else %}color: #6c757d;{% endif %}">{{
+                            fecha|date:"d" }}</span>
+                    </div>
+                </a>
+                {% empty %}
+                <p class="text-muted small">No hay fechas disponibles.</p>
+                {% endfor %}
+            </div>
+            <!-- Selector de tipos de sala / formato -->
+            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+                <button type="button" class="btn px-4 py-2 fw-bold"
+                    style="border-color: #720042; color: #720042; background-color: #fff; border-width: 1px;">2D</button>
+                <button type="button" class="btn btn-outline-secondary px-4 py-2">3D</button>
+                <button type="button" class="btn btn-outline-secondary px-4 py-2">IMAX</button>
+                <button type="button" class="btn btn-outline-secondary px-4 py-2">Láser</button>
+                <button type="button" class="btn btn-outline-secondary px-4 py-2">4DX</button>
+                <button type="button" class="btn btn-outline-secondary px-4 py-2">VIP</button>
+            </div>
+
+            <!-- Listado de sesiones agrupadas por Sala -->
+            {% regroup pelicula.sesiones.all by sala as salas_list %}
+
+            {% for sala_group in salas_list %}
+            <div class="card border shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold text-dark">{{ sala_group.grouper.identificador }}</h5>
+                    {% if pelicula.detalles.clasificacion %}
+                    <span class="badge" style="background-color: #f8d7da; color: #720042; font-weight: bold;">
+                        B+{{ pelicula.detalles.get_clasificacion_display }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                        {% for sesion in sala_group.list %}
+                        <div class="col">
+                            <div class="card border h-100 p-3 text-center shadow-sm">
+                                <h5 class="fw-bold mb-1 text-dark">
+                                    {{ sesion.horario|date:"H:i" }}
+                                    <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
+                                </h5>
+                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                                    Sala {{ sesion.sala.identificador }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-warning">No hay horarios programados para esta película actualmente.</div>
+            {% endfor %}
+        </div>
+
+        <!-- PESTAÑA 2: DETALLES DE LA PELÍCULA -->
+        <div class="tab-pane fade" id="detalles" role="tabpanel" aria-labelledby="detalles-tab">
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    {% if pelicula.imagen %}
+                    <img src="{{ pelicula.imagen.url }}" class="img-fluid rounded shadow" alt="{{ pelicula.titulo }}">
+                    {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded"
+                        style="height: 350px;">
+                        Sin imagen
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-9">
+                    <h3 class="fw-bold mb-3" style="color: #720042;">Sinopsis</h3>
+                    <p class="text-muted fs-5">{{ pelicula.sinopsis }}</p>
+
+                    <hr class="my-4">
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <strong>Director:</strong>
+                            <p class="text-muted">{{ pelicula.director.nombre|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Género:</strong>
+                            <p class="text-muted">{{ pelicula.genero.nombre|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Año:</strong>
+                            <p class="text-muted">{{ pelicula.anio|default:"N/D" }}</p>
+                        </div>
+                        {% if pelicula.detalles %}
+                        <div class="col-md-4">
+                            <strong>Fecha de estreno:</strong>
+                            <p class="text-muted">{{ pelicula.detalles.fecha_estreno|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Clasificación:</strong>
+                            <p class="text-muted">{{ pelicula.detalles.get_clasificacion_display }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .nav-tabs .nav-link.active {
+        color: #720042 !important;
+        border-color: transparent !important;
+        border-bottom: 3px solid #720042 !important;
+        background: transparent !important;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        background: transparent;
+    }
+
+    main {
+        margin-left: 100px;
+        transition: margin-left 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endblock %}

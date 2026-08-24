@@ -1,5 +1,5 @@
 {% load static %}
-{% load static %}
+
 <!-- Footer con fondo morado -->
 <footer class="text-white pt-5 pb-3" style="background-color: #720042;">
     <div class="container">
@@ -7,7 +7,7 @@
         <div class="row align-items-start mb-4">
             
             <!-- Columna 1: Logo e Inicio / Contacto -->
-            <div class="col-md-3 mb-4 mb-md-0 text-center text-md-start">
+            <div class="col-md-3 mb-4 mb-md-0 text-start">
                 <img src="{% static 'logo_sinfondo.png' %}" alt="Logo" style="height: 60px; width: auto; object-fit: contain;" class="mb-3">
                 <ul class="list-unstyled">
                     <li><a href="{% url 'inicio' %}" class="text-white text-decoration-none py-1 d-block">Inicio</a></li>
@@ -16,7 +16,7 @@
             </div>
 
             <!-- Columna 2: Secciones del Club / Promociones -->
-            <div class="col-md-3 mb-4 mb-md-0">
+            <div class="col-md-3 mb-4 mb-md-0 text-start">
                 <h6 class="text-uppercase fw-bold mb-3">Club y Promociones</h6>
                 <ul class="list-unstyled">
                     <li><a href="#" class="text-white text-decoration-none py-1 d-block">Snack bar</a></li>
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Columna 3: Cartelera y Estrenos -->
-            <div class="col-md-3 mb-4 mb-md-0">
+            <div class="col-md-3 mb-4 mb-md-0 text-start">
                 <h6 class="text-uppercase fw-bold mb-3">Cartelera</h6>
                 <ul class="list-unstyled">
                     <li><a href="{% url 'cartelera' %}" class="text-white text-decoration-none py-1 d-block">Cartelera</a></li>
@@ -33,25 +33,28 @@
                     <li><a href="{% url 'sobrecine' %}" class="text-white text-decoration-none py-1 d-block">Sobre Cine</a></li>
                 </ul>
             </div>
-
+        </div>
 
         <!-- Línea divisoria blanca -->
         <hr class="border-light opacity-50 my-4">
 
-        <!-- Fila inferior: Copyright y Redes Sociales (GitHub) -->
+
+        <!-- Fila inferior: Todo centrado y en la misma línea en móvil / separado en PC -->
         <div class="row align-items-center">
-            <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
-                <p class="small mb-0 text-white-50">
+            <div class="col-12 text-center text-md-start mb-3 mb-md-0 d-md-flex justify-content-between align-items-center">
+                <!-- Copyright -->
+                <p class="small mb-2 mb-md-0 text-white-50">
                     &copy; 2026. Hecho con buenas vibras 
                 </p>
-            </div>
-            
-            <!-- Red social: GitHub -->
-            <div class="col-md-4 text-center text-md-end">
-                <a href="https://github.com/0xPsylocybe/proyectoCINEWEB.git" target="_blank" class="text-white fs-4 text-decoration-none" title="GitHub">
-                    <i class="bi bi-github"></i>
-                </a>
+                
+                <!-- Red social: GitHub al lado en PC / Centrado abajo en móvil -->
+                <div>
+                    <a href="https://github.com/0xPsylocybe/proyectoCINEWEB.git" target="_blank" class="text-white fs-4 text-decoration-none" title="GitHub">
+                        <i class="bi bi-github"></i>
+                    </a>
+                </div>
             </div>
         </div>
+    
     </div>
 </footer>

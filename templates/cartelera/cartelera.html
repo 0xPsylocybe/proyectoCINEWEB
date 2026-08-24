@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+CINES LEÓN - Cartelera
+{% endblock %}
+
+{% block contenido %}
+<!-- Contenido principal de la cartelera -->
+<div class="container-fluid my-4 px-4">
+    <!-- Botón Regresar ubicado sobre el título -->
+    <div class="mb-2">
+        <a href="{%url 'inicio' %}" class="text-decoration-none text-muted small">&larr; Regresar</a>
+    </div>
+    
+    <!-- Título principal con estilo y color -->
+    <h2 class="fw-bold mb-4" style="color: #720042; font-weight: bold;">Cartelera</h2>
+
+    <!-- Cuadrícula de películas -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+        {% for pelicula in cartelera %}
+            <div class="col">
+                <a href="{% url 'detalle_cartelera' pelicula.pk %}" class="card-pelicula text-decoration-none d-block h-100">
+                    <!-- Contenedor de la imagen con tamaño fijo de póster y zoom -->
+                    <div class="overflow-hidden rounded shadow-sm bg-dark mb-2" style="height: 350px;">
+                        {% if pelicula.imagen %}
+                            <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover transition-zoom" alt="{{ pelicula.nombre }}">
+                        {% else %}
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white">
+                                Sin imagen
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Título de la película debajo de la imagen -->
+                    <div class="text-center px-1">
+                        <span class="text-muted small d-block text-truncate">
+                            {{ pelicula.titulo }}
+                        </span>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-muted">No hay películas disponibles en este momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Efecto de zoom suave exclusivamente en la imagen */
+    .card-pelicula .transition-zoom {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card-pelicula:hover .transition-zoom {
+        transform: scale(1.05);
+    }
+
+    /* Comportamiento y animación de expansión del sidebar */
+    .sidebar {
+        width: 80px; 
+        transition: width 0.3s ease; 
+        overflow: hidden; 
+        white-space: nowrap;
+    }
+
+    .sidebar:hover {
+        width: 240px;
+    }
+
+    .text-sidebar {
+        color: #720042 !important;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-pills .text-sidebar:hover {
+        background-color: #720042 !important;
+        color: #ffffff !important;
+    }
+
+    .sidebar-text {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .sidebar:hover .sidebar-text {
+        opacity: 1;
+    }
+
+    /* Ajuste del contenido principal para que no quede detrás del menú fijo */
+    main {
+        margin-left: 100px;
+        transition: margin-left 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endblock %}
