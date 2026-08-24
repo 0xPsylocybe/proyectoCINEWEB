@@ -1,9 +1,20 @@
 from django.shortcuts import render
 from django.utils import timezone
-from peliculas.models import DetallePelicula
+from peliculas.models import DetallePelicula, Peliculas
+
 
 def inicio(request):
-    return render(request, "core/inicio.html")
+    cartelera = Peliculas.objects.all()
+    
+    contexto = {
+            "cartelera": cartelera
+            
+        }
+    return render(
+            request,
+            "core/inicio.html",
+            contexto
+        )
 
 def sobrecine(request):
     return render(request, "core/sobrecine.html")
