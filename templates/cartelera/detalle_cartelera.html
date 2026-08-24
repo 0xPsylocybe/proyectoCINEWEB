@@ -133,7 +133,7 @@ CINES LEÓN - {{ pelicula.titulo }}
 
                         <!-- Botón Comprar ÚNICO a la derecha -->
                         <div class="d-flex align-items-center">
-                            <button type="button" class="btn btn-comprar btn-lg"
+                            <button type="button" class="btn btn-comprar btn-lg" disabled
                                 data-sala-id="{{ sala_group.grouper.id }}"
                                 style="white-space: nowrap; min-width: 120px;">
                                 Comprar
@@ -274,6 +274,11 @@ CINES LEÓN - {{ pelicula.titulo }}
     document.addEventListener('DOMContentLoaded', function () {
         const sesionCards = document.querySelectorAll('.sesion-card');
 
+        // Deshabilitar todos los botones al cargar
+        document.querySelectorAll('.btn-comprar').forEach(btn => {
+            btn.disabled = true;
+        });
+
         sesionCards.forEach(card => {
             card.addEventListener('click', function () {
                 const sesionId = this.dataset.sesionId;
@@ -290,8 +295,9 @@ CINES LEÓN - {{ pelicula.titulo }}
                 this.classList.add('seleccionada');
 
                 // Encontrar la sala de esta sesión y habilitar su botón
-                const salaCard = this.closest('.card');
-                const comprarBtn = salaCard.querySelector('.btn-comprar');
+                // Subir desde sesion-card -> col -> row -> flex-grow-1 -> d-flex (flex container)
+                const flexContainer = this.closest('.d-flex.gap-3.align-items-stretch');
+                const comprarBtn = flexContainer?.querySelector('.btn-comprar');
                 if (comprarBtn) {
                     comprarBtn.disabled = false;
                     comprarBtn.dataset.sesionId = sesionId; // Guardar ID de sesión seleccionada
@@ -300,7 +306,7 @@ CINES LEÓN - {{ pelicula.titulo }}
         });
 
         // Manejar click en botón Comprar
-        document.querySelectorAll('.btn-comprar:not(:disabled)').forEach(btn => {
+        document.querySelectorAll('.btn-comprar').forEach(btn => {
             btn.addEventListener('click', function () {
                 const sesionId = this.dataset.sesionId;
                 if (sesionId) {
