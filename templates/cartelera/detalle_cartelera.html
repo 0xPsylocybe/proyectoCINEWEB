@@ -86,21 +86,26 @@ CINES LEÓN - {{ pelicula.titulo }}
                 {% endfor %}
             </div>
             <!-- Selector de tipos de sala / formato -->
-            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
-                <button type="button" class="btn px-4 py-2 fw-bold"
-                    style="border-color: #720042; color: #720042; background-color: #fff; border-width: 1px;">2D</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">3D</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">IMAX</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">Láser</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">4DX</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">VIP</button>
+            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center" id="filtro-tipos">
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold activo" data-tipo="2D"
+                    style="background-color: #720042; color: white; border: none;">2D</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="3D"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">3D</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="IMAX"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">IMAX</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="LASER"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">Láser</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="4DX"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">4DX</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="VIP"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">VIP</button>
             </div>
 
             <!-- Listado de sesiones agrupadas por Sala -->
             {% for sala, sesiones in salas_con_sesiones %}
-            <div class="card border shadow-sm mb-4">
+            <div class="card border shadow-sm mb-4" data-tipo-sala="{{ sala.tipo }}">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0 fw-bold text-dark">{{ sala.identificador }}</h5>
+                    <h5 class="mb-0 fw-bold text-dark">{{ sala.identificador }} - {{ sala.tipo }}</h5>
                     {% if pelicula.detalles.clasificacion %}
                     <span class="badge" style="background-color: #f8d7da; color: #720042; font-weight: bold;">
                         B+{{ pelicula.detalles.get_clasificacion_display }}
@@ -313,6 +318,36 @@ CINES LEÓN - {{ pelicula.titulo }}
                     console.log('Comprando entrada para sesión:', sesionId);
                     // TODO: Implementar lógica de compra
                 }
+            });
+        });
+
+        // Filtrado por tipo de sala
+        document.querySelectorAll('.filtro-tipo').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const tipoSeleccionado = this.dataset.tipo;
+
+                // Actualizar estilos de botones
+                document.querySelectorAll('.filtro-tipo').forEach(b => {
+                    b.classList.remove('activo');
+                    b.style.backgroundColor = '#f5f5f5';
+                    b.style.color = '#666';
+                    b.style.borderColor = '#ccc';
+                });
+
+                this.classList.add('activo');
+                this.style.backgroundColor = '#720042';
+                this.style.color = 'white';
+                this.style.borderColor = '#720042';
+
+                // Filtrar salas por tipo
+                document.querySelectorAll('.card[data-tipo-sala]').forEach(card => {
+                    const tipoSala = card.dataset.tipoSala;
+                    if (tipoSala === tipoSeleccionado || tipoSeleccionado === 'TODOS') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
     });
