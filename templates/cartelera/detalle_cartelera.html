@@ -322,32 +322,55 @@ CINES LEÓN - {{ pelicula.titulo }}
         });
 
         // Filtrado por tipo de sala
+        let tipoActivoActual = '2D'; // Tipo inicial
+
         document.querySelectorAll('.filtro-tipo').forEach(btn => {
             btn.addEventListener('click', function () {
                 const tipoSeleccionado = this.dataset.tipo;
 
-                // Actualizar estilos de botones
-                document.querySelectorAll('.filtro-tipo').forEach(b => {
-                    b.classList.remove('activo');
-                    b.style.backgroundColor = '#f5f5f5';
-                    b.style.color = '#666';
-                    b.style.borderColor = '#ccc';
-                });
+                // Si se hace clic en el botón activo, deseleccionar
+                if (tipoActivoActual === tipoSeleccionado) {
+                    tipoActivoActual = null;
 
-                this.classList.add('activo');
-                this.style.backgroundColor = '#720042';
-                this.style.color = 'white';
-                this.style.borderColor = '#720042';
+                    // Actualizar estilos de botones
+                    document.querySelectorAll('.filtro-tipo').forEach(b => {
+                        b.classList.remove('activo');
+                        b.style.backgroundColor = '#f5f5f5';
+                        b.style.color = '#666';
+                        b.style.borderColor = '#ccc';
+                    });
 
-                // Filtrar salas por tipo
-                document.querySelectorAll('.card[data-tipo-sala]').forEach(card => {
-                    const tipoSala = card.dataset.tipoSala;
-                    if (tipoSala === tipoSeleccionado || tipoSeleccionado === 'TODOS') {
+                    // Mostrar todas las salas
+                    document.querySelectorAll('.card[data-tipo-sala]').forEach(card => {
                         card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+                    });
+                } else {
+                    // Si se hace clic en otro botón, seleccionar ese
+                    tipoActivoActual = tipoSeleccionado;
+
+                    // Actualizar estilos de botones
+                    document.querySelectorAll('.filtro-tipo').forEach(b => {
+                        b.classList.remove('activo');
+                        b.style.backgroundColor = '#f5f5f5';
+                        b.style.color = '#666';
+                        b.style.borderColor = '#ccc';
+                    });
+
+                    this.classList.add('activo');
+                    this.style.backgroundColor = '#720042';
+                    this.style.color = 'white';
+                    this.style.borderColor = '#720042';
+
+                    // Filtrar salas por tipo
+                    document.querySelectorAll('.card[data-tipo-sala]').forEach(card => {
+                        const tipoSala = card.dataset.tipoSala;
+                        if (tipoSala === tipoSeleccionado) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
             });
         });
     });
