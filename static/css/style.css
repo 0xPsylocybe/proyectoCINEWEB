@@ -1,0 +1,121 @@
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.pulse-logo {
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.preloader-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* ==========================================================
+    ESPACIADO FIJO ANTI-SOLAPAMIENTO (Evita que el navbar tape la vista)
+    ========================================================== */
+
+/* En Escritorio e iPad (Pantallas de 768px en adelante) */
+@media (min-width: 768px) {
+    body {
+        padding-top: 100px !important; /* 85px del navbar superior + 15px de respiro visual */
+        padding-left: 80px !important;  /* Espacio lateral para el sidebar fijo */
+    }
+}
+
+/* En Móviles (Pantallas menores a 768px) */
+@media (max-width: 767.98px) {
+    body {
+        padding-top: 70px !important;  /* 60px del navbar móvil + 10px de respiro */
+        padding-left: 0 !important;
+    }
+}
+
+
+
+/*NAV BAR*/
+.hover-gestor:hover {
+    color: #720042 !important;
+    background-color: #f8f9fa;
+}
+
+/* Ajuste para evitar que el navbar superior de 85px solape el contenido principal en PC/iPad */
+@media (min-width: 768px) {
+    main {
+        margin-top: 95px !important;
+        margin-left: 100px !important;
+        transition: margin 0.3s ease;
+    }
+}
+
+/*side bar*/
+
+    /* ==========================================================
+       ESCRITORIO E IPAD (Pantallas de 768px en adelante)
+       ========================================================== */
+    @media (min-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 100vh;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 1030;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .sidebar-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .sidebar-text {
+            opacity: 1;
+        }
+
+        /* El contenido se desplaza a la derecha del sidebar y no tiene margen superior */
+        main {
+            margin-left: 100px !important;
+            margin-top: 0 !important;
+            transition: margin 0.3s ease;
+        }
+    }
+
+    /* ==========================================================
+       MÓVIL (Pantallas menores a 768px)
+       ========================================================== */
+    @media (max-width: 767.98px) {
+        .sidebar {
+            width: 260px !important;
+        }
+
+        .sidebar-text {
+            opacity: 1 !important;
+        }
+
+        /* El contenido no se desplaza a la izquierda, pero baja 65px para dejar ver el navbar superior */
+        main {
+            margin-left: 0 !important;
+            margin-top: 65px !important;
+        }
+    }
+
+    /* Estilos de colores corporativos */
+    .text-sidebar {
+        color: #720042 !important;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-pills .text-sidebar:hover {
+        background-color: #720042 !important;
+        color: #ffffff !important;
+    }
