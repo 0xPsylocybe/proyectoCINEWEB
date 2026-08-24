@@ -70,12 +70,20 @@ CINES LEÓN - {{ pelicula.titulo }}
                 <a href="?fecha={{ fecha|date:'Y-m-d' }}" class="text-decoration-none">
                     <div class="card border text-center p-2 rounded-3 {% if forloop.first %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
                         style="min-width: 75px; {% if forloop.first %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
+
                         <span class="small text-uppercase fw-semibold"
-                            style="{% if forloop.first %}color: #720042;{% endif %}">{{ fecha|date:"D" }}.</span>
-                        <span class="small text-muted" style="font-size: 0.75rem;">{{ fecha|date:"M" }}</span>
+                            style="{% if forloop.first %}color: #720042;{% endif %}">
+                            {{ fecha|date:"D" }}.
+                        </span>
+
+                        <span class="small text-muted" style="font-size: 0.75rem;">
+                            {{ fecha|date:"M" }}
+                        </span>
+
                         <span class="fw-bold fs-4"
-                            style="{% if forloop.first %}color: #720042;{% else %}color: #6c757d;{% endif %}">{{
-                            fecha|date:"d" }}</span>
+                            style="{% if forloop.first %}color: #720042;{% else %}color: #6c757d;{% endif %}">
+                            {{ fecha|date:"d" }}
+                        </span>
                     </div>
                 </a>
                 {% empty %}
@@ -113,8 +121,7 @@ CINES LEÓN - {{ pelicula.titulo }}
                             <div class="d-flex gap-2 align-items-stretch h-100">
                                 <!-- Tarjeta de sesión (clickeable) -->
                                 <div class="sesion-card flex-grow-1 card border p-3 text-center shadow-sm cursor-pointer transition-all"
-                                    data-sesion-id="{{ sesion.id }}"
-                                    style="border-color: #dee2e6; cursor: pointer;">
+                                    data-sesion-id="{{ sesion.id }}" style="border-color: #dee2e6; cursor: pointer;">
                                     <h5 class="fw-bold mb-1 text-dark">
                                         {{ sesion.horario|date:"H:i" }}
                                         <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
@@ -127,8 +134,7 @@ CINES LEÓN - {{ pelicula.titulo }}
                                 <!-- Botón Comprar -->
                                 <div class="d-flex align-items-center">
                                     <button type="button" class="btn btn-comprar btn-sm"
-                                        data-sesion-id="{{ sesion.id }}"
-                                        disabled
+                                        data-sesion-id="{{ sesion.id }}" disabled
                                         style="background-color: #720042; color: white; white-space: nowrap;">
                                         Comprar
                                     </button>
@@ -252,11 +258,11 @@ CINES LEÓN - {{ pelicula.titulo }}
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const sesionCards = document.querySelectorAll('.sesion-card');
 
         sesionCards.forEach(card => {
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function () {
                 const sesionId = this.dataset.sesionId;
 
                 // Desseleccionar todas las sesiones

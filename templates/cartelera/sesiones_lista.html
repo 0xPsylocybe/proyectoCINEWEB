@@ -6,7 +6,7 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>📽️ Gestión de Sesiones</h1>
-        <a href="{% url 'crear_sesion' %}" class="btn btn-primary btn-lg">
+        <a href="{% url 'sesion_form' %}" class="btn btn-primary btn-lg">
             ➕ Nueva Sesión
         </a>
     </div>
@@ -71,7 +71,7 @@
         </div>
     {% else %}
         <div class="alert alert-info text-center">
-            <p>No hay sesiones registradas. <a href="{% url 'crear_sesion' %}">Crear una</a></p>
+            <p>No hay sesiones registradas. <a href="{% url 'sesion_form' %}">Crear una</a></p>
         </div>
     {% endif %}
 </div>

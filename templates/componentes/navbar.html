@@ -8,10 +8,10 @@
         <!-- 1. BLOQUE IZQUIERDA: Visible solo si está autenticado Y el filtro is_gestor devuelve True -->
         <div class="d-flex align-items-center gap-2">
             {% if user.is_authenticated and user|is_gestor %}
-                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Panel</a>
-                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Películas</a>
-                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Sesiones</a>
-                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Snack bar</a>
+                <a href="{% url 'lista_peliculas' %}" class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" >Películas</a>
+                <a href="{% url 'nueva_pelicula' %}" class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor">Agregar película</a>
+                <a href="{% url 'sesiones_lista' %}" class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor">Sesiones </a>
+                <a href="{% url 'sesion_form' %}" class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor">Snack bar</a>
             {% endif %}
         </div>
 
