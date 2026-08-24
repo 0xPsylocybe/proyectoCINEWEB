@@ -19,10 +19,40 @@ tener claros los **siguientes puntos a trabajar**. Actualizadlo conforme avancé
 
 | Fecha | Tarea | Estado | Notas / validación |
 |-------|-------|--------|--------------------|
-|       | App **core**: plantilla base, navbar, inicio, sobre el cine | 🟡| |
-|       | App **peliculas**: modelos (`Pelicula`, `Director`, `Genero`, `DetallePelicula`) | 🟡| |
-|       | App **peliculas**: CRUD, búsqueda por título y filtrado por género | 🟡 | |
-|       | **cartelera** (visualización): listado y detalle de película | 🟡 | |
+| 2026-08-21 | App **core**: plantilla base, navbar, sidebar, footer | 🔵 | Bootstrap 5, responsive, preloader con el logo |
+| 2026-08-21 | App **core**: inicio, sobre el cine, próximos estrenos | 🔵 | Ver observaciones abajo |
+| 2026-08-21 | App **peliculas**: modelos (`Peliculas`, `Director`, `Genero`, `DetallePelicula`) | 🔵 | |
+| 2026-08-21 | App **peliculas**: CRUD completo (crear / listar / editar / eliminar) | 🔵 | Con mensajes de Django y subida de póster |
+| 2026-08-21 | App **peliculas**: alta rápida de **Género** y **Director** desde el propio listado | 🔵 | Dos formularios en la misma pantalla |
+| 2026-08-21 | App **peliculas**: búsqueda por título y filtrado por género | ⬜ | No encontrado en el código |
+| 2026-08-21 | **cartelera** (visualización): listado y detalle de película | 🔵 | David lo ha dividido en dos secciones |
+| 2026-08-24 | App **usuarios**: login / logout con las vistas genéricas de Django | 🔵 | Sin registro público: los gestores se crean desde el admin |
+| 2026-08-24 | App **usuarios**: recuperación de contraseña (4 pantallas) | 🔵 | `password_reset` completo con plantillas propias |
+| 2026-08-24 | App **usuarios**: decorador `gestor_required` | 🔵 | Gestor = superusuario o miembro del grupo *Gestores* |
+
+### Observaciones sobre el código de Luizay (revisión de David, 2026-08-25)
+
+Todas sus pantallas responden correctamente; no hay ninguna que reviente. Lo que
+convendría repasar:
+
+1. ⬜ **`detalle_pelicula` es inalcanzable**: la vista existe en
+   `peliculas/views.py` pero no tiene ruta en `peliculas/urls.py`, y su
+   plantilla `templates/peliculas/detalle_pelicula.html` no existe. Tal y como
+   está, si se enruta dará error de plantilla. Decidir: completarla o borrarla.
+2. ⬜ **Errata en una URL**: `pelicula/<pk>/editar_pelicual` (el `name` sí está
+   bien escrito, solo se ve en la barra del navegador).
+3. ⬜ **`templates/restauracion/snack_bar.html` está vacío** y nadie lo usa. El
+   Snack Bar se sirve desde `templates/restauracion/catalogo.html` (David).
+   Decidir con cuál os quedáis para no tener dos.
+4. ⬜ **La portada muestra las 35 películas**, también las que no están en
+   cartelera. `core/views.py` usa `Peliculas.objects.all()`. La cartelera ya
+   filtra por `en_cartelera`; la portada quizá debería hacer lo mismo.
+5. ⬜ **`/proximos_estrenos/` sale vacía**: filtra por `fecha_estreno` futura y,
+   con las fechas reales importadas de TMDB, ninguna lo cumple. En la cartelera
+   se acordó otro criterio (todo lo que no esté en cartelera). **Hay que
+   unificar**, porque ahora las dos pantallas dicen cosas distintas.
+6. ⬜ Los **mensajes de commit** son casi todos "actualizaciones", lo que hace
+   difícil seguir qué cambió en cada uno.
 
 ## Progreso — David
 

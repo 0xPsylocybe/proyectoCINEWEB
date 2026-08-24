@@ -177,7 +177,8 @@ algunas anotaciones:
 
 #### **App Películas**
 - ✅ Modelos: `Pelicula`, `Director`, `Genero`, `DetallePelicula`
-- ✅ CRUD completo con validaciones
+- ✅ CRUD completo con validaciones y subida de póster
+- ✅ Alta rápida de **género** y **director** desde el propio listado
 - ✅ Catálogo de 35 películas (14 en cartelera, 21 fuera)
 - ✅ `Peliculas.recaudacion` — solo lectura en el admin, la actualizará un
   trigger en la BBDD a partir de las ventas de entradas
@@ -217,10 +218,19 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
   marcadas `en_cartelera`) y **Próximos estrenos** (el resto)
 
 #### **App Usuarios**
-- ✅ Autenticación (login/logout)
+- ✅ Autenticación con las vistas genéricas de Django (login/logout)
+- ✅ **Recuperación de contraseña** completa (solicitud, enviado, confirmación
+  y fin), con plantillas propias
 - ✅ Decorator `@gestor_required` para proteger vistas
 - ✅ Sistema de roles: Sysadmin, Gestores, Anónimos
 - ✅ Template tags personalizados para control de permisos
+- ℹ️ **No hay registro público**: los gestores se crean desde el admin y se
+  añaden al grupo *Gestores*. La compra es anónima y no requiere cuenta
+
+#### **App Core**
+- ✅ Plantilla base con Bootstrap 5, preloader con el logo y diseño responsive
+- ✅ Navbar superior (con los accesos de gestión) y sidebar lateral plegable
+- ✅ Páginas de inicio, "Sobre el cine" y próximos estrenos
 
 #### **Gestión de Sesiones (Nuevo)**
 - ✅ CRUD completo de sesiones: crear, leer, editar, eliminar
@@ -279,6 +289,14 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - **Trigger de recaudación** en la BBDD (lo lleva David):
   `venta_entrada → sesion → pelicula.recaudacion`. Debe contemplar el `DELETE`
   para que una anulación reste
+- **Búsqueda por título y filtrado por género** en películas (estaba previsto y
+  no está implementado)
+- **Unificar el criterio de "próximos estrenos"**: la cartelera muestra todo lo
+  que no está en cartelera, pero la página `/proximos_estrenos/` exige además
+  fecha futura y por eso sale vacía
+- **`detalle_pelicula`**: la vista existe pero no tiene URL ni plantilla
+- **`templates/restauracion/snack_bar.html`** está vacío y duplica el catálogo
+- La **portada** muestra las 35 películas, también las que no están en cartelera
 - **Limpieza:** quedan 8 directores sin ninguna película tras corregir las fichas
 - `regenerar_sesiones --borrar` deja la web sin sesiones varios minutos mientras
   reinserta; debería ir en una transacción
