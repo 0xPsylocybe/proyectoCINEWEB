@@ -151,6 +151,8 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-25 | Los **carteles** no se versionan (`media/` está en `.gitignore`): cada uno los genera con `importar_tmdb`. | David |
 | 2026-08-25 | *Próximos estrenos* se ordena por **puntuación** descendente. La nota es la de **TMDB**, no la de IMDb (TMDB no la expone; haría falta OMDb con otra clave). Campo `Peliculas.puntuacion`. | David |
 | 2026-08-25 | 🔵 **EN REVISIÓN** (pendiente de opinar Luizay): botón **"Buscar en TMDB"** al dar de alta una película. Ver propuesta detallada abajo. | David → Luizay |
+| 2026-08-25 | El generador de sesiones **ya no crea pases solapados** (había 407 imposibles de proyectar). Como efecto, la programación pasa de ~535 sesiones a 225. | David |
+| 2026-08-25 | 🔵 **EN REVISIÓN**: las **horas de pase** (18/20/22) no encajan con películas de 2h30-3h30. Ver propuesta detallada abajo. | David & Luizay |
 
 ---
 
@@ -202,3 +204,51 @@ atribuida a Christopher Nolan.
 ### Estado
 
 ⬜ Pendiente de que Luizay opine. No se ha escrito nada de código todavía.
+
+---
+
+## 🔵 Propuesta pendiente de revisión — horas de pase de las sesiones
+
+**Quién la propone:** David · **Quién decide:** Luizay & David · **Fecha:** 2026-08-25
+
+### El problema
+
+Las horas de pase están fijas en `HORARIOS_POR_DIA`
+(`cartelera/management/commands/regenerar_sesiones.py`) y son cada dos horas:
+**18, 20 y 22** entre semana, más 12, 14 y 00 los fines de semana.
+
+Esas horas suponen películas de hora y media. Pero una sesión ocupa la sala
+**15 min de publicidad + la película + 20 min de limpieza**, y el catálogo actual
+tiene películas largas:
+
+| Película | Dura | Empieza a las 18:00 y la sala queda libre a las |
+|----------|------|--------------------------------------------------|
+| The Brutalist | 215 min | 22:10 |
+| Wicked | 162 min | 21:17 |
+| Oppenheimer | 180 min | 21:35 |
+
+Es decir, **el pase de las 20:00 no cabe** en esa sala. Antes el generador los
+creaba igual (había **407 sesiones solapadas** en la BBDD, imposibles de
+proyectar). Desde el 2026-08-25 el generador respeta la ocupación, así que ya no
+se solapan, pero como consecuencia **descarta 153 huecos** y la programación baja
+de ~535 sesiones a **225**.
+
+### Opciones
+
+1. **Dejarlo como está.** 225 sesiones en 14 días, 15-16 pases por película. Es
+   una programación realista, solo que más corta.
+2. **Espaciar las horas** a algo como **16:00, 19:30 y 23:00** entre semana. Con
+   3h30 de margen entra casi cualquier película del catálogo y se aprovechan las
+   tres franjas.
+3. **Horas por duración**: en vez de una lista fija, encadenar los pases desde la
+   hora de apertura según lo que dure cada película (lo que hace un cine de
+   verdad). Es lo más flexible y lo que más trabajo lleva.
+
+### Recomendación
+
+La **2**, por sencilla: es cambiar una constante y volver a lanzar
+`regenerar_sesiones --borrar`. La 3 queda para cuando el resto esté cerrado.
+
+### Estado
+
+⬜ Pendiente de decidir entre los dos.

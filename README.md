@@ -214,7 +214,10 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - ✅ Modelos: `Sala` (7 salas con tipos: 2D, 3D, IMAX x2, LASER, 4DX, VIP)
 - ✅ Modelo `Sesion` con validaciones de solapamiento
 - ✅ Cálculo automático de tiempos: publicidad (15 min) + película + limpieza (20 min)
-- ✅ Generación de sesiones: 14 días x horarios variables por día
+- ✅ Generación de sesiones: 14 días x horarios variables por día. El generador
+  **respeta la ocupación de la sala**: no programa un pase si el anterior aún no
+  ha terminado (la duración la calcula el propio modelo `Sesion`). Reparte
+  recorriendo día → hora → sala, de modo que ninguna película se queda sin pases
 - ✅ Filtrado de sesiones por "día de cine" (12:00-02:59 del día siguiente)
 - ✅ Selector de fechas dinámico que destaca día seleccionado
 - ✅ **Nuevo:** `Sala.precio_entrada` — el precio de la entrada depende de la sala
@@ -304,8 +307,9 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - **`templates/restauracion/snack_bar.html`** está vacío y duplica el catálogo
 - La **portada** muestra las 35 películas, también las que no están en cartelera
 - **Limpieza:** quedan 8 directores sin ninguna película tras corregir las fichas
-- `regenerar_sesiones --borrar` deja la web sin sesiones varios minutos mientras
-  reinserta; debería ir en una transacción
+- 🔵 **En revisión:** las **horas de pase** (18/20/22) suponen películas de hora y
+  media y no encajan con las de 2h30-3h30, así que se descartan huecos. Ver la
+  propuesta en `PROGRESO.md`
 - **Búsqueda avanzada** en películas
 - **Reportes y estadísticas**
 - **Tests unitarios e integración**
@@ -313,7 +317,7 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 ### Datos actuales en BD
 - 35 películas (14 en cartelera, 21 en próximos estrenos), todas con cartel
 - 7 salas con precio propio y rejilla de butacas
-- ~530 sesiones generadas
+- 225 sesiones generadas, sin ningún solapamiento
 - 38 directores y 13 géneros
 - 5 categorías y 29 productos de restauración
 
