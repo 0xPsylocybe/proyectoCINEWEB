@@ -158,3 +158,79 @@ algunas anotaciones:
 - la base de datos esta en supabase: me parecio mejor asi dado que cada quien esta en su ordenador
 - no agregue el campo recaudacion, lo agregmos cuando tengamos esa app lista
 - superuser admin 123456hola
+
+---
+
+## 8. Progreso de desarrollo (actualizado)
+
+**Estado actual:** En desarrollo activo. Módulos funcionales: películas, cartelera, usuarios, sesiones.
+
+### ✅ Completado
+
+#### **App Películas**
+- ✅ Modelos: `Pelicula`, `Director`, `Genero`, `DetallePelicula`
+- ✅ CRUD completo con validaciones
+- ✅ Carga de datos: 37 películas (15 en cartelera, 22 archivadas)
+- ✅ Datos realistas con directores y géneros españoles/internacionales
+
+#### **App Cartelera**
+- ✅ Modelos: `Sala` (7 salas con tipos: 2D, 3D, IMAX x2, LASER, 4DX, VIP)
+- ✅ Modelo `Sesion` con validaciones de solapamiento
+- ✅ Cálculo automático de tiempos: publicidad (15 min) + película + limpieza (20 min)
+- ✅ Generación de 749 sesiones: 14 días x horarios variables por día
+- ✅ **Nuevo:** Filtrado de sesiones por "día de cine" (12:00-02:59 del día siguiente)
+- ✅ **Nuevo:** Selector de fechas dinámico que destaca día seleccionado
+
+#### **App Usuarios**
+- ✅ Autenticación (login/logout)
+- ✅ Decorator `@gestor_required` para proteger vistas
+- ✅ Sistema de roles: Sysadmin, Gestores, Anónimos
+- ✅ Template tags personalizados para control de permisos
+
+#### **Gestión de Sesiones (Nuevo)**
+- ✅ CRUD completo de sesiones: crear, leer, editar, eliminar
+- ✅ Validación de solapamientos a nivel de modelo y formulario
+- ✅ **Opción A (Automática):** Comando Django `manage.py regenerar_sesiones`
+  - Parámetros: `--dias N` (default 14), `--borrar` (elimina existentes)
+  - Distribuye películas round-robin por salas garantizando cobertura
+  - Horarios por día: L-J (18,20,22), V (18,20,22,00), S (12,18,20,22,00), D (12,14,18,20,22,00)
+- ✅ **Opción C (Manual):** Vista `/cartelera/sesiones/rellenar/`
+  - Seleccionar películas (checkboxes)
+  - Seleccionar salas (checkboxes)
+  - Rango de fechas (inicio/fin)
+  - Opción de borrar sesiones existentes
+  - Generación automática con click
+
+#### **UI/UX**
+- ✅ Detalle de película con tabs (Horarios / Detalles)
+- ✅ Selector de fechas con scroll horizontal y highlight del día
+- ✅ Sesiones agrupadas por sala en cards interactivas
+- ✅ Botón "Comprar" con estados: deshabilitado/habilitado/hover/active
+- ✅ Responsive: mobile, tablet, desktop
+- ✅ Estilos Bootstrap 5 + CSS personalizado
+- ✅ **Nuevo:** Filtrado visual de 54 sesiones por día (en lugar de ~750)
+
+### 🔄 En progreso
+- Agrupación final de salas en template (regroup vs diccionario)
+- UI de gestión unificada (películas + sesiones) en panel admin
+
+### ⏳ Pendiente
+- **App Restauración:** Productos y ventas
+- **App Reservas:** Carrito y checkout de entradas
+- **Búsqueda avanzada** en películas
+- **Sistema de pagos**
+- **Reportes y estadísticas**
+- **Tests unitarios e integración**
+
+### Datos actuales en BD
+- 37 películas (15 en cartelera)
+- 7 salas con características reales
+- 749 sesiones generadas
+- 15+ directores y 10 géneros
+
+### Stack actual
+- **Backend:** Python 3.x, Django 5.2
+- **Base de datos:** PostgreSQL (Supabase)
+- **Frontend:** Bootstrap 5, CSS3, JavaScript vanilla
+- **Auth:** Django auth + decorators personalizados
+- **Admin:** Django Jazzmin

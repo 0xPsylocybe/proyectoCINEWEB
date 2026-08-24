@@ -67,47 +67,45 @@ CINES LEÓN - {{ pelicula.titulo }}
             <!-- Selector de fechas (Estilo Tarjetas/Pills con scroll horizontal en móviles) -->
             <div class="d-flex flex-row gap-2 mb-4 overflow-auto pb-2 scrollbar-none">
                 {% for fecha in fechas_disponibles %}
-                <a href="?fecha={{ fecha|date:'Y-m-d' }}" class="text-decoration-none">
-                    <div class="card border text-center p-2 rounded-3 {% if forloop.first %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
-                        style="min-width: 75px; {% if forloop.first %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
-
+                {% with fecha_str=fecha|date:"Y-m-d" %}
+                <a href="?fecha={{ fecha_str }}" class="text-decoration-none">
+                    <div class="card border text-center p-2 rounded-3 {% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}border-dark shadow-sm{% else %}border-light text-muted{% endif %}"
+                        style="min-width: 75px; {% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}border-color: #720042 !important; background-color: #fff5f8;{% endif %}">
                         <span class="small text-uppercase fw-semibold"
-                            style="{% if forloop.first %}color: #720042;{% endif %}">
-                            {{ fecha|date:"D" }}.
-                        </span>
-
-                        <span class="small text-muted" style="font-size: 0.75rem;">
-                            {{ fecha|date:"M" }}
-                        </span>
-
+                            style="{% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}color: #720042;{% endif %}">{{ fecha|date:"D" }}.</span>
+                        <span class="small text-muted" style="font-size: 0.75rem;">{{ fecha|date:"M" }}</span>
                         <span class="fw-bold fs-4"
-                            style="{% if forloop.first %}color: #720042;{% else %}color: #6c757d;{% endif %}">
-                            {{ fecha|date:"d" }}
+                            style="{% if fecha_str == request.GET.fecha or forloop.first and not request.GET.fecha %}color: #720042;{% else %}color: #6c757d;{% endif %}">
+                            {{fecha|date:"d" }}
                         </span>
                     </div>
                 </a>
+                {% endwith %}
                 {% empty %}
                 <p class="text-muted small">No hay fechas disponibles.</p>
                 {% endfor %}
             </div>
             <!-- Selector de tipos de sala / formato -->
-            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
-                <button type="button" class="btn px-4 py-2 fw-bold"
-                    style="border-color: #720042; color: #720042; background-color: #fff; border-width: 1px;">2D</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">3D</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">IMAX</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">Láser</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">4DX</button>
-                <button type="button" class="btn btn-outline-secondary px-4 py-2">VIP</button>
+            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center" id="filtro-tipos">
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold activo" data-tipo="2D"
+                    style="background-color: #720042; color: white; border: none;">2D</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="3D"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">3D</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="IMAX"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">IMAX</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="LASER"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">Láser</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="4DX"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">4DX</button>
+                <button type="button" class="btn filtro-tipo px-4 py-2 fw-bold" data-tipo="VIP"
+                    style="border-color: #ccc; color: #666; background-color: #f5f5f5; border-width: 1px;">VIP</button>
             </div>
 
             <!-- Listado de sesiones agrupadas por Sala -->
-            {% regroup pelicula.sesiones.all by sala as salas_list %}
-
-            {% for sala_group in salas_list %}
-            <div class="card border shadow-sm mb-4">
+            {% for sala, sesiones in salas_con_sesiones %}
+            <div class="card border shadow-sm mb-4" data-tipo-sala="{{ sala.tipo }}">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0 fw-bold text-dark">{{ sala_group.grouper.identificador }}</h5>
+                    <h5 class="mb-0 fw-bold text-dark">{{ sala.identificador }} - {{ sala.tipo }}</h5>
                     {% if pelicula.detalles.clasificacion %}
                     <span class="badge" style="background-color: #f8d7da; color: #720042; font-weight: bold;">
                         B+{{ pelicula.detalles.get_clasificacion_display }}
@@ -115,33 +113,37 @@ CINES LEÓN - {{ pelicula.titulo }}
                     {% endif %}
                 </div>
                 <div class="card-body">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                        {% for sesion in sala_group.list %}
-                        <div class="col">
-                            <div class="d-flex gap-2 align-items-stretch h-100">
-                                <!-- Tarjeta de sesión (clickeable) -->
-                                <div class="sesion-card flex-grow-1 card border p-3 text-center shadow-sm cursor-pointer transition-all"
-                                    data-sesion-id="{{ sesion.id }}" style="border-color: #dee2e6; cursor: pointer;">
-                                    <h5 class="fw-bold mb-1 text-dark">
-                                        {{ sesion.horario|date:"H:i" }}
-                                        <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
-                                    </h5>
-                                    <div class="mt-2 text-muted" style="font-size: 0.75rem;">
-                                        {{ sesion.sala.identificador }}
+                    <div class="d-flex gap-3 align-items-stretch">
+                        <!-- Contenedor de sesiones (flex-grow para ocupar espacio) -->
+                        <div class="flex-grow-1">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                                {% for sesion in sesiones %}
+                                <div class="col">
+                                    <!-- Tarjeta de sesión (clickeable) -->
+                                    <div class="sesion-card card border p-3 text-center shadow-sm cursor-pointer transition-all h-100"
+                                        data-sesion-id="{{ sesion.id }}"
+                                        style="border-color: #dee2e6; cursor: pointer;">
+                                        <h5 class="fw-bold mb-1 text-dark">
+                                            {{ sesion.horario|date:"H:i" }}
+                                            <small class="text-muted fs-6">{{ sesion.horario|date:"a" }}</small>
+                                        </h5>
+                                        <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                                            {{ sesion.sala.identificador }}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Botón Comprar -->
-                                <div class="d-flex align-items-center">
-                                    <button type="button" class="btn btn-comprar btn-sm"
-                                        data-sesion-id="{{ sesion.id }}" disabled
-                                        style="background-color: #720042; color: white; white-space: nowrap;">
-                                        Comprar
-                                    </button>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% endfor %}
+
+                        <!-- Botón Comprar ÚNICO a la derecha -->
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-comprar btn-lg" disabled
+                                data-sala-id="{{ sala.id }}"
+                                style="white-space: nowrap; min-width: 120px;">
+                                Comprar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -241,25 +243,46 @@ CINES LEÓN - {{ pelicula.titulo }}
         box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.2) !important;
     }
 
+    .btn-comprar {
+        transition: all 0.3s ease;
+        border: 2px solid #720042 !important;
+    }
+
     .btn-comprar:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
+        background-color: #ccc !important;
+        border-color: #999 !important;
+        color: #666 !important;
     }
 
     .btn-comprar:not(:disabled) {
         cursor: pointer;
-        transition: all 0.3s ease;
+        background-color: #720042 !important;
+        color: white !important;
+        box-shadow: 0 0.25rem 0.5rem rgba(114, 0, 66, 0.2);
     }
 
     .btn-comprar:not(:disabled):hover {
         transform: translateY(-2px);
-        box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.3);
+        box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.4);
+        background-color: #5a0034 !important;
+    }
+
+    .btn-comprar:not(:disabled):active {
+        transform: translateY(0);
+        box-shadow: 0 0.25rem 0.5rem rgba(114, 0, 66, 0.3);
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const sesionCards = document.querySelectorAll('.sesion-card');
+
+        // Deshabilitar todos los botones al cargar
+        document.querySelectorAll('.btn-comprar').forEach(btn => {
+            btn.disabled = true;
+        });
 
         sesionCards.forEach(card => {
             card.addEventListener('click', function () {
@@ -268,7 +291,7 @@ CINES LEÓN - {{ pelicula.titulo }}
                 // Desseleccionar todas las sesiones
                 sesionCards.forEach(c => c.classList.remove('seleccionada'));
 
-                // Deshabilitar todos los botones
+                // Deshabilitar todos los botones de compra
                 document.querySelectorAll('.btn-comprar').forEach(btn => {
                     btn.disabled = true;
                 });
@@ -276,8 +299,55 @@ CINES LEÓN - {{ pelicula.titulo }}
                 // Seleccionar esta sesión
                 this.classList.add('seleccionada');
 
-                // Habilitar botón correspondiente
-                document.querySelector(`[data-sesion-id="${sesionId}"].btn-comprar`).disabled = false;
+                // Encontrar la sala de esta sesión y habilitar su botón
+                // Subir desde sesion-card -> col -> row -> flex-grow-1 -> d-flex (flex container)
+                const flexContainer = this.closest('.d-flex.gap-3.align-items-stretch');
+                const comprarBtn = flexContainer?.querySelector('.btn-comprar');
+                if (comprarBtn) {
+                    comprarBtn.disabled = false;
+                    comprarBtn.dataset.sesionId = sesionId; // Guardar ID de sesión seleccionada
+                }
+            });
+        });
+
+        // Manejar click en botón Comprar
+        document.querySelectorAll('.btn-comprar').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const sesionId = this.dataset.sesionId;
+                if (sesionId) {
+                    console.log('Comprando entrada para sesión:', sesionId);
+                    // TODO: Implementar lógica de compra
+                }
+            });
+        });
+
+        // Filtrado por tipo de sala
+        document.querySelectorAll('.filtro-tipo').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const tipoSeleccionado = this.dataset.tipo;
+
+                // Actualizar estilos de botones
+                document.querySelectorAll('.filtro-tipo').forEach(b => {
+                    b.classList.remove('activo');
+                    b.style.backgroundColor = '#f5f5f5';
+                    b.style.color = '#666';
+                    b.style.borderColor = '#ccc';
+                });
+
+                this.classList.add('activo');
+                this.style.backgroundColor = '#720042';
+                this.style.color = 'white';
+                this.style.borderColor = '#720042';
+
+                // Filtrar salas por tipo
+                document.querySelectorAll('.card[data-tipo-sala]').forEach(card => {
+                    const tipoSala = card.dataset.tipoSala;
+                    if (tipoSala === tipoSeleccionado || tipoSeleccionado === 'TODOS') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
     });

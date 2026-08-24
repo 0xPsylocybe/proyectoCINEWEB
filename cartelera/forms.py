@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Sesion
+from .models import Sesion, Sala
+from peliculas.models import Peliculas
 
 
 class SesionForm(forms.ModelForm):
@@ -32,3 +33,37 @@ class SesionForm(forms.ModelForm):
                 raise ValidationError(e.message)
 
         return cleaned_data
+
+
+class RellenarSesionesForm(forms.Form):
+    peliculas = forms.ModelMultipleChoiceField(
+        queryset=Peliculas.objects.filter(detalles__en_cartelera=True),
+        widget=forms.CheckboxSelectMultiple,
+        label='Selecciona películas',
+        required=True
+    )
+
+    salas = forms.ModelMultipleChoiceField(
+        queryset=Sala.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label='Selecciona salas',
+        required=True
+    )
+
+    fecha_inicio = forms.DateField(
+        label='Fecha inicio',
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )
+
+    fecha_fin = forms.DateField(
+        label='Fecha fin',
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )
+
+    borrar_existentes = forms.BooleanField(
+        label='Borrar sesiones existentes de estas películas',
+        required=False,
+        initial=False
+    )
