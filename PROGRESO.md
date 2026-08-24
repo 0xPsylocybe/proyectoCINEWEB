@@ -147,6 +147,58 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-24 | La compra **no tiene pasarela de pago real**: se validan los datos de la tarjeta pero no se guardan ni se envían a ningún sitio. | David |
 | 2026-08-25 | Una **entrada = una butaca**. Desaparece el campo "cantidad de entradas" del carrito: la cantidad sale del número de butacas elegidas. | David |
 | 2026-08-25 | Las butacas se **bloquean 30 minutos** desde que se eligen. El bloqueo caducado se libera solo; no hace falta cron. | David |
-| 2026-08-25 | *Próximos estrenos* = todas las películas que **no** estén en cartelera (sin mirar la fecha de estreno). ⚠️ La página `/proximos_estrenos/` del menú aún usa el criterio antiguo (no en cartelera **y** fecha futura) y sale vacía: **falta unificar**. | David |
+| 2026-08-25 | *Próximos estrenos* = todas las películas que **no** estén en cartelera (sin mirar la fecha de estreno). Aplicado ya en las dos pantallas. | David |
 | 2026-08-25 | Los **carteles** no se versionan (`media/` está en `.gitignore`): cada uno los genera con `importar_tmdb`. | David |
 | 2026-08-25 | *Próximos estrenos* se ordena por **puntuación** descendente. La nota es la de **TMDB**, no la de IMDb (TMDB no la expone; haría falta OMDb con otra clave). Campo `Peliculas.puntuacion`. | David |
+| 2026-08-25 | 🔵 **EN REVISIÓN** (pendiente de opinar Luizay): botón **"Buscar en TMDB"** al dar de alta una película. Ver propuesta detallada abajo. | David → Luizay |
+
+---
+
+## 🔵 Propuesta pendiente de revisión — botón "Buscar en TMDB"
+
+**Quién la propone:** David · **Quién decide:** Luizay · **Fecha:** 2026-08-25
+
+### Qué es
+
+Al dar de alta una película, escribir el título y pulsar un botón **"Buscar en
+TMDB"** que rellene solo el resto del formulario: sinopsis, duración, año,
+género, director, puntuación y el cartel. El gestor revisa lo que ha salido y
+guarda; si no le convence, lo corrige a mano antes de dar a guardar.
+
+La lógica ya existe: es la misma que usa el comando `importar_tmdb`, que fue
+con el que se trajeron los 35 carteles y sus fichas.
+
+### Por qué con un botón y no automático al guardar
+
+Se valoró completar los datos solos con un `post_save`, sin botón. Se descarta
+porque **TMDB acierta casi siempre, pero no siempre**: buscando "Dune" puede
+devolver la de Villeneuve (2021) o la de Lynch (1984). Con el botón el gestor ve
+la ficha antes de aceptarla; en automático entraría en la BBDD sin que nadie la
+mire, que es justo como el catálogo acabó teniendo *La zona de interés*
+atribuida a Christopher Nolan.
+
+### Qué habría que tocar
+
+1. Sacar la lógica de TMDB del comando a un módulo `peliculas/tmdb.py` (ahora
+   vive dentro de la clase `Command` y desde una vista no se puede usar).
+2. Un endpoint `/peliculas/buscar-tmdb/?titulo=...` que devuelva JSON,
+   protegido con `@gestor_required`.
+3. Un poco de JavaScript en el formulario para volcar la respuesta en los campos.
+4. Al guardar: crear el director y el género si no existen, y descargar el cartel.
+
+### ⚠️ Lo que hay que hablar antes de hacerlo
+
+- **Toca `templates/peliculas/nueva_pelicula.html`, que es de Luizay.** De ahí
+  que esto esté en revisión y no hecho: conviene acordarlo para no chocar en el
+  siguiente merge.
+- **La clave de TMDB está en el `.env` de cada equipo.** En un equipo sin `.env`
+  el botón fallaría, así que habría que detectarlo y ocultarlo con un aviso
+  claro en vez de soltar un error.
+- **`DetallePelicula`** (fecha de estreno, clasificación por edad) es otro modelo
+  y el formulario actual no lo incluye. TMDB da la fecha de estreno, así que
+  podría rellenarse también, pero implica tocar el formulario algo más a fondo.
+  ¿Se deja fuera de momento?
+
+### Estado
+
+⬜ Pendiente de que Luizay opine. No se ha escrito nada de código todavía.
