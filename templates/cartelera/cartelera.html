@@ -48,57 +48,5 @@ CINES LEÓN - Cartelera
     </div>
 </div>
 
-<style>
-    /* Efecto de zoom suave exclusivamente en la imagen */
-    .card-pelicula .transition-zoom {
-        transition: transform 0.3s ease-in-out;
-    }
 
-    .card-pelicula:hover .transition-zoom {
-        transform: scale(1.05);
-    }
-
-    /* Comportamiento y animación de expansión del sidebar */
-    .sidebar {
-        width: 80px; 
-        transition: width 0.3s ease; 
-        overflow: hidden; 
-        white-space: nowrap;
-    }
-
-    .sidebar:hover {
-        width: 240px;
-    }
-
-    .text-sidebar {
-        color: #720042 !important;
-        transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    .nav-pills .text-sidebar:hover {
-        background-color: #720042 !important;
-        color: #ffffff !important;
-    }
-
-    .sidebar-text {
-        opacity: 0;
-        transition: opacity 0.2s ease;
-    }
-
-    .sidebar:hover .sidebar-text {
-        opacity: 1;
-    }
-
-    /* Ajuste del contenido principal para que no quede detrás del menú fijo */
-    main {
-        margin-left: 100px;
-        transition: margin-left 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-        main {
-            margin-left: 0;
-        }
-    }
-</style>
 {% endblock %}

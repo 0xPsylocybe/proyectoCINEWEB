@@ -1,9 +1,9 @@
 {% load static %}
-<!-- Componente Navbar Superior (Escritorio) -->
+<!-- Componente Navbar Superior (Escritorio / iPad) -->
 <nav class="navbar navbar-expand-lg bg-white px-4 border-bottom fixed-top d-none d-md-block" style="height: 85px; z-index: 1020; margin-left: 80px;">
     <div class="container-fluid position-relative d-flex align-items-center h-100">
         
-        <!-- Espacio izquierdo (vacío para balancear flexbox) -->
+        <!-- Espacio izquierdo (vacío para balancear flexbox y no chocar con el sidebar) -->
         <div class="d-none d-lg-block" style="width: 150px;"></div>
 
         <!-- Logo centrado sin cortes -->
@@ -24,5 +24,14 @@
     .btn-city-selector:hover, .btn-city-selector:focus {
         background-color: #5a0033;
         color: white;
+    }
+
+    /* Ajuste para evitar que el navbar superior de 85px solape el contenido principal en PC/iPad */
+    @media (min-width: 768px) {
+        main {
+            margin-top: 95px !important; /* 85px del navbar + 10px de separación visual */
+            margin-left: 100px !important; /* Espacio para el sidebar fijo */
+            transition: margin 0.3s ease;
+        }
     }
 </style>

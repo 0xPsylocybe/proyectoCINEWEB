@@ -1,19 +1,19 @@
 {% load static %}
 
-<!-- Barra superior exclusiva para móviles con el botón de menú e isologo -->
+<!-- Barra superior exclusiva para MÓVILES (Oculta en iPad y PC con d-md-none) -->
 <nav class="navbar navbar-light bg-white d-md-none px-3 shadow-sm fixed-top d-flex justify-content-between align-items-center w-100" style="height: 60px; z-index: 1040;">
-    <!-- Botón hamburguesa (abre el menú lateral) -->
+    <!-- Botón hamburguesa (abre el offcanvas en móvil) -->
     <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Isologo a la izquierda/centro alineado con link a inicio -->
+    <!-- Isologo móvil -->
     <a class="navbar-brand m-0 p-0 d-flex align-items-center" href="{% url 'inicio' %}">
         <img src="{% static 'isologo.png' %}" alt="Cines León" style="height: 38px; width: auto; object-fit: contain;">
     </a>
 </nav>
 
-<!-- Menú Lateral: Flotante en Escritorio / Desplegable en Móvil -->
+<!-- Menú Lateral: Sidebar fijo en Escritorio e iPad / Desplegable en Móvil -->
 <div class="offcanvas-md offcanvas-start sidebar d-flex flex-column flex-shrink-0 bg-white shadow-sm border-end" tabindex="-1" id="mobileSidebar" style="z-index: 1050;">
     
     <!-- Encabezado del menú móvil -->
@@ -35,6 +35,12 @@
                 <a href="{% url 'cartelera' %}" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="Cartelera">
                     <i class="bi bi-film fs-5 flex-shrink-0"></i>
                     <span class="ms-3 sidebar-text">Cartelera</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link text-sidebar d-flex align-items-center py-2 px-2 rounded-3" title="snack bar">
+                    <i class="bi-cup-straw fs-5 flex-shrink-0"></i>
+                    <span class="ms-3 sidebar-text">Snack bar</span>
                 </a>
             </li>
             <li>
@@ -67,9 +73,9 @@
 
 <style>
     /* ==========================================================
-       ESCRITORIO
+       ESCRITORIO E IPAD (Pantallas de 768px en adelante)
        ========================================================== */
-    @media (min-width: 769px) {
+    @media (min-width: 768px) {
         .sidebar {
             position: fixed;
             top: 0;
@@ -95,17 +101,18 @@
             opacity: 1;
         }
 
+        /* El contenido se desplaza a la derecha del sidebar y no tiene margen superior */
         main {
             margin-left: 100px !important;
-            margin-top: 75px !important; /* Espacio para el navbar superior en PC */
+            margin-top: 0 !important;
             transition: margin 0.3s ease;
         }
     }
 
     /* ==========================================================
-       MÓVIL
+       MÓVIL (Pantallas menores a 768px)
        ========================================================== */
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
         .sidebar {
             width: 260px !important;
         }
@@ -114,13 +121,14 @@
             opacity: 1 !important;
         }
 
+        /* El contenido no se desplaza a la izquierda, pero baja 65px para dejar ver el navbar superior */
         main {
             margin-left: 0 !important;
-            margin-top: 65px !important; /* Espacio exacto para la barra superior móvil */
+            margin-top: 65px !important;
         }
     }
 
-    /* Estilos generales */
+    /* Estilos de colores corporativos */
     .text-sidebar {
         color: #720042 !important;
         transition: background-color 0.2s ease, color 0.2s ease;
