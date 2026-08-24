@@ -1,36 +1,49 @@
 {% load static %}
+{%load auth_extras %}
+
 <!-- Componente Navbar Superior (Escritorio / iPad) -->
 <nav class="navbar navbar-expand-lg bg-white px-4 border-bottom fixed-top d-none d-md-block" style="height: 85px; z-index: 1020; margin-left: 80px;">
-    <div class="container-fluid position-relative d-flex align-items-center h-100">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between h-100">
         
-        <!-- Espacio izquierdo (vacío para balancear flexbox y no chocar con el sidebar) -->
-        <div class="d-none d-lg-block" style="width: 150px;"></div>
+        <!-- 1. BLOQUE IZQUIERDA: Visible solo si está autenticado Y el filtro is_gestor devuelve True -->
+        <div class="d-flex align-items-center gap-2">
+            {% if user.is_authenticated and user|is_gestor %}
+                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Panel</a>
+                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Películas</a>
+                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Sesiones</a>
+                <a class="nav-link text-dark fw-medium px-2 py-1 rounded hover-gestor" href="#">Snack bar</a>
+            {% endif %}
+        </div>
 
-        <!-- Logo centrado sin cortes -->
+        <!-- 2. BLOQUE CENTRO: Logo perfectamente centrado -->
         <a class="navbar-brand position-absolute start-50 translate-middle-x m-0 d-flex align-items-center" href="{% url 'inicio' %}" style="height: 100%;">
             <img src="{% static 'logo2.png' %}" alt="Cines León Logo" style="max-height: 70px; width: auto; object-fit: contain;">
         </a>
+
+        <!-- 3. BLOQUE DERECHA: Nombre del usuario autenticado -->
+        <div class="d-flex align-items-center gap-2">
+            {% if user.is_authenticated %}
+                <div class="d-flex align-items-center gap-2 px-3 py-1 bg-light rounded-pill border">
+                    <i class="bi bi-person-fill fs-6" style="color: #720042;"></i>
+                    <span class="text-dark fw-semibold small">{{ user.username }}</span>
+                </div>
+            {% endif %}
+        </div>
 
     </div>
 </nav>
 
 <style>
-    .btn-city-selector {
-        background-color: #720042;
-        border: none;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-    }
-    .btn-city-selector:hover, .btn-city-selector:focus {
-        background-color: #5a0033;
-        color: white;
+    .hover-gestor:hover {
+        color: #720042 !important;
+        background-color: #f8f9fa;
     }
 
     /* Ajuste para evitar que el navbar superior de 85px solape el contenido principal en PC/iPad */
     @media (min-width: 768px) {
         main {
-            margin-top: 95px !important; /* 85px del navbar + 10px de separación visual */
-            margin-left: 100px !important; /* Espacio para el sidebar fijo */
+            margin-top: 95px !important;
+            margin-left: 100px !important;
             transition: margin 0.3s ease;
         }
     }
