@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
+from usuarios.decorators import gestor_required
 from .forms import PeliculasForm, GeneroForm,DirectorForm
 from .models import Peliculas,Director,Genero
 
 
+@gestor_required
 def crear_pelicula(request):
     if request.method == "POST":
         formulario = PeliculasForm(request.POST, request.FILES)
@@ -18,6 +20,7 @@ def crear_pelicula(request):
     return render(request, "peliculas/nueva_pelicula.html", {"formulario": formulario})
 
 
+@gestor_required
 def lista_peliculas(request):
     if request.method == 'POST' and 'guardar_genero' in request.POST:
         genero_form = GeneroForm(request.POST)
@@ -46,6 +49,7 @@ def lista_peliculas(request):
     return render(request, "peliculas/lista_peliculas.html", contexto)
 
 
+@gestor_required
 def editar_peliculas(request, pk):
     pelicula = get_object_or_404(Peliculas, pk=pk)
 
@@ -62,6 +66,7 @@ def editar_peliculas(request, pk):
     return render(request, "peliculas/nueva_pelicula.html", {"formulario": formulario})
 
 
+@gestor_required
 def eliminar_pelicula(request, pk):
     pelicula = get_object_or_404(Peliculas, pk=pk)
 
