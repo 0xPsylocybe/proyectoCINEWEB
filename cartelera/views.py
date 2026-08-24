@@ -195,7 +195,7 @@ def rellenar_sesiones(request):
                 fecha_actual += timedelta(days=1)
 
             messages.success(request, f'✓ {sesiones_creadas} sesiones generadas correctamente.')
-            return redirect('cartelera:lista_sesiones')
+            return redirect('cartelera:sesiones_lista')
     else:
         form = RellenarSesionesForm()
 
