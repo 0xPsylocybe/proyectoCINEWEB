@@ -62,10 +62,25 @@ def leer_api_key():
     return None
 
 
-def pedir(url):
-    peticion = urllib.request.Request(url, headers={"User-Agent": "CINEWEB/1.0"})
+def es_token_v4(clave):
+    """El token v4 de TMDB es un JWT; la API key v3 es una cadena hexadecimal."""
+    return clave.count(".") == 2 and clave.startswith("ey")
+
+
+def pedir(url, clave):
+    cabeceras = {"User-Agent": "CINEWEB/1.0"}
+    if es_token_v4(clave):
+        cabeceras["Authorization"] = "Bearer %s" % clave
+    peticion = urllib.request.Request(url, headers=cabeceras)
     with urllib.request.urlopen(peticion, timeout=20) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def con_clave(params, clave):
+    """La v3 viaja en la URL; la v4 va en la cabecera y no debe ir aquí."""
+    if not es_token_v4(clave):
+        params["api_key"] = clave
+    return params
 
 
 def slug(texto):
@@ -81,6 +96,10 @@ class Command(BaseCommand):
                             help="Muestra los cambios sin guardarlos")
         parser.add_argument("--solo-carteles", action="store_true",
                             help="Descarga solo el cartel, sin tocar los demás campos")
+        parser.add_argument("--conservar-titulos", action="store_true",
+                            help="Mantiene título, género y director de la BBDD, y toma de "
+                                 "TMDB solo cartel, sinopsis, duración y año. TMDB añade "
+                                 "coletillas como 'Del revés 2 (Inside Out 2)'")
         parser.add_argument("--api-key", help="Clave de TMDB (si no, se lee de .env)")
 
     def handle(self, *args, **opciones):
@@ -127,7 +146,7 @@ class Command(BaseCommand):
                 ficha["titulo"] if cambio == "->" else ""))
 
             if not ensayo:
-                self.aplicar(pelicula, ficha, solo_carteles)
+                self.aplicar(pelicula, ficha, solo_carteles, opciones["conservar_titulos"])
 
             self.stdout.write("    %s · %s · %s min · %s" % (
                 ficha["anio"], ficha["director"] or "?", ficha["duracion"] or "?",
@@ -146,24 +165,24 @@ class Command(BaseCommand):
 
     def buscar(self, clave, titulo, anio):
         """Busca la película y devuelve su ficha ya normalizada."""
-        params = {"api_key": clave, "query": titulo, "language": "es-ES"}
+        params = con_clave({"query": titulo, "language": "es-ES"}, clave)
         if anio:
             params["year"] = anio
-        datos = pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)))
+        datos = pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)), clave)
 
         resultados = datos.get("results") or []
         if not resultados and anio:
             # Reintenta sin año: a veces el año de la BBDD no es el de estreno
             params.pop("year")
-            resultados = (pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)))
+            resultados = (pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)), clave)
                           .get("results") or [])
         if not resultados:
             return None
 
         detalle = pedir("%s/movie/%s?%s" % (
             API, resultados[0]["id"],
-            urllib.parse.urlencode({"api_key": clave, "language": "es-ES",
-                                    "append_to_response": "credits"})))
+            urllib.parse.urlencode(con_clave({"language": "es-ES",
+                                              "append_to_response": "credits"}, clave))), clave)
 
         director = next((p["name"] for p in detalle.get("credits", {}).get("crew", [])
                          if p.get("job") == "Director"), None)
@@ -181,9 +200,10 @@ class Command(BaseCommand):
             "poster": detalle.get("poster_path"),
         }
 
-    def aplicar(self, pelicula, ficha, solo_carteles):
+    def aplicar(self, pelicula, ficha, solo_carteles, conservar_titulos=False):
         if not solo_carteles:
-            pelicula.titulo = ficha["titulo"]
+            if not conservar_titulos:
+                pelicula.titulo = ficha["titulo"]
             if ficha["sinopsis"]:
                 # sinopsis es CharField(300): cortamos por palabra
                 texto = ficha["sinopsis"]
@@ -194,12 +214,14 @@ class Command(BaseCommand):
                 pelicula.duracion = timedelta(minutes=ficha["duracion"])
             if ficha["anio"]:
                 pelicula.anio = ficha["anio"]
-            if ficha["director"]:
-                pelicula.director = Director.objects.get_or_create(
-                    nombre=ficha["director"])[0]
-            if ficha["genero"]:
-                pelicula.genero = Genero.objects.get_or_create(
-                    nombre=ficha["genero"])[0]
+            if ficha["director"] and not conservar_titulos:
+                pelicula.director = Director.objects.filter(
+                    nombre__iexact=ficha["director"]).first() or Director.objects.create(
+                    nombre=ficha["director"])
+            if ficha["genero"] and not conservar_titulos:
+                pelicula.genero = Genero.objects.filter(
+                    nombre__iexact=ficha["genero"]).first() or Genero.objects.create(
+                    nombre=ficha["genero"])
 
             if ficha["estreno"]:
                 detalle = DetallePelicula.objects.filter(pelicula=pelicula).first()
