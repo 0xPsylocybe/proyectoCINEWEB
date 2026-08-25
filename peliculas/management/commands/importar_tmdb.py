@@ -14,7 +14,6 @@ import time
 import urllib.error
 from datetime import timedelta
 
-from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 
 from peliculas import tmdb
@@ -152,6 +151,8 @@ class Command(BaseCommand):
         pelicula.save()
 
     def descargar_cartel(self, pelicula, poster_path):
+        # guardar_cartel lo deja en la BBDD (que es lo que se comparte) y en
+        # el fichero. Requiere que la película ya tenga id, que siempre lo tiene
+        # aquí porque se está actualizando una existente.
         contenido = tmdb.descargar_cartel(poster_path)
-        pelicula.imagen.save("%s.jpg" % tmdb.slug(pelicula.titulo),
-                             ContentFile(contenido), save=False)
+        pelicula.guardar_cartel(contenido, "%s.jpg" % tmdb.slug(pelicula.titulo))

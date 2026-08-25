@@ -37,8 +37,59 @@ class Peliculas(models.Model):
   class Meta:
       verbose_name='Pelicula'
       verbose_name_plural='Peliculas'
+
   def __str__(self):
       return self.titulo
+
+  def guardar_cartel(self, contenido, nombre=None, tipo="image/jpeg"):
+      """Guarda el cartel en la BBDD (y en `imagen`, que sigue marcando que la
+      película tiene cartel y da el nombre del fichero).
+
+      `contenido` son los bytes de la imagen.
+      """
+      from django.core.files.base import ContentFile
+
+      CartelPelicula.objects.update_or_create(
+          pelicula=self, defaults={"datos": contenido, "tipo": tipo})
+
+      if nombre:
+          # save=False: lo guarda quien llame, junto con el resto de campos
+          self.imagen.save(nombre, ContentFile(contenido), save=False)
+
+  @property
+  def url_cartel(self):
+      """URL desde la que se sirve el cartel, o None si no tiene."""
+      from django.urls import reverse
+
+      if not self.imagen:
+          return None
+      return reverse("cartel_pelicula", args=[self.pk])
+
+
+class CartelPelicula(models.Model):
+    """El cartel guardado en la propia base de datos.
+
+    Va en una tabla aparte, y no como un campo de `Peliculas`, para que las
+    consultas del catálogo (`Peliculas.objects.all()`) no arrastren varios MB
+    de imágenes. Solo se lee cuando alguien pide la imagen concreta.
+
+    Se hace así porque la base de datos es compartida pero la carpeta `media/`
+    no: los ficheros subidos por uno no llegaban al equipo del otro.
+    """
+
+    pelicula = models.OneToOneField(
+        Peliculas, on_delete=models.CASCADE, related_name="cartel")
+    datos = models.BinaryField("Imagen", editable=False)
+    tipo = models.CharField("Tipo", max_length=50, default="image/jpeg")
+    actualizado = models.DateTimeField("Actualizado", auto_now=True)
+
+    class Meta:
+        db_table = "cartel_pelicula"
+        verbose_name = "Cartel"
+        verbose_name_plural = "Carteles"
+
+    def __str__(self):
+        return "Cartel de %s (%d KB)" % (self.pelicula.titulo, len(self.datos) // 1024)
 
 
 class DetallePelicula(models.Model):

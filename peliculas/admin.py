@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  DetallePelicula, Director, Genero, Peliculas
+from .models import CartelPelicula, DetallePelicula, Director, Genero, Peliculas
 
 @admin.action(description="Marcar como disponibles")
 def marcar_disponibles(modeladmin, request, queryset):
@@ -43,11 +43,17 @@ class DetallePeliculaInline(admin.StackedInline):
 
 @admin.register(Peliculas)
 class PeliculasAdmin(admin.ModelAdmin):
-    list_display = ("titulo", "duracion", "director", "genero", "anio", "recaudacion")
+    list_display = ("titulo", "duracion", "director", "genero", "anio",
+                    "recaudacion", "tiene_cartel")
     search_fields = ("titulo", "genero__nombre", "director__nombre")
     list_filter = ("genero", "director", "anio")
     readonly_fields = ("recaudacion",)
-    inlines = [DetallePeliculaInline] 
+    inlines = [DetallePeliculaInline]
+
+    @admin.display(boolean=True, description="Cartel")
+    def tiene_cartel(self, obj):
+        """El cartel se guarda en la BBDD, no en media/, para que se comparta."""
+        return CartelPelicula.objects.filter(pelicula=obj).exists() 
 
 
 @admin.register(DetallePelicula)

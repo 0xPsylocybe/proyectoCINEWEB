@@ -9,7 +9,7 @@ CINES LEÓN - {{ pelicula.titulo }}
 <!-- Imagen principal / Banner superior estilo Cines Unidos (Sin icono de video) -->
 <div class="position-relative w-100 mb-4" style="max-height: 450px; overflow: hidden; background-color: #111;">
     {% if pelicula.imagen %}
-    <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover opacity-75" alt="{{ pelicula.titulo }}"
+    <img src="{{ pelicula.url_cartel }}" class="w-100 h-100 object-fit-cover opacity-75" alt="{{ pelicula.titulo }}"
         style="max-height: 450px;">
     {% else %}
     <div class="d-flex align-items-center justify-content-center text-white" style="height: 300px;">
@@ -157,7 +157,7 @@ CINES LEÓN - {{ pelicula.titulo }}
             <div class="row">
                 <div class="col-md-3 text-center mb-4">
                     {% if pelicula.imagen %}
-                    <img src="{{ pelicula.imagen.url }}" class="img-fluid rounded shadow" alt="{{ pelicula.titulo }}">
+                    <img src="{{ pelicula.url_cartel }}" class="img-fluid rounded shadow" alt="{{ pelicula.titulo }}">
                     {% else %}
                     <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded"
                         style="height: 350px;">

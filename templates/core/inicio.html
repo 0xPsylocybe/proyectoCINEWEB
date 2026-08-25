@@ -79,7 +79,7 @@ CINES LEÓN - Inicio
         <a href="{% url 'detalle_cartelera' pelicula.pk %}" class="card-pelicula text-decoration-none d-block h-100">
             <div class="overflow-hidden rounded shadow-sm bg-dark mb-2" style="height: 350px;">
                 {% if pelicula.imagen %}
-                <img src="{{ pelicula.imagen.url }}" class="w-100 h-100 object-fit-cover transition-zoom"
+                <img src="{{ pelicula.url_cartel }}" class="w-100 h-100 object-fit-cover transition-zoom"
                     alt="{{ pelicula.nombre }}">
                 {% else %}
                 <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white">

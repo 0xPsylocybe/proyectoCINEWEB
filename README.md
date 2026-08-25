@@ -164,7 +164,8 @@ algunas anotaciones:
 3.Busca y elige la opción que apunta a tu entorno virtual local: ./venv/bin/python.
 
 - la base de datos esta en supabase: me parecio mejor asi dado que cada quien esta en su ordenador
-- no agregue el campo recaudacion, lo agregmos cuando tengamos esa app lista
+- ~~no agregue el campo recaudacion, lo agregmos cuando tengamos esa app lista~~
+  (hecho el 25/08: campo `recaudacion` + trigger, ver sección 8)
 - superuser admin 123456hola
 
 ---
@@ -180,8 +181,14 @@ algunas anotaciones:
 - ✅ CRUD completo con validaciones y subida de póster
 - ✅ Alta rápida de **género** y **director** desde el propio listado
 - ✅ Catálogo de 35 películas (14 en cartelera, 21 fuera)
-- ✅ `Peliculas.recaudacion` — solo lectura en el admin, la actualizará un
-  trigger en la BBDD a partir de las ventas de entradas
+- ✅ `Peliculas.recaudacion` — solo lectura en el admin. La mantiene al día un
+  **trigger de PostgreSQL** (`reservas/0005_trigger_recaudacion`) por el camino
+  `venta_entrada → sesion → pelicula`. Cubre los tres casos: una venta suma,
+  una anulación resta, y si se corrige una venta ajusta la diferencia (incluso
+  si se cambia a una sesión de otra película). Se hizo con un trigger, y no en
+  la vista de compra, para que cuadre venga la venta del formulario, del Django
+  Admin o de un `INSERT` a mano. Los productos del Snack Bar **no** cuentan:
+  la recaudación es solo taquilla
 - ✅ `Peliculas.puntuacion` — nota media sobre 10, la importa `importar_tmdb`.
   ⚠️ Es la puntuación de **TMDB**, no la de IMDb: TMDB no expone la nota de
   IMDb por su API (solo el `imdb_id`); para esa haría falta OMDb y otra clave.
@@ -211,8 +218,13 @@ python manage.py importar_tmdb --conservar-titulos   # carteles + fichas de TMDB
 token v4. Con `--conservar-titulos` mantiene título, género y director de la
 BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 
-> ⚠️ Los carteles van a `media/`, que **está en `.gitignore`**. Al clonar o
-> hacer pull no vienen: hay que generarlos en cada equipo con ese comando.
+- ✅ **Los carteles se guardan en la BBDD** (modelo `CartelPelicula`), no solo en
+  `media/`. Como la base de datos es compartida y la carpeta `media/` está en
+  `.gitignore`, antes las imágenes se veían rotas en el equipo del compañero.
+  Se sirven desde `/peliculas/cartel/<id>/` con caché de un día
+
+> El binario va en una tabla aparte a propósito: si estuviera dentro de
+> `Peliculas`, cada consulta del catálogo arrastraría varios MB de imágenes.
 
 #### **App Cartelera**
 - ✅ Modelos: `Sala` (7 salas con tipos: 2D, 3D, IMAX x2, LASER, 4DX, VIP)
@@ -310,9 +322,6 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - **Snack Bar:** el botón ➕ del catálogo todavía no añade nada al carrito
 - **Compra realizada:** mostrar el resumen de lo comprado (película, hora, sala
   y butacas), que ahora solo dice que la compra fue bien
-- **Trigger de recaudación** en la BBDD (lo lleva David):
-  `venta_entrada → sesion → pelicula.recaudacion`. Debe contemplar el `DELETE`
-  para que una anulación reste
 - **Búsqueda por título y filtrado por género** en películas (estaba previsto y
   no está implementado)
 - **`detalle_pelicula`**: la vista existe pero no tiene URL ni plantilla

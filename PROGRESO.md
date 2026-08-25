@@ -72,7 +72,8 @@ convendría repasar:
 | 2026-08-25 | **reservas**: selección de butacas + reserva de 30 min | 🔵 | `UniqueConstraint` en BBDD contra doble venta |
 | 2026-08-25 | **peliculas**: corregir fichas y traer carteles de TMDB | 🔵 | `corregir_peliculas` + `importar_tmdb` |
 | 2026-08-25 | **cartelera**: dividir en *Cartelera* y *Próximos estrenos* | 🔵 | |
-|       | Lógica de la BBDD (trigger de recaudación) | 🟡 | Lo lleva David |
+| 2026-08-25 | **peliculas**: carteles guardados en la BBDD (`CartelPelicula`) | 🔵 | La carpeta `media/` no se comparte y las imágenes salían rotas |
+| 2026-08-25 | Lógica de la BBDD: **trigger de recaudación** | 🔵 | `reservas/0005_trigger_recaudacion` |
 
 ---
 
@@ -88,7 +89,7 @@ Marcad con quién lo coge y su estado.
 
 ### 🗄️ Modelos y base de datos
 5. ✅ Modelos de las cinco apps, migrados.
-6. 🟡 Triggers/SQL a medida en una migración `RunSQL` — pendiente el de recaudación.
+6. ✅ Triggers/SQL a medida en una migración `RunSQL` — hecho el de recaudación.
 7. ✅ Modelos registrados en el **Django Admin**.
 8. ✅ Superusuario, grupo *Gestores* y datos de prueba.
 
@@ -117,7 +118,7 @@ Marcad con quién lo coge y su estado.
 22. ✅ Butacas con reserva temporal de 30 minutos.
 23. ⬜ Que el botón ➕ del Snack Bar añada el producto al carrito.
 24. ⬜ Mostrar en "compra realizada" qué se ha comprado (con las butacas).
-25. ⬜ Trigger de recaudación (contemplando el `DELETE` para las anulaciones).
+25. ✅ Trigger de recaudación, con el `DELETE` contemplado para las anulaciones.
 
 ### 🗂️ Gestión de sesiones (David)
 26. ⬜ Filtrar por película en `/cartelera/sesiones/`.
@@ -142,7 +143,7 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-20 | Naming: modelos PascalCase singular + `db_table` snake_case singular. Sesiones = modelo `Sesion` (tabla `sesion`). | Luizay & David |
 | 2026-08-20 | Consistencia en la escritura del código (nomenclatura, estilo) y en las tipologías/tipos de datos usados en los modelos. | Luizay & David |
 | 2026-08-20 | Columnas con convención Django: **PK `id`**, **FK `<campo>_id`**; nombres de tabla vía `db_table` (snake_case singular). | Luizay & David |
-| 2026-08-20 | 🔵 **EN REVISIÓN** (pendiente de aprobar Luizay): guardar las imágenes en la **BBDD** usando Pillow, en vez de en el sistema de archivos. A decidir por Luizay. | David → Luizay |
+| 2026-08-20 | ✅ **APROBADO el 2026-08-25**: guardar las imágenes en la **BBDD** en vez de solo en el sistema de archivos. Ver detalle abajo. | Luizay & David |
 | 2026-08-24 | El **precio de la entrada depende de la sala** (`Sala.precio_entrada`), no de la película. | David |
 | 2026-08-24 | La compra **no tiene pasarela de pago real**: se validan los datos de la tarjeta pero no se guardan ni se envían a ningún sitio. | David |
 | 2026-08-25 | Una **entrada = una butaca**. Desaparece el campo "cantidad de entradas" del carrito: la cantidad sale del número de butacas elegidas. | David |
@@ -153,6 +154,55 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-25 | ✅ Botón **"Buscar en TMDB"** al dar de alta o editar una película: rellena la ficha y propone el cartel, y el gestor revisa antes de guardar. Toca la plantilla de Luizay, que debería echarle un ojo. Ver detalle abajo. | David → Luizay |
 | 2026-08-25 | El generador de sesiones **ya no crea pases solapados** (había 407 imposibles de proyectar). Como efecto, la programación pasa de ~535 sesiones a 225. | David |
 | 2026-08-25 | ✅ Nuevas **horas de pase**: L-V no se abre antes de las 17:00, matinal solo en fin de semana, último pase de viernes y sábado a la 1:00 y sin películas de más de 2h en esa franja. Ver detalle abajo. | David & Luizay |
+
+---
+
+## ✅ Carteles guardados en la base de datos
+
+**Fecha:** 2026-08-25 · Retoma la propuesta que estaba en revisión desde el 20/08.
+
+### El problema que lo provocó
+
+A Luizay le salían las imágenes rotas. La causa: **compartimos base de datos
+(Supabase) pero no la carpeta `media/`**, que está en `.gitignore`. La BBDD
+guardaba la ruta del cartel y en su equipo ese fichero no existía.
+
+Antes sí las veía, pero por un descuido: hasta el 21/08 no había `MEDIA_ROOT`,
+así que Django dejaba los ficheros subidos en la raíz del proyecto
+(`peliculas/posters/`), que **sí** está versionada, y viajaban por git sin
+querer. Al configurar `MEDIA_ROOT` todo lo nuevo pasó a `media/`, ignorado, y
+el problema quedó a la vista.
+
+### Cómo se ha hecho
+
+- Modelo **`CartelPelicula`** (tabla `cartel_pelicula`), con el binario, el tipo
+  y la fecha. Va en **tabla aparte** y no como un campo de `Peliculas`: si el
+  binario estuviera en `Peliculas`, cada `Peliculas.objects.all()` de la
+  cartelera se traería varios MB de imágenes desde Supabase.
+- Vista **`/peliculas/cartel/<id>/`** que sirve la imagen, con cabecera de
+  caché de un día. Si una película aún no tiene el cartel en la BBDD, cae al
+  fichero de `media/` (compatibilidad mientras se migra).
+- `Peliculas.guardar_cartel()` deja el cartel en los dos sitios, y
+  `Peliculas.url_cartel` da la URL. Lo usan el alta, la edición, el botón de
+  TMDB y el comando `importar_tmdb`.
+- Migración **`0006_carteles_a_la_bbdd`**: sube a la BBDD los ficheros que ya
+  hubiera en disco. Subió los 35 carteles, **3,1 MB**.
+- El campo `imagen` se mantiene: sigue indicando si una película tiene cartel y
+  guarda el nombre del fichero.
+
+### Qué tiene que hacer Luizay
+
+Solo `git pull` y `python manage.py migrate`. Los carteles ya están en la BBDD
+compartida, así que los verá sin descargar nada.
+
+### A tener en cuenta
+
+- La BBDD engorda ~3 MB con 35 carteles (~90 KB cada uno). El plan gratuito de
+  Supabase da 500 MB, así que hay margen de sobra, pero conviene no subir
+  imágenes enormes desde el formulario.
+- Las imágenes las sirve ahora Django, no el servidor de ficheros. Con la caché
+  de un día es asumible para este proyecto; en producción real se pondría
+  delante un CDN o almacenamiento de objetos.
 
 ---
 

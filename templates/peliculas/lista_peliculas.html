@@ -75,7 +75,7 @@ CINES LEÓN - Peliculas
                     <tr>
                         <td class="text-center">
                             {% if pelicula.imagen %}
-                                <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.titulo }}" class="img-thumbnail" style="width: 50px; height: 70px; object-fit: cover;">
+                                <img src="{{ pelicula.url_cartel }}" alt="{{ pelicula.titulo }}" class="img-thumbnail" style="width: 50px; height: 70px; object-fit: cover;">
                             {% else %}
                                 <img src="{% static 'logo2.png' %}" alt="Sin imagen" class="img-thumbnail" style="width: 50px; height: 70px; object-fit: cover;">
                             {% endif %}
@@ -102,7 +102,7 @@ CINES LEÓN - Peliculas
                                     data-anio="{{ pelicula.anio|default:'N/A' }}"
                                     data-duracion="{{ pelicula.duracion|default:'N/A' }}"
                                     data-sinopsis="{{ pelicula.sinopsis|default:'Sin sinopsis' }}"
-                                    data-imagen="{% if pelicula.imagen %}{{ pelicula.imagen.url }}{% else %}{% static 'logo2.png' %}{% endif %}"
+                                    data-imagen="{% if pelicula.imagen %}{{ pelicula.url_cartel }}{% else %}{% static 'logo2.png' %}{% endif %}"
                                     data-destacada="{% if pelicula.detalles and pelicula.detalles.destacada %}Sí{% else %}No{% endif %}"
                                     data-estreno="{{ pelicula.detalles.fecha_estreno|date:'d/m/Y'|default:'N/A' }}"
                                     data-clasificacion="{{ pelicula.detalles.get_clasificacion_display|default:'N/A' }}"

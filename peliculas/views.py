@@ -1,11 +1,34 @@
-from django.core.files.base import ContentFile
-from django.http import JsonResponse
+import os
+
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from usuarios.decorators import gestor_required
 from . import tmdb
 from .forms import PeliculasForm, GeneroForm,DirectorForm
-from .models import Peliculas,Director,Genero
+from .models import CartelPelicula, Peliculas,Director,Genero
+
+
+def cartel_pelicula(request, pk):
+    """Sirve el cartel guardado en la base de datos.
+
+    Si esa película todavía no lo tiene en la BBDD, cae al fichero de `media/`
+    (equipos que aún no hayan migrado). Es público: los carteles se ven en la
+    cartelera sin necesidad de iniciar sesión.
+    """
+    pelicula = get_object_or_404(Peliculas, pk=pk)
+
+    cartel = CartelPelicula.objects.filter(pelicula=pelicula).first()
+    if cartel:
+        respuesta = HttpResponse(bytes(cartel.datos), content_type=cartel.tipo)
+        # El cartel de una película no cambia casi nunca
+        respuesta["Cache-Control"] = "public, max-age=86400"
+        return respuesta
+
+    if pelicula.imagen and os.path.exists(pelicula.imagen.path):
+        return FileResponse(pelicula.imagen.open("rb"))
+
+    raise Http404("Esta película no tiene cartel.")
 
 
 @gestor_required
@@ -52,6 +75,29 @@ def buscar_tmdb(request):
     })
 
 
+def _guardar_cartel(request, pelicula, formulario):
+    """Lleva el cartel a la BBDD, venga del fichero subido o de TMDB.
+
+    Se llama con la película ya guardada, porque el cartel cuelga de ella.
+    """
+    subida = request.FILES.get("imagen")
+    poster = request.POST.get("poster_tmdb")
+
+    if subida:
+        # El formulario ya dejó el fichero en `imagen`; falta la copia en BBDD,
+        # que es lo único que se comparte entre equipos.
+        subida.seek(0)
+        pelicula.guardar_cartel(subida.read(),
+                                tipo=getattr(subida, "content_type", None) or "image/jpeg")
+    elif poster:
+        try:
+            pelicula.guardar_cartel(tmdb.descargar_cartel(poster),
+                                    "%s.jpg" % tmdb.slug(pelicula.titulo))
+            pelicula.save(update_fields=["imagen"])
+        except tmdb.ErrorTMDB:
+            messages.warning(request, "No se pudo descargar el cartel de TMDB.")
+
+
 @gestor_required
 def crear_pelicula(request):
     if request.method == "POST":
@@ -60,17 +106,6 @@ def crear_pelicula(request):
         if formulario.is_valid():
             pelicula = formulario.save(commit=False)
 
-            # Si el gestor no subió cartel pero usó el buscador de TMDB,
-            # se descarga el que propuso TMDB.
-            poster = request.POST.get("poster_tmdb")
-            if poster and not request.FILES.get("imagen"):
-                try:
-                    pelicula.imagen.save("%s.jpg" % tmdb.slug(pelicula.titulo),
-                                         ContentFile(tmdb.descargar_cartel(poster)),
-                                         save=False)
-                except tmdb.ErrorTMDB:
-                    messages.warning(request, "No se pudo descargar el cartel de TMDB.")
-
             puntuacion = request.POST.get("puntuacion_tmdb")
             if puntuacion:
                 try:
@@ -78,7 +113,10 @@ def crear_pelicula(request):
                 except ValueError:
                     pass
 
+            # Hay que guardarla antes: el cartel cuelga de ella y necesita su id
             pelicula.save()
+            _guardar_cartel(request, pelicula, formulario)
+
             messages.success(request, "¡Película creada correctamente!")
             return redirect("lista_peliculas")
     else:
@@ -125,7 +163,8 @@ def editar_peliculas(request, pk):
         formulario = PeliculasForm(request.POST, request.FILES, instance=pelicula)
 
         if formulario.is_valid():
-            formulario.save()
+            pelicula = formulario.save()
+            _guardar_cartel(request, pelicula, formulario)
             messages.success(request, "Pelicula editada")
             return redirect("lista_peliculas")
     else:
