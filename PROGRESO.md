@@ -150,7 +150,7 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-25 | *Próximos estrenos* = todas las películas que **no** estén en cartelera (sin mirar la fecha de estreno). Aplicado ya en las dos pantallas. | David |
 | 2026-08-25 | Los **carteles** no se versionan (`media/` está en `.gitignore`): cada uno los genera con `importar_tmdb`. | David |
 | 2026-08-25 | *Próximos estrenos* se ordena por **puntuación** descendente. La nota es la de **TMDB**, no la de IMDb (TMDB no la expone; haría falta OMDb con otra clave). Campo `Peliculas.puntuacion`. | David |
-| 2026-08-25 | 🔵 **EN REVISIÓN** (pendiente de opinar Luizay): botón **"Buscar en TMDB"** al dar de alta una película. Ver propuesta detallada abajo. | David → Luizay |
+| 2026-08-25 | ✅ Botón **"Buscar en TMDB"** al dar de alta o editar una película: rellena la ficha y propone el cartel, y el gestor revisa antes de guardar. Toca la plantilla de Luizay, que debería echarle un ojo. Ver detalle abajo. | David → Luizay |
 | 2026-08-25 | El generador de sesiones **ya no crea pases solapados** (había 407 imposibles de proyectar). Como efecto, la programación pasa de ~535 sesiones a 225. | David |
 | 2026-08-25 | 🔵 **EN REVISIÓN**: las **horas de pase** (18/20/22) no encajan con películas de 2h30-3h30. Ver propuesta detallada abajo. | David & Luizay |
 
@@ -188,22 +188,25 @@ atribuida a Christopher Nolan.
 3. Un poco de JavaScript en el formulario para volcar la respuesta en los campos.
 4. Al guardar: crear el director y el género si no existen, y descargar el cartel.
 
-### ⚠️ Lo que hay que hablar antes de hacerlo
+### Cómo quedó resuelto cada punto
 
-- **Toca `templates/peliculas/nueva_pelicula.html`, que es de Luizay.** De ahí
-  que esto esté en revisión y no hecho: conviene acordarlo para no chocar en el
-  siguiente merge.
-- **La clave de TMDB está en el `.env` de cada equipo.** En un equipo sin `.env`
-  el botón fallaría, así que habría que detectarlo y ocultarlo con un aviso
-  claro en vez de soltar un error.
-- **`DetallePelicula`** (fecha de estreno, clasificación por edad) es otro modelo
-  y el formulario actual no lo incluye. TMDB da la fecha de estreno, así que
-  podría rellenarse también, pero implica tocar el formulario algo más a fondo.
-  ¿Se deja fuera de momento?
+- **Toca `templates/peliculas/nueva_pelicula.html`, que es de Luizay.** Se ha
+  tocado lo mínimo: un bloque nuevo antes del `<form>`, dos campos ocultos y un
+  `<script>` al final. No se ha modificado el renderizado de los campos ni la
+  vista previa del póster que ya había. ⚠️ **Luizay: avisa si prefieres otra
+  cosa.**
+- **Equipos sin `.env`**: `tmdb.hay_clave()` decide si el botón se pinta. Sin
+  clave el bloque no aparece y el formulario funciona como siempre; si aun así
+  se llama al endpoint, responde 502 con el texto de qué hay que configurar,
+  nunca un error 500.
+- **`DetallePelicula`**: queda fuera de momento. El formulario de alta no
+  incluye ese modelo y añadirlo daba para otra tarea. La fecha de estreno sí la
+  rellena `importar_tmdb` en lote.
 
 ### Estado
 
-⬜ Pendiente de que Luizay opine. No se ha escrito nada de código todavía.
+✅ **Hecho** el 2026-08-25. Botón "Buscar en TMDB" en el alta y en la edición de
+película. Queda pendiente que Luizay revise el cambio en su plantilla.
 
 ---
 

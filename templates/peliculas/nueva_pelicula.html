@@ -16,8 +16,31 @@ CINES LEÓN - Nueva Pelicula
 <div class="container my-4">
     <h2 class="mb-4" style="color: #720042; font-weight: bold;">Nueva Película</h2>
 
+    {% if hay_clave_tmdb %}
+    <!-- Rellenado automático desde TMDB: propone los datos, no los guarda -->
+    <div class="card shadow-sm border-0 mb-4" style="background-color: #fff5f8;">
+        <div class="card-body">
+            <label class="form-label fw-bold" style="color: #720042;">
+                ¿Rellenamos la ficha desde TMDB?
+            </label>
+            <div class="input-group">
+                <input type="text" id="tmdb-titulo" class="form-control"
+                       placeholder="Título de la película, p. ej. Interstellar">
+                <button type="button" id="tmdb-buscar" class="btn text-white px-4"
+                        style="background-color: #720042;">Buscar en TMDB</button>
+            </div>
+            <div id="tmdb-aviso" class="small mt-2 d-none"></div>
+            <div class="form-text text-muted small">
+                Rellena los campos con lo que devuelva TMDB. Revísalos antes de guardar.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" name="poster_tmdb" id="poster-tmdb">
+        <input type="hidden" name="puntuacion_tmdb" id="puntuacion-tmdb">
 
         <div class="row g-4 align-items-start">
             <div class="col-md-4 text-center">
@@ -88,11 +111,113 @@ CINES LEÓN - Nueva Pelicula
         // Añadir clases de Bootstrap y el borde personalizado a los inputs generados por Django
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
+            if (input.type === 'hidden') { return; }
             if (!input.classList.contains('form-control') && !input.classList.contains('form-check-input')) {
                 input.classList.add('form-control', 'custom-brand-border');
             }
         });
     });
 </script>
+
+{% if hay_clave_tmdb %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const boton = document.getElementById('tmdb-buscar');
+        const entrada = document.getElementById('tmdb-titulo');
+        const aviso = document.getElementById('tmdb-aviso');
+
+        function mostrarAviso(texto, tipo) {
+            aviso.textContent = texto;
+            aviso.className = 'small mt-2 text-' + tipo;
+        }
+
+        // Selecciona una opción del desplegable; si TMDB trae un director o
+        // género que no estaba en la lista, se añade la opción al vuelo.
+        function elegirOpcion(campo, dato) {
+            const select = document.getElementById('id_' + campo);
+            if (!select || !dato) { return; }
+            if (!select.querySelector('option[value="' + dato.id + '"]')) {
+                select.add(new Option(dato.nombre, dato.id));
+            }
+            select.value = dato.id;
+        }
+
+        function rellenar(ficha) {
+            const titulo = document.getElementById('id_titulo');
+            const sinopsis = document.getElementById('id_sinopsis');
+            const anio = document.getElementById('id_anio');
+            const duracion = document.getElementById('id_duracion');
+
+            if (titulo) { titulo.value = ficha.titulo; }
+            if (sinopsis) { sinopsis.value = ficha.sinopsis; }
+            if (anio && ficha.anio) { anio.value = ficha.anio; }
+            // duracion es un DurationField: Django espera HH:MM:SS
+            if (duracion && ficha.duracion) {
+                const h = Math.floor(ficha.duracion / 60);
+                const m = ficha.duracion % 60;
+                duracion.value = h + ':' + String(m).padStart(2, '0') + ':00';
+            }
+
+            elegirOpcion('director', ficha.director);
+            elegirOpcion('genero', ficha.genero);
+
+            document.getElementById('poster-tmdb').value = ficha.poster || '';
+            document.getElementById('puntuacion-tmdb').value = ficha.puntuacion || '';
+
+            // Vista previa del cartel, reutilizando la que ya había
+            if (ficha.poster_url) {
+                const img = document.getElementById('img-preview');
+                img.src = ficha.poster_url;
+                img.classList.remove('d-none');
+                document.getElementById('placeholder-text').classList.add('d-none');
+            }
+        }
+
+        function buscar() {
+            const titulo = entrada.value.trim();
+            if (!titulo) {
+                mostrarAviso('Escribe primero un título.', 'danger');
+                return;
+            }
+
+            boton.disabled = true;
+            boton.textContent = 'Buscando...';
+            mostrarAviso('Consultando TMDB...', 'muted');
+
+            fetch('{% url "buscar_tmdb" %}?titulo=' + encodeURIComponent(titulo))
+                .then(function (r) { return r.json().then(function (d) { return {ok: r.ok, datos: d}; }); })
+                .then(function (respuesta) {
+                    if (!respuesta.ok) {
+                        mostrarAviso(respuesta.datos.error || 'No se ha podido consultar TMDB.', 'danger');
+                        return;
+                    }
+                    rellenar(respuesta.datos);
+                    mostrarAviso('Datos de "' + respuesta.datos.titulo + '" cargados. Revísalos antes de guardar.', 'success');
+                })
+                .catch(function () {
+                    mostrarAviso('No se ha podido consultar TMDB.', 'danger');
+                })
+                .finally(function () {
+                    boton.disabled = false;
+                    boton.textContent = 'Buscar en TMDB';
+                });
+        }
+
+        boton.addEventListener('click', buscar);
+        // Enter en el buscador busca, no envía el formulario
+        entrada.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); buscar(); }
+        });
+
+        // Si el gestor sube su propia imagen, se descarta la de TMDB
+        const ficheroImagen = document.getElementById('id_imagen');
+        if (ficheroImagen) {
+            ficheroImagen.addEventListener('change', function () {
+                if (this.files.length) { document.getElementById('poster-tmdb').value = ''; }
+            });
+        }
+    });
+</script>
+{% endif %}
 
 {% endblock %}

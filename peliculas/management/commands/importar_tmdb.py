@@ -10,24 +10,15 @@ La clave de TMDB se lee de la variable de entorno TMDB_API_KEY o del
 fichero .env del proyecto (TMDB_API_KEY=...). El .env está en .gitignore.
 """
 
-import json
-import os
-import re
 import time
-import unicodedata
 import urllib.error
-import urllib.parse
-import urllib.request
 from datetime import timedelta
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 
+from peliculas import tmdb
 from peliculas.models import DetallePelicula, Director, Genero, Peliculas
-
-API = "https://api.themoviedb.org/3"
-IMG = "https://image.tmdb.org/t/p/w500"
 
 # Títulos inventados por la carga inicial -> película real equivalente.
 # La clave es el título tal cual está en la BBDD.
@@ -48,46 +39,6 @@ SUSTITUCIONES = {
 }
 
 
-def leer_api_key():
-    clave = os.environ.get("TMDB_API_KEY")
-    if clave:
-        return clave.strip()
-
-    env = os.path.join(settings.BASE_DIR, ".env")
-    if os.path.exists(env):
-        with open(env, encoding="utf-8") as f:
-            for linea in f:
-                if linea.strip().startswith("TMDB_API_KEY"):
-                    return linea.split("=", 1)[1].strip().strip('"').strip("'")
-    return None
-
-
-def es_token_v4(clave):
-    """El token v4 de TMDB es un JWT; la API key v3 es una cadena hexadecimal."""
-    return clave.count(".") == 2 and clave.startswith("ey")
-
-
-def pedir(url, clave):
-    cabeceras = {"User-Agent": "CINEWEB/1.0"}
-    if es_token_v4(clave):
-        cabeceras["Authorization"] = "Bearer %s" % clave
-    peticion = urllib.request.Request(url, headers=cabeceras)
-    with urllib.request.urlopen(peticion, timeout=20) as r:
-        return json.loads(r.read().decode("utf-8"))
-
-
-def con_clave(params, clave):
-    """La v3 viaja en la URL; la v4 va en la cabecera y no debe ir aquí."""
-    if not es_token_v4(clave):
-        params["api_key"] = clave
-    return params
-
-
-def slug(texto):
-    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z0-9]+", "-", texto.lower()).strip("-")
-
-
 class Command(BaseCommand):
     help = "Rellena carteles y fichas de las películas desde TMDB"
 
@@ -103,7 +54,7 @@ class Command(BaseCommand):
         parser.add_argument("--api-key", help="Clave de TMDB (si no, se lee de .env)")
 
     def handle(self, *args, **opciones):
-        clave = opciones.get("api_key") or leer_api_key()
+        clave = opciones.get("api_key") or tmdb.leer_api_key()
         if not clave:
             raise CommandError(
                 "Falta la clave de TMDB.\n"
@@ -165,42 +116,7 @@ class Command(BaseCommand):
 
     def buscar(self, clave, titulo, anio):
         """Busca la película y devuelve su ficha ya normalizada."""
-        params = con_clave({"query": titulo, "language": "es-ES"}, clave)
-        if anio:
-            params["year"] = anio
-        datos = pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)), clave)
-
-        resultados = datos.get("results") or []
-        if not resultados and anio:
-            # Reintenta sin año: a veces el año de la BBDD no es el de estreno
-            params.pop("year")
-            resultados = (pedir("%s/search/movie?%s" % (API, urllib.parse.urlencode(params)), clave)
-                          .get("results") or [])
-        if not resultados:
-            return None
-
-        detalle = pedir("%s/movie/%s?%s" % (
-            API, resultados[0]["id"],
-            urllib.parse.urlencode(con_clave({"language": "es-ES",
-                                              "append_to_response": "credits"}, clave))), clave)
-
-        director = next((p["name"] for p in detalle.get("credits", {}).get("crew", [])
-                         if p.get("job") == "Director"), None)
-        generos = detalle.get("genres") or []
-        estreno = detalle.get("release_date") or ""
-
-        return {
-            "titulo": detalle.get("title") or titulo,
-            "sinopsis": (detalle.get("overview") or "").strip(),
-            "duracion": detalle.get("runtime") or 0,
-            "anio": int(estreno[:4]) if estreno[:4].isdigit() else anio,
-            "estreno": estreno,
-            "director": director,
-            "genero": generos[0]["name"] if generos else None,
-            "poster": detalle.get("poster_path"),
-            # Nota media de TMDB sobre 10 (no es la de IMDb, que TMDB no expone)
-            "puntuacion": round(detalle.get("vote_average") or 0, 1),
-        }
+        return tmdb.buscar(titulo, anio, clave=clave)
 
     def aplicar(self, pelicula, ficha, solo_carteles, conservar_titulos=False):
         if not solo_carteles:
@@ -210,11 +126,7 @@ class Command(BaseCommand):
             if not conservar_titulos:
                 pelicula.titulo = ficha["titulo"]
             if ficha["sinopsis"]:
-                # sinopsis es CharField(300): cortamos por palabra
-                texto = ficha["sinopsis"]
-                if len(texto) > 300:
-                    texto = texto[:297].rsplit(" ", 1)[0] + "..."
-                pelicula.sinopsis = texto
+                pelicula.sinopsis = tmdb.recortar_sinopsis(ficha["sinopsis"])
             if ficha["duracion"]:
                 pelicula.duracion = timedelta(minutes=ficha["duracion"])
             if ficha["anio"]:
@@ -240,10 +152,6 @@ class Command(BaseCommand):
         pelicula.save()
 
     def descargar_cartel(self, pelicula, poster_path):
-        peticion = urllib.request.Request(IMG + poster_path,
-                                          headers={"User-Agent": "CINEWEB/1.0"})
-        with urllib.request.urlopen(peticion, timeout=30) as r:
-            contenido = r.read()
-
-        pelicula.imagen.save("%s.jpg" % slug(pelicula.titulo),
+        contenido = tmdb.descargar_cartel(poster_path)
+        pelicula.imagen.save("%s.jpg" % tmdb.slug(pelicula.titulo),
                              ContentFile(contenido), save=False)

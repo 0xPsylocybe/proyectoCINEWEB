@@ -192,6 +192,10 @@ algunas anotaciones:
   *Vidas pasadas* de Chazelle...). Comando `corregir_peliculas`
 - ✅ **Carteles**: las 35 películas tienen póster, importado de TMDB junto con
   sinopsis, duración y año. Comando `importar_tmdb`
+- ✅ **Botón "Buscar en TMDB"** al dar de alta o editar una película: escribes el
+  título, pulsas y se rellenan sinopsis, duración, año, género, director,
+  puntuación y el cartel (con vista previa). El gestor revisa antes de guardar.
+  Si el equipo no tiene clave de TMDB, el botón simplemente no aparece
 
 ##### Comandos de datos
 
