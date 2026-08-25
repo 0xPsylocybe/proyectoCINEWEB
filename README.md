@@ -222,6 +222,14 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
   **respeta la ocupación de la sala**: no programa un pase si el anterior aún no
   ha terminado (la duración la calcula el propio modelo `Sesion`). Reparte
   recorriendo día → hora → sala, de modo que ninguna película se queda sin pases
+- ✅ **Reglas de programación** en `cartelera/programacion.py`, compartidas por el
+  comando y la vista "Rellenar automáticamente":
+  - L-V no se abre antes de las **17:00**; matinal solo sábado y domingo
+  - Pases cada **2h30** (17:00, 19:30, 22:00), porque cada dos horas solo caben
+    películas de hasta 85 min contando publicidad y limpieza
+  - Viernes y sábado, último pase a la **1:00**, y ahí **no entran películas de
+    más de 2 horas**
+  - Las sesiones **con entradas vendidas nunca se borran** al regenerar
 - ✅ Filtrado de sesiones por "día de cine" (12:00-02:59 del día siguiente)
 - ✅ Selector de fechas dinámico que destaca día seleccionado
 - ✅ **Nuevo:** `Sala.precio_entrada` — el precio de la entrada depende de la sala
@@ -311,9 +319,6 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - **`templates/restauracion/snack_bar.html`** está vacío y duplica el catálogo
 - La **portada** muestra las 35 películas, también las que no están en cartelera
 - **Limpieza:** quedan 8 directores sin ninguna película tras corregir las fichas
-- 🔵 **En revisión:** las **horas de pase** (18/20/22) suponen películas de hora y
-  media y no encajan con las de 2h30-3h30, así que se descartan huecos. Ver la
-  propuesta en `PROGRESO.md`
 - **Búsqueda avanzada** en películas
 - **Reportes y estadísticas**
 - **Tests unitarios e integración**

@@ -152,7 +152,7 @@ Anotad aquí acuerdos o validaciones puntuales (fecha — qué se validó — qu
 | 2026-08-25 | *Próximos estrenos* se ordena por **puntuación** descendente. La nota es la de **TMDB**, no la de IMDb (TMDB no la expone; haría falta OMDb con otra clave). Campo `Peliculas.puntuacion`. | David |
 | 2026-08-25 | ✅ Botón **"Buscar en TMDB"** al dar de alta o editar una película: rellena la ficha y propone el cartel, y el gestor revisa antes de guardar. Toca la plantilla de Luizay, que debería echarle un ojo. Ver detalle abajo. | David → Luizay |
 | 2026-08-25 | El generador de sesiones **ya no crea pases solapados** (había 407 imposibles de proyectar). Como efecto, la programación pasa de ~535 sesiones a 225. | David |
-| 2026-08-25 | 🔵 **EN REVISIÓN**: las **horas de pase** (18/20/22) no encajan con películas de 2h30-3h30. Ver propuesta detallada abajo. | David & Luizay |
+| 2026-08-25 | ✅ Nuevas **horas de pase**: L-V no se abre antes de las 17:00, matinal solo en fin de semana, último pase de viernes y sábado a la 1:00 y sin películas de más de 2h en esa franja. Ver detalle abajo. | David & Luizay |
 
 ---
 
@@ -247,11 +247,35 @@ de ~535 sesiones a **225**.
    hora de apertura según lo que dure cada película (lo que hace un cine de
    verdad). Es lo más flexible y lo que más trabajo lleva.
 
-### Recomendación
+### Cómo quedó
 
-La **2**, por sencilla: es cambiar una constante y volver a lanzar
-`regenerar_sesiones --borrar`. La 3 queda para cuando el resto esté cerrado.
+✅ **Resuelto el 2026-08-25** con la opción 2, más las reglas que faltaban:
 
-### Estado
+| Día | Pases |
+|-----|-------|
+| Lunes a jueves | 17:00 · 19:30 · 22:00 |
+| Viernes | 17:00 · 19:30 · 22:00 · 01:00 |
+| Sábado | 12:00 · 14:30 · 17:00 · 19:30 · 22:00 · 01:00 |
+| Domingo | 12:00 · 14:30 · 17:00 · 19:30 · 22:00 |
 
-⬜ Pendiente de decidir entre los dos.
+- **De lunes a viernes no se abre antes de las 17:00.** Matinal solo el fin de semana.
+- **El último pase de viernes y sábado es a la 1:00**, y en esa franja **no se
+  programan películas de más de 2 horas**.
+- Los saltos son de 2h30: con pases cada dos horas solo caben películas de hasta
+  85 minutos, contando publicidad y limpieza.
+
+Resultado: **249 sesiones** (antes 225) y cada película en 4-6 salas en vez de 2-3.
+
+Las reglas viven en `cartelera/programacion.py`, que ahora comparten el comando
+`regenerar_sesiones` y la vista "Rellenar automáticamente". Antes cada uno tenía
+su propia tabla de horarios y generaban programaciones distintas.
+
+### ⚠️ Dos fallos que aparecieron al hacerlo
+
+1. **Toda la programación estaba corrida dos horas.** Se construían las horas con
+   `timezone.now().replace(hour=17)`, que son las 17:00 **UTC**: en Madrid, las
+   19:00. Por eso "las 22:00" caían a las 00:00 y las películas largas se colaban
+   en la madrugada. Ahora se construyen en hora local con `make_aware`.
+2. **`--borrar` reventaba si había entradas vendidas**, porque `VentaEntrada.sesion`
+   es `PROTECT`. Ahora esas sesiones se conservan, se avisa de ello y se respeta
+   su ocupación al reprogramar. Lo mismo en la vista de rellenar.

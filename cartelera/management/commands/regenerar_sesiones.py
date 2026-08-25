@@ -1,42 +1,23 @@
 """Regenera la programación de sesiones de las películas en cartelera.
 
-Reglas que respeta:
-  - Cada día de la semana tiene sus propias horas de pase.
-  - Una sala no puede tener dos sesiones que se pisen. La ocupación de cada
-    pase la calcula el propio modelo `Sesion` (15 min de publicidad + duración
-    de la película + 20 min de limpieza), para no duplicar esa regla aquí.
-  - Los pases se reparten entre las salas asignadas a cada película.
+Las reglas (horas de pase, madrugadas, duración máxima del último pase) están
+en `cartelera/programacion.py`, compartidas con la vista "Rellenar
+automáticamente" para que las dos generen lo mismo.
 
 Uso:
     python manage.py regenerar_sesiones --dry-run          # ensayo, no toca nada
     python manage.py regenerar_sesiones --dias 14 --borrar
 """
 
-import random
 from collections import defaultdict
-from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
+from cartelera import programacion
 from cartelera.models import Sala, Sesion
 from peliculas.models import Peliculas
-
-# Horas de pase según el día de la semana (0 = lunes ... 6 = domingo).
-# La hora 0 es el pase de medianoche: cae en la madrugada del día siguiente.
-HORARIOS_POR_DIA = {
-    0: [18, 20, 22],
-    1: [18, 20, 22],
-    2: [18, 20, 22],
-    3: [18, 20, 22],
-    4: [18, 20, 22, 0],
-    5: [12, 18, 20, 22, 0],
-    6: [12, 14, 18, 20, 22, 0],
-}
-
-# Salas en las que se programa cada película, como mucho.
-SALAS_POR_PELICULA = 4
 
 
 class Command(BaseCommand):
@@ -68,100 +49,77 @@ class Command(BaseCommand):
         if ensayo:
             self.stdout.write(self.style.WARNING("ENSAYO: no se guarda nada\n"))
 
-        # Ocupación de cada sala: lista de (inicio, fin) ya reservados.
-        # Si no se borra lo anterior, hay que respetarlo.
-        ocupacion = defaultdict(list)
-        if not borrar:
-            for sesion in Sesion.objects.select_related("pelicula", "sala"):
-                ocupacion[sesion.sala_id].append(
-                    (sesion.horario, sesion.hora_fin_limpieza))
+        # Las sesiones con entradas vendidas no se tocan: la venta manda, y
+        # además la BBDD lo impide (VentaEntrada.sesion es PROTECT).
+        vendidas = list(Sesion.objects.filter(entradas_vendidas__isnull=False)
+                        .select_related("pelicula", "sala").distinct())
 
-        inicio_periodo = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        nuevas = []
-        sin_hueco = 0
+        # Hay que respetar la ocupación de lo que se conserva
+        ocupacion_previa = defaultdict(list)
+        intactas = vendidas if borrar else list(
+            Sesion.objects.select_related("pelicula", "sala"))
+        for sesion in intactas:
+            ocupacion_previa[sesion.sala_id].append(
+                (sesion.horario, sesion.hora_fin_limpieza))
 
-        # Se programa sala por sala y hora por hora, no película por película:
-        # así se aprovechan todas las salas y ninguna película se queda fuera
-        # porque las anteriores hayan ocupado ya todos los huecos.
-        # El índice va rotando el catálogo para repartir los pases.
-        siguiente = 0
+        if borrar and vendidas:
+            self.stdout.write(self.style.WARNING(
+                "%d sesiones se conservan porque tienen entradas vendidas:" % len(vendidas)))
+            for sesion in vendidas[:10]:
+                self.stdout.write("   %s" % sesion)
 
-        for desplazamiento in range(dias):
-            fecha = inicio_periodo + timedelta(days=desplazamiento)
-
-            for hora in HORARIOS_POR_DIA[fecha.weekday()]:
-                for sala in salas:
-                    if hora == 0:
-                        # Pase de medianoche: cae en la madrugada del día siguiente
-                        comienzo = fecha + timedelta(days=1,
-                                                     minutes=random.randint(0, 30))
-                    else:
-                        comienzo = fecha.replace(hour=hora,
-                                                 minute=random.randint(0, 30))
-
-                    colocada = False
-                    # Se busca en el catálogo una película que quepa en el hueco
-                    for intento in range(len(peliculas)):
-                        pelicula = peliculas[(siguiente + intento) % len(peliculas)]
-
-                        # El modelo es quien sabe cuánto ocupa una sesión
-                        candidata = Sesion(pelicula=pelicula, sala=sala,
-                                           horario=comienzo)
-                        fin = candidata.hora_fin_limpieza
-
-                        if self._cabe(ocupacion[sala.id], comienzo, fin):
-                            ocupacion[sala.id].append((comienzo, fin))
-                            nuevas.append(candidata)
-                            siguiente = (siguiente + intento + 1) % len(peliculas)
-                            colocada = True
-                            break
-
-                    if not colocada:
-                        sin_hueco += 1
+        # localdate y no now(): las horas de la tabla son horas locales
+        nuevas, descartes = programacion.generar(
+            peliculas, salas, dias, timezone.localdate(), ocupacion_previa)
 
         if not ensayo:
             # Borrado e inserción juntos: así la cartelera nunca se queda vacía
             # a ojos de quien esté navegando.
             with transaction.atomic():
                 if borrar:
-                    borradas = Sesion.objects.all().delete()[0]
+                    # Solo las que nadie ha comprado
+                    borradas = (Sesion.objects
+                                .exclude(pk__in=[s.pk for s in vendidas])
+                                .delete()[0])
                     self.stdout.write("Sesiones anteriores eliminadas: %d" % borradas)
                 Sesion.objects.bulk_create(nuevas, batch_size=500)
 
-        self._resumen(nuevas, sin_hueco, peliculas, dias, ensayo)
+        self._resumen(nuevas, descartes, peliculas, dias, ensayo)
 
-    @staticmethod
-    def _cabe(reservas, inicio, fin):
-        """True si el hueco [inicio, fin) no pisa ninguna reserva de la sala."""
-        return all(fin <= ocupado_desde or inicio >= ocupado_hasta
-                   for ocupado_desde, ocupado_hasta in reservas)
-
-    def _resumen(self, nuevas, sin_hueco, peliculas, dias, ensayo):
+    def _resumen(self, nuevas, descartes, peliculas, dias, ensayo):
         self.stdout.write("")
         verbo = "Se crearían" if ensayo else "Creadas"
         self.stdout.write(self.style.SUCCESS("%s %d sesiones en %d días"
                                              % (verbo, len(nuevas), dias)))
 
-        if sin_hueco:
+        if descartes["sala_ocupada"]:
             self.stdout.write(self.style.WARNING(
                 "%d huecos sin cubrir: la sala seguía ocupada por el pase anterior"
-                % sin_hueco))
+                % descartes["sala_ocupada"]))
+        if descartes["sin_pelicula_corta"]:
+            self.stdout.write(self.style.WARNING(
+                "%d huecos de madrugada sin cubrir: no hay películas de menos de %s"
+                % (descartes["sin_pelicula_corta"],
+                   programacion.DURACION_MAXIMA_MADRUGADA)))
 
-        # Reparto por película, para ver que ninguna se queda coja
         por_pelicula = defaultdict(set)
         pases = defaultdict(int)
+        madrugadas = defaultdict(int)
         for sesion in nuevas:
             por_pelicula[sesion.pelicula.titulo].add(sesion.sala.identificador)
             pases[sesion.pelicula.titulo] += 1
+            if programacion.es_madrugada(timezone.localtime(sesion.horario).hour):
+                madrugadas[sesion.pelicula.titulo] += 1
 
         sin_programar = [p.titulo for p in peliculas if p.titulo not in por_pelicula]
 
         self.stdout.write("")
         self.stdout.write("Reparto por película:")
         for titulo in sorted(por_pelicula):
-            usadas = sorted(por_pelicula[titulo])
-            self.stdout.write("   %-42s %3d pases en %d salas"
-                              % (titulo[:42], pases[titulo], len(usadas)))
+            extra = ("  (%d de madrugada)" % madrugadas[titulo]) if madrugadas[titulo] else ""
+            self.stdout.write("   %-42s %3d pases en %d salas%s"
+                              % (titulo[:42], pases[titulo],
+                                 len(por_pelicula[titulo]), extra))
 
         if sin_programar:
             self.stdout.write(self.style.ERROR(

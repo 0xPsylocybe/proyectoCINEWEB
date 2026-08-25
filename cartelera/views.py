@@ -163,51 +163,50 @@ def rellenar_sesiones(request):
             salas = form.cleaned_data['salas']
             borrar_existentes = form.cleaned_data['borrar_existentes']
 
-            # Borrar sesiones existentes si lo solicita
-            if borrar_existentes:
-                Sesion.objects.filter(pelicula__in=peliculas).delete()
+            from collections import defaultdict
 
-            # Horarios por día de la semana
-            horarios_por_dia = {
-                0: [18, 20, 22],
-                1: [18, 20, 22],
-                2: [18, 20, 22],
-                3: [18, 20, 22],
-                4: [18, 20, 22, 0],
-                5: [12, 18, 20, 22, 0],
-                6: [12, 14, 18, 20, 22, 0],
-            }
+            from django.db import transaction
 
-            sesiones_creadas = 0
-            fecha_actual = fecha_inicio
+            from cartelera import programacion
 
-            while fecha_actual <= fecha_fin:
-                dia_semana = fecha_actual.weekday()
-                horas = horarios_por_dia.get(dia_semana, [])
+            peliculas = list(peliculas)
+            salas = list(salas)
+            dias = (fecha_fin - fecha_inicio).days + 1
 
-                for idx, pelicula in enumerate(peliculas):
-                    for hora_idx, hora in enumerate(horas):
-                        sala = salas[( idx * len(horas) + hora_idx) % len(salas)]
+            with transaction.atomic():
+                if borrar_existentes:
+                    # Las sesiones con entradas vendidas no se pueden borrar
+                    # (VentaEntrada.sesion es PROTECT) ni se debe: la venta manda.
+                    conservadas = Sesion.objects.filter(
+                        pelicula__in=peliculas, entradas_vendidas__isnull=False)
+                    a_borrar = (Sesion.objects.filter(pelicula__in=peliculas)
+                                .exclude(pk__in=conservadas.values("pk")))
+                    cuantas = conservadas.count()
+                    a_borrar.delete()
+                    if cuantas:
+                        messages.warning(
+                            request,
+                            '%d sesiones se han conservado porque tienen entradas '
+                            'vendidas.' % cuantas)
 
-                        if hora == 0:
-                            horario = fecha_actual + timedelta(days=1, hours=0, minutes=0)
-                        else:
-                            horario = fecha_actual.replace(hour=hora, minute=0)
+                # Se respeta lo que ya haya programado en esas salas
+                ocupacion = defaultdict(list)
+                for sesion in Sesion.objects.filter(sala__in=salas).select_related(
+                        "pelicula", "sala"):
+                    ocupacion[sesion.sala_id].append(
+                        (sesion.horario, sesion.hora_fin_limpieza))
 
-                        try:
-                            sesion, created = Sesion.objects.get_or_create(
-                                pelicula=pelicula,
-                                sala=sala,
-                                horario=horario
-                            )
-                            if created:
-                                sesiones_creadas += 1
-                        except:
-                            pass
+                nuevas, descartes = programacion.generar(
+                    peliculas, salas, dias, fecha_inicio, ocupacion)
+                Sesion.objects.bulk_create(nuevas, batch_size=500)
 
-                fecha_actual += timedelta(days=1)
-
-            messages.success(request, f'✓ {sesiones_creadas} sesiones generadas correctamente.')
+            messages.success(
+                request, '✓ %d sesiones generadas correctamente.' % len(nuevas))
+            if descartes["sala_ocupada"]:
+                messages.info(
+                    request,
+                    '%d pases no se pudieron programar porque la sala seguía '
+                    'ocupada por la sesión anterior.' % descartes["sala_ocupada"])
             return redirect('sesiones_lista')
     else:
         form = RellenarSesionesForm()
