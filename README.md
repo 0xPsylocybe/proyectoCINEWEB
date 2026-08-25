@@ -294,7 +294,36 @@ python manage.py runserver
 La web queda en <http://127.0.0.1:8000/> y el panel en
 <http://127.0.0.1:8000/admin/>.
 
-### 7.8 Rutas principales
+### 7.8 Tests
+
+```bash
+python manage.py test --keepdb
+```
+
+> ⚠️ **El `--keepdb` hace falta.** Sin él, Django intenta borrar la base de
+> datos de test al terminar y el *pooler* de Supabase deja una conexión
+> abierta, así que falla con `database "test_postgres" is being accessed by
+> other users` aunque los tests hayan pasado. Con `--keepdb` la reutiliza, y
+> además va bastante más rápido.
+
+Para una app concreta:
+
+```bash
+python manage.py test reservas --keepdb
+```
+
+**77 tests** repartidos así:
+
+| App | Qué cubre |
+|-----|-----------|
+| `reservas` | Butacas, caducidad de la reserva, doble venta, compra completa, resguardo y el trigger de recaudación |
+| `cartelera` | Ocupación y solapamiento de sesiones, reglas de programación, filtros de gestión y cartelera pública |
+| `peliculas` | Carteles en la BBDD, búsqueda en TMDB y alta de película |
+
+Los tests de TMDB **no llaman a la API**: sustituyen la respuesta, así que
+funcionan sin conexión y sin clave.
+
+### 7.9 Rutas principales
 
 | Ruta | Qué es | Quién entra |
 |------|--------|-------------|

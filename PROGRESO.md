@@ -78,6 +78,7 @@ convendría repasar:
 | 2026-08-25 | **reservas**: resguardo de compra con localizador | 🔵 | Imprimible |
 | 2026-08-25 | Documentación: README de puesta en marcha | 🔵 | Sección 7 |
 | 2026-08-25 | Configuración por `.env` (BBDD, SECRET_KEY, TMDB) | 🔵 | Con `.env.example` de plantilla |
+| 2026-08-25 | **Tests**: 77 en reservas, cartelera y peliculas | 🔵 | `manage.py test --keepdb` |
 
 ---
 
@@ -135,7 +136,9 @@ Marcad con quién lo coge y su estado.
 29b. ✅ Configuración por `.env`, con `.env.example` como plantilla.
 30. ⬜ Pruebas de instalación desde cero siguiendo el README.
 31. ⬜ Revisión cruzada del código del compañero.
-32. ⬜ Tests unitarios y de integración.
+32. ✅ Tests: 77, en `reservas`, `cartelera` y `peliculas`.
+     Se lanzan con `python manage.py test --keepdb` (el `--keepdb` hace falta
+     por el pooler de Supabase, ver README 7.8).
 
 ---
 
