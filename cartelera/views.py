@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.db.models import Q
 from usuarios.decorators import gestor_required
 from peliculas.models import Peliculas
-from .models import Sesion
+from .models import Sala, Sesion
 from .forms import SesionForm
 
 def lista_cartelera(request):
@@ -89,8 +89,62 @@ def detalle_cartelera(request, pk):
 
 @gestor_required
 def lista_sesiones(request):
+    """Listado de sesiones para el gestor, con filtros y paginación.
+
+    Son varios cientos de sesiones: sin filtrar, la pantalla es inmanejable.
+    """
+    from datetime import datetime
+
+    from django.core.paginator import Paginator
+
     sesiones = Sesion.objects.select_related('pelicula', 'sala').order_by('horario')
-    contexto = {'sesiones': sesiones}
+
+    # --- Filtros ---
+    pelicula_id = request.GET.get('pelicula') or ''
+    if pelicula_id:
+        sesiones = sesiones.filter(pelicula_id=pelicula_id)
+
+    sala_id = request.GET.get('sala') or ''
+    if sala_id:
+        sesiones = sesiones.filter(sala_id=sala_id)
+
+    def leer_fecha(nombre):
+        valor = request.GET.get(nombre) or ''
+        try:
+            return valor, datetime.strptime(valor, '%Y-%m-%d').date()
+        except ValueError:
+            return valor, None
+
+    desde_txt, desde = leer_fecha('desde')
+    hasta_txt, hasta = leer_fecha('hasta')
+    if desde:
+        sesiones = sesiones.filter(horario__date__gte=desde)
+    if hasta:
+        sesiones = sesiones.filter(horario__date__lte=hasta)
+
+    total = sesiones.count()
+
+    paginas = Paginator(sesiones, 24)
+    pagina = paginas.get_page(request.GET.get('pagina'))
+
+    # Para conservar los filtros al cambiar de página
+    filtros = request.GET.copy()
+    filtros.pop('pagina', None)
+
+    contexto = {
+        'sesiones': pagina,
+        'pagina': pagina,
+        'total': total,
+        'peliculas': Peliculas.objects.filter(sesiones__isnull=False)
+                                      .distinct().order_by('titulo'),
+        'salas': Sala.objects.order_by('identificador'),
+        'filtro_pelicula': pelicula_id,
+        'filtro_sala': sala_id,
+        'filtro_desde': desde_txt,
+        'filtro_hasta': hasta_txt,
+        'hay_filtros': any([pelicula_id, sala_id, desde_txt, hasta_txt]),
+        'querystring': filtros.urlencode(),
+    }
     return render(request, 'cartelera/sesiones_lista.html', contexto)
 
 

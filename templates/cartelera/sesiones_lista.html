@@ -24,6 +24,73 @@
         {% endfor %}
     {% endif %}
 
+    <!-- FILTROS -->
+    <div class="card border-0 shadow-sm mb-4" style="background-color: #fff5f8;">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label for="filtro-pelicula" class="form-label fw-bold small mb-1"
+                           style="color: #720042;">Película</label>
+                    <select name="pelicula" id="filtro-pelicula" class="form-select">
+                        <option value="">Todas</option>
+                        {% for p in peliculas %}
+                        <option value="{{ p.id }}" {% if filtro_pelicula == p.id|stringformat:"s" %}selected{% endif %}>
+                            {{ p.titulo }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <label for="filtro-sala" class="form-label fw-bold small mb-1"
+                           style="color: #720042;">Sala</label>
+                    <select name="sala" id="filtro-sala" class="form-select">
+                        <option value="">Todas</option>
+                        {% for s in salas %}
+                        <option value="{{ s.id }}" {% if filtro_sala == s.id|stringformat:"s" %}selected{% endif %}>
+                            {{ s.identificador }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <label for="filtro-desde" class="form-label fw-bold small mb-1"
+                           style="color: #720042;">Desde</label>
+                    <input type="date" name="desde" id="filtro-desde" class="form-control"
+                           value="{{ filtro_desde }}">
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <label for="filtro-hasta" class="form-label fw-bold small mb-1"
+                           style="color: #720042;">Hasta</label>
+                    <input type="date" name="hasta" id="filtro-hasta" class="form-control"
+                           value="{{ filtro_hasta }}">
+                </div>
+
+                <div class="col-6 col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn fw-bold flex-grow-1"
+                            style="background-color: #720042; color: white;">Filtrar</button>
+                    {% if hay_filtros %}
+                    <a href="{% url 'sesiones_lista' %}" class="btn btn-outline-secondary"
+                       title="Quitar filtros">✕</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p class="text-muted">
+        {% if hay_filtros %}
+            <strong>{{ total }}</strong> sesion{{ total|pluralize:"es" }} con estos filtros
+        {% else %}
+            <strong>{{ total }}</strong> sesion{{ total|pluralize:"es" }} en total
+        {% endif %}
+        {% if pagina.paginator.num_pages > 1 %}
+            · página {{ pagina.number }} de {{ pagina.paginator.num_pages }}
+        {% endif %}
+    </p>
+
     {% if sesiones %}
         <div class="row">
             {% for sesion in sesiones %}
@@ -32,6 +99,10 @@
                         <div class="card-header bg-info text-white text-center">
                             <h5 class="mb-0">{{ sesion.pelicula.titulo }}</h5>
                             <small>{{ sesion.sala.identificador }} - {{ sesion.sala.tipo }} (Cap: {{ sesion.sala.capacidad }})</small>
+                            <div class="fw-bold mt-1">
+                                📅 {{ sesion.horario|date:"l j \d\e F"|capfirst }}
+                                · {{ sesion.horario|date:"H:i" }}
+                            </div>
                         </div>
                         <div class="card-body">
                             <!-- Timeline -->
@@ -73,9 +144,51 @@
                 </div>
             {% endfor %}
         </div>
+
+        <!-- PAGINACIÓN (conservando los filtros) -->
+        {% if pagina.paginator.num_pages > 1 %}
+        <nav class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if pagina.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" style="color: #720042;"
+                       href="?pagina=1{% if querystring %}&{{ querystring }}{% endif %}">« Primera</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" style="color: #720042;"
+                       href="?pagina={{ pagina.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Anterior</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link" style="background-color: #720042; border-color: #720042;">
+                        {{ pagina.number }} de {{ pagina.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if pagina.has_next %}
+                <li class="page-item">
+                    <a class="page-link" style="color: #720042;"
+                       href="?pagina={{ pagina.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" style="color: #720042;"
+                       href="?pagina={{ pagina.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}">Última »</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
     {% else %}
         <div class="alert alert-info text-center">
+            {% if hay_filtros %}
+            <p class="mb-2">Ninguna sesión coincide con estos filtros.</p>
+            <a href="{% url 'sesiones_lista' %}" class="btn btn-sm btn-outline-secondary">
+                Quitar filtros
+            </a>
+            {% else %}
             <p>No hay sesiones registradas. <a href="{% url 'sesion_form' %}">Crear una</a></p>
+            {% endif %}
         </div>
     {% endif %}
 </div>

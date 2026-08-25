@@ -270,6 +270,10 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 
 #### **Gestión de Sesiones (Nuevo)**
 - ✅ CRUD completo de sesiones: crear, leer, editar, eliminar
+- ✅ **Filtros en `/cartelera/sesiones/`**: por película, por sala y por rango de
+  fechas, combinables entre sí, con paginación de 24 en 24 que conserva los
+  filtros al cambiar de página. Cada tarjeta muestra ya el día y la hora.
+  Con 250 sesiones, la pantalla era inmanejable sin esto
 - ✅ Validación de solapamientos a nivel de modelo y formulario
 - ✅ **Opción A (Automática):** Comando Django `manage.py regenerar_sesiones`
   - Parámetros: `--dias N` (default 14), `--borrar` (elimina existentes)
@@ -315,10 +319,6 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
   ocupada), y cuenta atrás de la reserva en la pantalla de confirmación
 
 ### ⏳ Pendiente
-- **Gestión de Sesiones** (pantalla `/cartelera/sesiones/`):
-  - 🔍 Filtrar por película
-  - 📅 Filtrar por fecha
-  - 📋 Mostrar la fecha de la sesión en la tabla
 - **Snack Bar:** el botón ➕ del catálogo todavía no añade nada al carrito
 - **Compra realizada:** mostrar el resumen de lo comprado (película, hora, sala
   y butacas), que ahora solo dice que la compra fue bien

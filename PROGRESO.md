@@ -74,6 +74,7 @@ convendría repasar:
 | 2026-08-25 | **cartelera**: dividir en *Cartelera* y *Próximos estrenos* | 🔵 | |
 | 2026-08-25 | **peliculas**: carteles guardados en la BBDD (`CartelPelicula`) | 🔵 | La carpeta `media/` no se comparte y las imágenes salían rotas |
 | 2026-08-25 | Lógica de la BBDD: **trigger de recaudación** | 🔵 | `reservas/0005_trigger_recaudacion` |
+| 2026-08-25 | **cartelera**: filtros y paginación en `/cartelera/sesiones/` | 🔵 | Por película, sala y rango de fechas |
 
 ---
 
@@ -121,9 +122,9 @@ Marcad con quién lo coge y su estado.
 25. ✅ Trigger de recaudación, con el `DELETE` contemplado para las anulaciones.
 
 ### 🗂️ Gestión de sesiones (David)
-26. ⬜ Filtrar por película en `/cartelera/sesiones/`.
-27. ⬜ Filtrar por fecha.
-28. ⬜ Mostrar la fecha de la sesión en la tabla.
+26. ✅ Filtrar por película en `/cartelera/sesiones/` (y también por sala).
+27. ✅ Filtrar por rango de fechas, combinable con lo anterior.
+28. ✅ Mostrar la fecha de la sesión en la tarjeta, más paginación de 24 en 24.
 
 ### ✅ Cierre
 29. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
