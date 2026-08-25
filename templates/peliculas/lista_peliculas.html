@@ -11,14 +11,14 @@ CINES LEÓN - Peliculas
 
     <!-- MENSAJES DE ALERTA -->
     {% if messages %}
-        <div class="mb-3">
-            {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                    <i class="fa-solid fa-check-circle me-2"></i> {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-            {% endfor %}
+    <div class="mb-3">
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-check-circle me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
     <!-- ENCABEZADO Y BARRA DE BÚSQUEDA -->
@@ -27,13 +27,13 @@ CINES LEÓN - Peliculas
             <h2 class="mb-0 fw-bold" style="color: #720042;">Listado de Películas</h2>
         </div>
         <div class="col-md-6 d-flex justify-content-md-end mt-3 mt-md-0">
-            <!-- Barra de búsqueda con visibilidad forzada y estilos explícitos -->
+            <!-- Barra de búsqueda corregida -->
             <div class="input-group" style="max-width: 350px;">
                 <span class="input-group-text bg-light border-end-0" style="color: #720042;">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" id="inputBuscadorIdentificador" class="form-control border-start-0 ps-0"
-                    placeholder="Buscar película por título..." autocomplete="off">
+                    placeholder="Buscar película por título o género..." autocomplete="off">
             </div>
         </div>
     </div>
@@ -43,12 +43,14 @@ CINES LEÓN - Peliculas
         <a href="{% url 'nueva_pelicula' %}" class="btn text-white px-4 shadow-sm" style="background-color: #720042;">
             + Nueva Película
         </a>
-        
+
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoGenero">
+            <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#modalNuevoGenero">
                 + Nuevo Género
             </button>
-            <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoDirector">
+            <button type="button" class="btn btn-outline-secondary shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#modalNuevoDirector">
                 + Nuevo Director
             </button>
         </div>
@@ -75,9 +77,11 @@ CINES LEÓN - Peliculas
                     <tr>
                         <td class="text-center">
                             {% if pelicula.imagen %}
-                                <img src="{{ pelicula.url_cartel }}" alt="{{ pelicula.titulo }}" class="img-thumbnail" style="width: 50px; height: 70px; object-fit: cover;">
+                            <img src="{{ pelicula.url_cartel }}" alt="{{ pelicula.titulo }}" class="img-thumbnail"
+                                style="width: 50px; height: 70px; object-fit: cover;">
                             {% else %}
-                                <img src="{% static 'logo2.png' %}" alt="Sin imagen" class="img-thumbnail" style="width: 50px; height: 70px; object-fit: cover;">
+                            <img src="{% static 'logo2.png' %}" alt="Sin imagen" class="img-thumbnail"
+                                style="width: 50px; height: 70px; object-fit: cover;">
                             {% endif %}
                         </td>
                         <td class="columna-identificador fw-bold">{{ pelicula.titulo }}</td>
@@ -87,15 +91,15 @@ CINES LEÓN - Peliculas
                         <td>{{ pelicula.duracion }}</td>
                         <td class="text-center">
                             {% if pelicula.detalles and pelicula.detalles.en_cartelera %}
-                                <span class="badge bg-success">Sí</span>
+                            <span class="badge bg-success">Sí</span>
                             {% else %}
-                                <span class="badge bg-secondary">No</span>
+                            <span class="badge bg-secondary">No</span>
                             {% endif %}
                         </td>
                         <td>
                             <div class="d-flex gap-1 justify-content-center align-items-center">
-                                <button type="button" class="btn btn-sm btn-info text-white btn-ver-estudio" data-bs-toggle="modal"
-                                    data-bs-target="#modalVerEstudio" 
+                                <button type="button" class="btn btn-sm btn-info text-white btn-ver-estudio"
+                                    data-bs-toggle="modal" data-bs-target="#modalVerEstudio"
                                     data-identificador="{{ pelicula.titulo|default:'N/A' }}"
                                     data-genero="{{ pelicula.genero.nombre|default:'N/A' }}"
                                     data-director="{{ pelicula.director.nombre|default:'N/A' }}"
@@ -110,8 +114,10 @@ CINES LEÓN - Peliculas
                                     Ver
                                 </button>
 
-                                <a href="{% url 'editar_pelicula' pelicula.id %}" class="btn btn-sm btn-warning">Editar</a>
-                                <a href="{% url 'eliminar_pelicula' pelicula.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                                <a href="{% url 'editar_pelicula' pelicula.id %}"
+                                    class="btn btn-sm btn-warning">Editar</a>
+                                <a href="{% url 'eliminar_pelicula' pelicula.id %}"
+                                    class="btn btn-sm btn-danger">Eliminar</a>
                             </div>
                         </td>
                     </tr>
@@ -136,13 +142,16 @@ CINES LEÓN - Peliculas
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header text-white" style="background-color: #720042;">
-                <h5 class="modal-title fw-bold" id="modalVerEstudioLabel">Película: <span id="modalIdText" class="text-warning"></span></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title fw-bold" id="modalVerEstudioLabel">Película: <span id="modalIdText"
+                        class="text-warning"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
             </div>
             <div class="modal-body bg-light">
                 <div class="row">
                     <div class="col-md-4 text-center mb-3 mb-md-0">
-                        <img id="m_imagen" src="" alt="Póster" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover;">
+                        <img id="m_imagen" src="" alt="Póster" class="img-fluid rounded shadow-sm"
+                            style="max-height: 250px; object-fit: cover;">
                     </div>
                     <div class="col-md-8">
                         <div class="card shadow-sm border-0 mb-3">
@@ -153,20 +162,24 @@ CINES LEÓN - Peliculas
                                     <div class="col-md-6"><strong>Director:</strong> <span id="m_director"></span></div>
                                     <div class="col-md-6"><strong>Año:</strong> <span id="m_anio"></span></div>
                                     <div class="col-md-6"><strong>Duración:</strong> <span id="m_duracion"></span></div>
-                                    <div class="col-12 mt-2"><strong>Sinopsis:</strong> <p id="m_sinopsis" class="text-muted mb-0 mt-1"></p></div>
+                                    <div class="col-12 mt-2"><strong>Sinopsis:</strong>
+                                        <p id="m_sinopsis" class="text-muted mb-0 mt-1"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card shadow-sm border-0 mt-2">
-                    <div class="card-header bg-dark text-white fw-bold small">2. Datos de Cartelera y Clasificación</div>
+                    <div class="card-header bg-dark text-white fw-bold small">2. Datos de Cartelera y Clasificación
+                    </div>
                     <div class="card-body bg-white">
                         <div class="row g-2 small">
                             <div class="col-md-4"><strong>Destacada:</strong> <span id="m_destacada"></span></div>
                             <div class="col-md-4"><strong>En Cartelera:</strong> <span id="m_en_cartelera"></span></div>
                             <div class="col-md-4"><strong>Fecha de Estreno:</strong> <span id="m_estreno"></span></div>
-                            <div class="col-md-6"><strong>Clasificación:</strong> <span id="m_clasificacion"></span></div>
+                            <div class="col-md-6"><strong>Clasificación:</strong> <span id="m_clasificacion"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -186,14 +199,16 @@ CINES LEÓN - Peliculas
                 {% csrf_token %}
                 <div class="modal-header text-white" style="background-color: #720042;">
                     <h5 class="modal-title">Nuevo Género</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     {{ genero_form.as_p }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="guardar_genero" class="btn text-white btn-sm" style="background-color: #720042;">Guardar Género</button>
+                    <button type="submit" name="guardar_genero" class="btn text-white btn-sm"
+                        style="background-color: #720042;">Guardar Género</button>
                 </div>
             </form>
         </div>
@@ -208,14 +223,16 @@ CINES LEÓN - Peliculas
                 {% csrf_token %}
                 <div class="modal-header text-white" style="background-color: #720042;">
                     <h5 class="modal-title">Nuevo Director</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     {{ director_form.as_p }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="guardar_director" class="btn text-white btn-sm" style="background-color: #720042;">Guardar Director</button>
+                    <button type="submit" name="guardar_director" class="btn text-white btn-sm"
+                        style="background-color: #720042;">Guardar Director</button>
                 </div>
             </form>
         </div>
