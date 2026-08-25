@@ -11,11 +11,26 @@ class SesionForm(forms.ModelForm):
         widgets = {
             'pelicula': forms.Select(attrs={'class': 'form-control'}),
             'sala': forms.Select(attrs={'class': 'form-control'}),
-            'horario': forms.DateTimeInput(attrs={
-                'class': 'form-control',
-                'type': 'datetime-local',
-            }),
+            # <input type="datetime-local"> solo entiende "AAAA-MM-DDTHH:MM".
+            # Sin este format, Django escribe la fecha en formato español
+            # ("24/08/2026 20:03:00"), el navegador la descarta y el campo
+            # aparece vacío al editar una sesión.
+            'horario': forms.DateTimeInput(
+                format='%Y-%m-%dT%H:%M',
+                attrs={
+                    'class': 'form-control',
+                    'type': 'datetime-local',
+                },
+            ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Se aceptan tanto lo que manda el navegador como el formato con espacio
+        self.fields['horario'].input_formats = [
+            '%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S',
+            '%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S',
+        ]
 
     def clean(self):
         cleaned_data = super().clean()
