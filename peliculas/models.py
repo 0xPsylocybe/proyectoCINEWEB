@@ -1,7 +1,10 @@
+"""Modelos del catalogo: peliculas, directores, generos, carteles y detalle."""
+
 from django.db import models
 
 
 class Genero(models.Model):
+    """Representa el género cinematográfico de una película (ej. Acción, Drama)."""
     nombre = models.CharField("Nombre", max_length=100)
 
     class Meta:
@@ -13,6 +16,7 @@ class Genero(models.Model):
 
 
 class Director(models.Model):
+    """Representa al director o cineasta responsable de una película."""
     nombre = models.CharField("Director", max_length=100)
 
     class Meta:
@@ -24,6 +28,7 @@ class Director(models.Model):
 
 
 class Peliculas(models.Model):
+  """Modelo principal de películas con información general, duración, director y puntuación."""
   titulo = models.CharField("Titulo", max_length=100)
   duracion = models.DurationField("Duracion")
   director = models.ForeignKey(Director, on_delete=models.CASCADE, related_name="peliculas")
@@ -93,6 +98,7 @@ class CartelPelicula(models.Model):
 
 
 class DetallePelicula(models.Model):
+    """Información adicional y estado de exhibición de una película (cartelera, estreno, clasificación)."""
     TP = "TP"
     M7 = "7"
     M12 = "12"

@@ -1,3 +1,5 @@
+"""Rutas del Snack Bar."""
+
 from django.urls import path
 from . import views
 

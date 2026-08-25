@@ -1,3 +1,5 @@
+"""Rutas de las paginas generales del sitio."""
+
 from django.urls import path
 from . import views
 

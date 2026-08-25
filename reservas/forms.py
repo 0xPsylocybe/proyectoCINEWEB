@@ -1,3 +1,5 @@
+"""Formularios del carrito: eleccion de sesion y productos de restauracion."""
+
 from django import forms
 from django.forms import inlineformset_factory
 from cartelera.models import Sesion

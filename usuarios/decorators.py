@@ -1,3 +1,5 @@
+"""Decoradores de permisos para proteger las vistas de gestion."""
+
 from django.contrib.auth.decorators import user_passes_test
 
 

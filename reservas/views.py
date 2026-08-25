@@ -1,3 +1,5 @@
+"""Vistas de la compra: carrito con butacas, confirmacion y resguardo."""
+
 from decimal import Decimal
 
 from django.shortcuts import render, get_object_or_404, redirect

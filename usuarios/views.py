@@ -1,3 +1,5 @@
+"""La autenticacion usa las vistas genericas de Django, configuradas en urls.py."""
+
 # La autenticación (login/logout y recuperación de contraseña) se gestiona con las
 # vistas genéricas de django.contrib.auth, configuradas en usuarios/urls.py.
 #

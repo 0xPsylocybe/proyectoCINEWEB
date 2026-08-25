@@ -39,9 +39,11 @@ SUSTITUCIONES = {
 
 
 class Command(BaseCommand):
+    """Comando para sincronizar las películas de la base de datos con los datos oficiales de TMDB."""
     help = "Rellena carteles y fichas de las películas desde TMDB"
 
     def add_arguments(self, parser):
+        """Configura los argumentos y opciones de la importación desde TMDB."""
         parser.add_argument("--dry-run", action="store_true",
                             help="Muestra los cambios sin guardarlos")
         parser.add_argument("--solo-carteles", action="store_true",
@@ -53,6 +55,7 @@ class Command(BaseCommand):
         parser.add_argument("--api-key", help="Clave de TMDB (si no, se lee de .env)")
 
     def handle(self, *args, **opciones):
+        """Ejecuta la sincronización e importación masiva iterando sobre cada película."""
         clave = opciones.get("api_key") or tmdb.leer_api_key()
         if not clave:
             raise CommandError(
@@ -118,6 +121,7 @@ class Command(BaseCommand):
         return tmdb.buscar(titulo, anio, clave=clave)
 
     def aplicar(self, pelicula, ficha, solo_carteles, conservar_titulos=False):
+        """Aplica la información obtenida de TMDB al objeto Pelicula y su DetallePelicula."""
         if not solo_carteles:
             # La puntuación se actualiza siempre: no es un dato que corrijamos a mano
             if ficha["puntuacion"]:
@@ -151,6 +155,7 @@ class Command(BaseCommand):
         pelicula.save()
 
     def descargar_cartel(self, pelicula, poster_path):
+        """Descarga el póster desde TMDB y lo almacena tanto en base de datos como en archivo."""
         # guardar_cartel lo deja en la BBDD (que es lo que se comparte) y en
         # el fichero. Requiere que la película ya tenga id, que siempre lo tiene
         # aquí porque se está actualizando una existente.

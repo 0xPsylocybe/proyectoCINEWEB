@@ -1,3 +1,5 @@
+"""Filtros de plantilla para consultar el rol del usuario desde el HTML."""
+
 from django import template
 
 from usuarios.decorators import es_gestor

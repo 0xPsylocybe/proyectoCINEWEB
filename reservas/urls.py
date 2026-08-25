@@ -1,3 +1,5 @@
+"""Rutas del proceso de compra de entradas."""
+
 from django.urls import path
 from . import views
 

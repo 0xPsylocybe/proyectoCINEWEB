@@ -21,9 +21,11 @@ from peliculas.models import Peliculas
 
 
 class Command(BaseCommand):
+    """Regenera la programacion respetando la ocupacion de cada sala."""
     help = "Regenera las sesiones de las películas en cartelera"
 
     def add_arguments(self, parser):
+        """Configura los argumentos de línea de comandos para la regeneración de sesiones."""
         parser.add_argument("--dias", type=int, default=14,
                             help="Días a programar (por defecto 14)")
         parser.add_argument("--borrar", action="store_true",
@@ -32,6 +34,7 @@ class Command(BaseCommand):
                             help="Muestra lo que haría sin guardar nada")
 
     def handle(self, *args, **opciones):
+        """Ejecuta el algoritmo de programación automática y guarda las sesiones en base de datos."""
         dias = opciones["dias"]
         borrar = opciones["borrar"]
         ensayo = opciones["dry_run"]
@@ -87,6 +90,7 @@ class Command(BaseCommand):
         self._resumen(nuevas, descartes, peliculas, dias, ensayo)
 
     def _resumen(self, nuevas, descartes, peliculas, dias, ensayo):
+        """Imprime en consola las estadísticas y reparto de sesiones generadas."""
         self.stdout.write("")
         verbo = "Se crearían" if ensayo else "Creadas"
         self.stdout.write(self.style.SUCCESS("%s %d sesiones en %d días"

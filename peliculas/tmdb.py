@@ -28,6 +28,7 @@ class ErrorTMDB(Exception):
 
 
 def leer_api_key():
+    """Obtiene la clave de API de TMDB desde las variables de entorno o el archivo .env."""
     clave = os.environ.get("TMDB_API_KEY")
     if clave:
         return clave.strip()
@@ -52,6 +53,7 @@ def es_token_v4(clave):
 
 
 def pedir(url, clave):
+    """Realiza una petición HTTP a la API de TMDB y devuelve la respuesta en formato JSON."""
     cabeceras = {"User-Agent": "CINEWEB/1.0"}
     if es_token_v4(clave):
         cabeceras["Authorization"] = "Bearer %s" % clave
@@ -68,6 +70,7 @@ def con_clave(params, clave):
 
 
 def slug(texto):
+    """Genera un slug limpio y sin caracteres especiales a partir de un texto."""
     texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "-", texto.lower()).strip("-")
 

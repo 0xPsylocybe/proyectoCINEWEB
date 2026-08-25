@@ -1,3 +1,5 @@
+"""Modelos del Snack Bar: categorias, productos y sus ventas."""
+
 from django.db import models
 
 

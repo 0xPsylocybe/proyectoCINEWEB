@@ -172,13 +172,16 @@ def buscar_o_crear(modelo, nombre):
 
 
 class Command(BaseCommand):
+    """Comando de corrección manual para los metadatos de las películas cargadas."""
     help = "Corrige títulos, directores, años, duraciones, géneros y sinopsis"
 
     def add_arguments(self, parser):
+        """Configura los argumentos de línea de comandos para la corrección."""
         parser.add_argument("--dry-run", action="store_true",
                             help="Muestra los cambios sin guardarlos")
 
     def handle(self, *args, **opciones):
+        """Aplica las correcciones sobre títulos, directores, géneros y sinopsis en base de datos."""
         ensayo = opciones["dry_run"]
         if ensayo:
             self.stdout.write(self.style.WARNING("ENSAYO: no se guarda nada\n"))

@@ -1,9 +1,12 @@
+"""Registro de salas y sesiones en el Django Admin."""
+
 from django.contrib import admin
 from .models import Sala, Sesion
 
 
 @admin.register(Sala)
 class SalaAdmin(admin.ModelAdmin):
+    """Administración de salas de proyección en el panel de control."""
     list_display = ("identificador", "tipo", "capacidad", "filas", "columnas", "precio_entrada")
     list_editable = ("filas", "columnas", "precio_entrada")
 
@@ -11,6 +14,7 @@ class SalaAdmin(admin.ModelAdmin):
 
 @admin.register(Sesion)
 class SesionAdmin(admin.ModelAdmin):
+    """Administración de sesiones de cine y monitorización de tiempos de ocupación."""
     list_display = ("pelicula", "sala", "horario", "hora_fin_ocupacion")
     list_filter = ("sala", "horario")
     search_fields = ("pelicula__nombre", "sala__identificador")
@@ -26,10 +30,12 @@ class SesionAdmin(admin.ModelAdmin):
     )
 
     def hora_fin_ocupacion(self, obj):
+        """Devuelve la hora en la que concluye la limpieza y la sala queda libre."""
         return obj.hora_fin_limpieza.strftime('%d/%m/%Y %H:%M')
     hora_fin_ocupacion.short_description = "Sala libre a las"
 
     def tiempo_ocupacion_display(self, obj):
+        """Genera un bloque visual con el desglose de tiempos de la sesión."""
         html = f"""
         <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; font-family: monospace;">
             <div><strong>📺 Publicidad:</strong> {obj.hora_inicio_publicidad.strftime('%H:%M')} - {obj.hora_inicio_pelicula.strftime('%H:%M')} (15 min)</div>

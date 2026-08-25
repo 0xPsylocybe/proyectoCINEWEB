@@ -1,3 +1,5 @@
+"""Modelos de la venta: entradas, butacas vendidas y reservas temporales."""
+
 from datetime import timedelta
 
 from django.db import models
@@ -103,10 +105,12 @@ class ReservaButaca(models.Model):
 
     @property
     def etiqueta(self):
+        """Identificador legible de la butaca (ej. 'A7')."""
         return f"{chr(ord('A') + self.fila - 1)}{self.numero}"
 
     @property
     def caducada(self):
+        """Comprueba si el tiempo de reserva temporal ha expirado."""
         return self.expira_en <= timezone.now()
 
     @staticmethod
@@ -116,4 +120,5 @@ class ReservaButaca(models.Model):
 
     @staticmethod
     def nueva_expiracion():
+        """Calcula la fecha y hora exacta en la que expirará la reserva."""
         return timezone.now() + timedelta(minutes=MINUTOS_RESERVA)

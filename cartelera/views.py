@@ -1,3 +1,5 @@
+"""Vistas de cartelera: lo que ve el visitante y la gestion de sesiones."""
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.db.models import Q
@@ -31,6 +33,7 @@ def lista_cartelera(request):
     )
 
 def detalle_cartelera(request, pk):
+    """Muestra el detalle de una película en cartelera con sus sesiones agrupadas por sala y fecha."""
     from datetime import timedelta, datetime, time
 
     pelicula = get_object_or_404(
@@ -109,6 +112,7 @@ def lista_sesiones(request):
         sesiones = sesiones.filter(sala_id=sala_id)
 
     def leer_fecha(nombre):
+        """Lee una fecha del formulario; si no es valida, se ignora el filtro."""
         valor = request.GET.get(nombre) or ''
         try:
             return valor, datetime.strptime(valor, '%Y-%m-%d').date()
@@ -150,6 +154,7 @@ def lista_sesiones(request):
 
 @gestor_required
 def crear_sesion(request):
+    """Permite al gestor crear manualmente una nueva sesión para una película y sala."""
     if request.method == 'POST':
         form = SesionForm(request.POST)
         if form.is_valid():
@@ -170,6 +175,7 @@ def crear_sesion(request):
 
 @gestor_required
 def editar_sesion(request, pk):
+    """Permite al gestor editar una sesión existente y validar posibles solapamientos."""
     sesion = get_object_or_404(Sesion, pk=pk)
 
     if request.method == 'POST':
@@ -192,6 +198,7 @@ def editar_sesion(request, pk):
 
 @gestor_required
 def eliminar_sesion(request, pk):
+    """Permite al gestor eliminar una sesión tras confirmación previa."""
     sesion = get_object_or_404(Sesion, pk=pk)
 
     if request.method == 'POST':
@@ -205,6 +212,7 @@ def eliminar_sesion(request, pk):
 
 @gestor_required
 def rellenar_sesiones(request):
+    """Genera y programa automáticamente múltiples sesiones para las películas y salas seleccionadas."""
     from datetime import timedelta, datetime
     from .forms import RellenarSesionesForm
 

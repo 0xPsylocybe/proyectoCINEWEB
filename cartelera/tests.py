@@ -15,9 +15,11 @@ from peliculas.models import DetallePelicula, Director, Genero, Peliculas
 
 
 class BaseCartelera(TestCase):
+    """Cine de prueba: dos salas y tres peliculas."""
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         cls.director = Director.objects.create(nombre="Denis Villeneuve")
         cls.genero = Genero.objects.create(nombre="Ciencia ficción")
 
@@ -34,6 +36,7 @@ class BaseCartelera(TestCase):
 
     @classmethod
     def crear_pelicula(cls, titulo, minutos=120, en_cartelera=True, puntuacion=0):
+        """Crea una pelicula con su detalle, lista para usar en los tests."""
         pelicula = Peliculas.objects.create(
             titulo=titulo, duracion=timedelta(minutes=minutos),
             director=cls.director, genero=cls.genero,
@@ -45,6 +48,7 @@ class BaseCartelera(TestCase):
 
     @staticmethod
     def momento(dia=10, hora=17, minuto=0):
+        """Devuelve una fecha concreta de 2030, para no depender del dia de hoy."""
         return timezone.make_aware(timezone.datetime(2030, 6, dia, hora, minuto))
 
 
@@ -187,6 +191,7 @@ class TestGestionDeSesiones(BaseCartelera):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         super().setUpTestData()
         cls.gestor = User.objects.create_user("gestor", password="clave")
         cls.gestor.groups.add(Group.objects.create(name="Gestores"))
@@ -198,6 +203,7 @@ class TestGestionDeSesiones(BaseCartelera):
             pelicula=cls.larga, sala=cls.otra_sala, horario=cls.momento(dia=11))
 
     def setUp(self):
+        """Deja la sesion iniciada como gestor antes de cada test."""
         self.client.force_login(self.gestor)
 
     def test_un_visitante_no_entra_en_la_gestion(self):

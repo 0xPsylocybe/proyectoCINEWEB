@@ -1,8 +1,11 @@
+"""Modelos de la cartelera: salas y sesiones, con sus tiempos de ocupacion."""
+
 from django.db import models
 from peliculas.models import Peliculas
 
 
 class Sala(models.Model):
+    """Representa una sala de cine, su capacidad, tipo de proyección y dimensiones."""
     TIPO_SALA_CHOICES = [
             ('IMAX', 'IMAX'),
             ('2D', '2D'),
@@ -27,6 +30,7 @@ class Sala(models.Model):
         return self.identificador
 
 class Sesion(models.Model):
+    """Representa la proyección de una película en una sala y horario específicos."""
     pelicula = models.ForeignKey(Peliculas, on_delete=models.CASCADE, related_name="sesiones", verbose_name="Película")
     sala = models.ForeignKey(Sala, on_delete=models.PROTECT, related_name="sesiones", verbose_name="Sala")
     horario = models.DateTimeField("Horario de Sesión", help_text="Hora de apertura de sala (15 min antes de película)")
@@ -45,15 +49,18 @@ class Sesion(models.Model):
     # Tiempos de la sesión (Opción B: horario = inicio real de sala)
     @property
     def hora_inicio_publicidad(self):
+        """Hora de apertura de la sala e inicio de anuncios publicitarios."""
         return self.horario
 
     @property
     def hora_inicio_pelicula(self):
+        """Hora de inicio real de la película (15 minutos tras la apertura)."""
         from datetime import timedelta
         return self.horario + timedelta(minutes=15)
 
     @property
     def hora_fin_pelicula(self):
+        """Hora en la que finaliza la proyección de la película."""
         from datetime import timedelta
         # duracion es un DurationField, convertir a minutos
         if self.pelicula.duracion:
@@ -64,6 +71,7 @@ class Sesion(models.Model):
 
     @property
     def hora_fin_limpieza(self):
+        """Hora en la que concluyen las labores de limpieza (20 minutos tras la película)."""
         from datetime import timedelta
         return self.hora_fin_pelicula + timedelta(minutes=20)
 

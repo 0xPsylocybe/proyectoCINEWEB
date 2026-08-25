@@ -1,3 +1,5 @@
+"""Formularios de sesiones: alta manual y generacion automatica."""
+
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Sesion, Sala
@@ -5,6 +7,7 @@ from peliculas.models import Peliculas
 
 
 class SesionForm(forms.ModelForm):
+    """Formulario para la creación y edición de sesiones de cine con validación de horarios."""
     class Meta:
         model = Sesion
         fields = ['pelicula', 'sala', 'horario']
@@ -25,6 +28,7 @@ class SesionForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """Limita las sesiones a las de la pelicula indicada, si se pasa una."""
         super().__init__(*args, **kwargs)
         # Se aceptan tanto lo que manda el navegador como el formato con espacio
         self.fields['horario'].input_formats = [
@@ -33,6 +37,7 @@ class SesionForm(forms.ModelForm):
         ]
 
     def clean(self):
+        """Comprueba que la sesion no se solape con otra de la misma sala."""
         cleaned_data = super().clean()
         sala = cleaned_data.get('sala')
         horario = cleaned_data.get('horario')
@@ -51,6 +56,7 @@ class SesionForm(forms.ModelForm):
 
 
 class RellenarSesionesForm(forms.Form):
+    """Formulario para la generación masiva automática de sesiones en un rango de fechas."""
     peliculas = forms.ModelMultipleChoiceField(
         queryset=Peliculas.objects.filter(detalles__en_cartelera=True),
         widget=forms.CheckboxSelectMultiple,

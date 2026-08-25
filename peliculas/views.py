@@ -1,3 +1,5 @@
+"""Vistas de peliculas: CRUD para gestores, carteles y busqueda en TMDB."""
+
 import os
 
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
@@ -100,6 +102,7 @@ def _guardar_cartel(request, pelicula, formulario):
 
 @gestor_required
 def crear_pelicula(request):
+    """Permite al gestor dar de alta una nueva película manualmente o desde datos de TMDB."""
     if request.method == "POST":
         formulario = PeliculasForm(request.POST, request.FILES)
 
@@ -128,6 +131,7 @@ def crear_pelicula(request):
 
 @gestor_required
 def lista_peliculas(request):
+    """Listado de gestión de películas con opción de añadir géneros y directores sobre la marcha."""
     if request.method == 'POST' and 'guardar_genero' in request.POST:
         genero_form = GeneroForm(request.POST)
         if genero_form.is_valid():
@@ -157,6 +161,7 @@ def lista_peliculas(request):
 
 @gestor_required
 def editar_peliculas(request, pk):
+    """Permite al gestor editar los datos y cartel de una película existente."""
     pelicula = get_object_or_404(Peliculas, pk=pk)
 
     if request.method == "POST":
@@ -177,6 +182,7 @@ def editar_peliculas(request, pk):
 
 @gestor_required
 def eliminar_pelicula(request, pk):
+    """Permite al gestor eliminar una película del catálogo."""
     pelicula = get_object_or_404(Peliculas, pk=pk)
 
     if request.method == "POST":
@@ -191,6 +197,7 @@ def eliminar_pelicula(request, pk):
     )
 
 def detalle_pelicula(request,pk):
+    """Muestra la ficha detallada pública de una película."""
     pelicula=get_object_or_404(Peliculas,pk=pk)
     contexto={
         "pelicula":pelicula

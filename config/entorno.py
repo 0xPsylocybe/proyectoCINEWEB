@@ -42,6 +42,7 @@ def obligatoria(clave, por_defecto=None):
 
 
 def booleana(clave, por_defecto=False):
+    """Interpreta el valor de una variable de entorno como un booleano (True/False)."""
     valor = os.environ.get(clave)
     if valor is None:
         return por_defecto

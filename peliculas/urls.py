@@ -1,3 +1,5 @@
+"""Rutas de peliculas: gestion del catalogo, carteles y consulta a TMDB."""
+
 from django.urls import path
 from . import views
 

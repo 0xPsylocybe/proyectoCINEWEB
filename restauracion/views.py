@@ -1,3 +1,5 @@
+"""Vistas del Snack Bar."""
+
 from django.shortcuts import render
 from .models import Producto, Categoria
 

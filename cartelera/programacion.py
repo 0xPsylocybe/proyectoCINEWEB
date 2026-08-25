@@ -41,10 +41,12 @@ DURACION_POR_DEFECTO = timedelta(minutes=120)
 
 
 def es_madrugada(hora):
+    """Comprueba si una hora dada pertenece a la franja de madrugada."""
     return hora < FIN_DE_LA_MADRUGADA
 
 
 def duracion(pelicula):
+    """Devuelve la duración de la película o el valor por defecto de 120 minutos."""
     return pelicula.duracion or DURACION_POR_DEFECTO
 
 

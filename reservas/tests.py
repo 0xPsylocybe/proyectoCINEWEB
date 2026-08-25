@@ -22,6 +22,7 @@ class BaseCine(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         cls.director = Director.objects.create(nombre="Christopher Nolan")
         cls.genero = Genero.objects.create(nombre="Ciencia ficción")
 
@@ -38,6 +39,7 @@ class BaseCine(TestCase):
 
     @classmethod
     def crear_pelicula(cls, titulo, minutos=120, en_cartelera=True):
+        """Crea una pelicula con su detalle, lista para usar en los tests."""
         pelicula = Peliculas.objects.create(
             titulo=titulo, duracion=timedelta(minutes=minutos),
             director=cls.director, genero=cls.genero,
@@ -177,12 +179,14 @@ class TestCompra(BaseCine):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         super().setUpTestData()
         cls.categoria = Categoria.objects.create(nombre="Bebidas")
         cls.producto = Producto.objects.create(
             nombre="Refresco", precio=Decimal("3.50"), categoria=cls.categoria)
 
     def comprar(self, butacas, productos=None):
+        """Recorre la compra entera: carrito, confirmacion y guardado."""
         datos = {"sesion": self.sesion.id, "butacas": butacas}
         datos.update(productos or {})
         self.client.post(reverse("reservas:carrito_pelicula",
@@ -249,15 +253,18 @@ class TestRecaudacion(BaseCine):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         super().setUpTestData()
         cls.otra_sesion = Sesion.objects.create(
             pelicula=cls.larga, sala=cls.sala,
             horario=cls.momento + timedelta(days=1))
 
     def recaudacion(self, pelicula):
+        """Relee la recaudacion de la pelicula desde la base de datos."""
         return Peliculas.objects.get(pk=pelicula.pk).recaudacion
 
     def vender(self, sesion, importe):
+        """Registra una venta de entradas por el importe indicado."""
         return VentaEntrada.objects.create(
             sesion=sesion, cantidad=1,
             precio_unitario=Decimal(importe), total_venta=Decimal(importe))
@@ -316,6 +323,7 @@ class TestServicioButacas(BaseCine):
     """La capa que decide qué butacas están libres."""
 
     def peticion(self):
+        """Fabrica una peticion con sesion iniciada, como la que llega de un navegador."""
         from django.contrib.sessions.middleware import SessionMiddleware
         from django.test import RequestFactory
 

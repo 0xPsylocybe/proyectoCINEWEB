@@ -21,9 +21,11 @@ JPEG = bytes.fromhex(
 
 
 class BasePeliculas(TestCase):
+    """Una pelicula de prueba con su ficha completa."""
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         cls.director = Director.objects.create(nombre="Greta Gerwig")
         cls.genero = Genero.objects.create(nombre="Comedia")
         cls.pelicula = Peliculas.objects.create(
@@ -115,11 +117,13 @@ class TestBuscarEnTMDB(BasePeliculas):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         super().setUpTestData()
         cls.gestor = User.objects.create_user("gestor", password="clave")
         cls.gestor.groups.add(Group.objects.create(name="Gestores"))
 
     def setUp(self):
+        """Deja la sesion iniciada como gestor antes de cada test."""
         self.client.force_login(self.gestor)
 
     def test_un_visitante_no_puede_buscar(self):
@@ -209,14 +213,17 @@ class TestAltaDePelicula(BasePeliculas):
 
     @classmethod
     def setUpTestData(cls):
+        """Prepara los datos que comparten todos los tests de la clase."""
         super().setUpTestData()
         cls.gestor = User.objects.create_user("gestor", password="clave")
         cls.gestor.groups.add(Group.objects.create(name="Gestores"))
 
     def setUp(self):
+        """Deja la sesion iniciada como gestor antes de cada test."""
         self.client.force_login(self.gestor)
 
     def datos(self, **extra):
+        """Datos minimos validos del formulario de alta de pelicula."""
         base = {
             "titulo": "Película nueva",
             "duracion": "1:30:00",

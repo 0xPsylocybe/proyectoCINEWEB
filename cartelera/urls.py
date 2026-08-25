@@ -1,3 +1,5 @@
+"""Rutas de cartelera: listado publico y CRUD de sesiones."""
+
 from django.urls import path
 from . import views
 
