@@ -9,10 +9,9 @@ Parámetros:
     <a href="{% url 'detalle_cartelera' pelicula.pk %}"
         class="card-pelicula text-decoration-none d-block h-100">
         <!-- Contenedor de la imagen con tamaño fijo de póster y zoom -->
-        <div class="overflow-hidden rounded shadow-sm bg-dark mb-2 position-relative" style="height: 350px;">
+        <div class="poster-marco overflow-hidden rounded shadow-sm bg-dark mb-2 position-relative">
             {% if mostrar_nota and pelicula.puntuacion %}
-            <span class="badge position-absolute top-0 end-0 m-2 px-2 py-1"
-                  style="background-color: rgba(0,0,0,.75); font-size: .8rem;">
+            <span class="badge-nota badge position-absolute top-0 end-0 m-2 px-2 py-1">
                 ⭐ {{ pelicula.puntuacion }}
             </span>
             {% endif %}
@@ -32,7 +31,7 @@ Parámetros:
                 {{ pelicula.titulo }}
             </span>
             {% if mostrar_estreno and pelicula.detalles.fecha_estreno %}
-            <span class="small d-block fw-semibold" style="color: #720042;">
+            <span class="texto-cine small d-block fw-semibold">
                 {{ pelicula.detalles.fecha_estreno|date:"j \d\e F" }}
             </span>
             {% endif %}

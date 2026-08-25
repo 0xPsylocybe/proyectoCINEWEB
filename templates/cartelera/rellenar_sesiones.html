@@ -7,7 +7,7 @@
 <div class="container my-5 px-3">
     <div class="row">
         <div class="col-md-8 mx-auto">
-            <h2 class="mb-4 fw-bold" style="color: #720042;">Rellenar Sesiones Automáticamente</h2>
+            <h2 class="texto-cine mb-4 fw-bold">Rellenar Sesiones Automáticamente</h2>
 
             <div class="card border shadow-sm">
                 <div class="card-body p-4">
@@ -16,8 +16,8 @@
 
                         <!-- Películas -->
                         <div class="mb-4">
-                            <h5 class="fw-bold mb-3" style="color: #720042;">Películas</h5>
-                            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                            <h5 class="texto-cine fw-bold mb-3">Películas</h5>
+                            <div class="fondo-suave border rounded p-3">
                                 {% for checkbox in form.peliculas %}
                                 <div class="form-check mb-2">
                                     {{ checkbox.tag }}
@@ -34,8 +34,8 @@
 
                         <!-- Salas -->
                         <div class="mb-4">
-                            <h5 class="fw-bold mb-3" style="color: #720042;">Salas</h5>
-                            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                            <h5 class="texto-cine fw-bold mb-3">Salas</h5>
+                            <div class="fondo-suave border rounded p-3">
                                 {% for checkbox in form.salas %}
                                 <div class="form-check mb-2">
                                     {{ checkbox.tag }}
@@ -82,8 +82,7 @@
 
                         <!-- Botones -->
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-lg fw-bold"
-                                style="background-color: #720042; color: white;">
+                            <button type="submit" class="btn-cine btn btn-lg fw-bold">
                                 Generar Sesiones
                             </button>
                             <a href="{% url 'sesiones_lista' %}" class="btn btn-lg btn-outline-secondary">

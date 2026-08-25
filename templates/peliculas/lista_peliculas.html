@@ -24,12 +24,12 @@ CINES LEÓN - Peliculas
     <!-- ENCABEZADO Y BARRA DE BÚSQUEDA -->
     <div class="row align-items-center mb-4 bg-white p-3 rounded shadow-sm">
         <div class="col-md-6">
-            <h2 class="mb-0 fw-bold" style="color: #720042;">Listado de Películas</h2>
+            <h2 class="texto-cine mb-0 fw-bold">Listado de Películas</h2>
         </div>
         <div class="col-md-6 d-flex justify-content-md-end mt-3 mt-md-0">
             <!-- Barra de búsqueda corregida -->
-            <div class="input-group" style="max-width: 350px;">
-                <span class="input-group-text bg-light border-end-0" style="color: #720042;">
+            <div class="buscador-estrecho input-group">
+                <span class="texto-cine input-group-text bg-light border-end-0">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" id="inputBuscadorIdentificador" class="form-control border-start-0 ps-0"
@@ -40,7 +40,7 @@ CINES LEÓN - Peliculas
 
     <!-- BOTONES DE ACCIÓN -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{% url 'nueva_pelicula' %}" class="btn text-white px-4 shadow-sm" style="background-color: #720042;">
+        <a href="{% url 'nueva_pelicula' %}" class="fondo-cine btn text-white px-4 shadow-sm">
             + Nueva Película
         </a>
 
@@ -77,11 +77,9 @@ CINES LEÓN - Peliculas
                     <tr>
                         <td class="text-center">
                             {% if pelicula.imagen %}
-                            <img src="{{ pelicula.url_cartel }}" alt="{{ pelicula.titulo }}" class="img-thumbnail"
-                                style="width: 50px; height: 70px; object-fit: cover;">
+                            <img src="{{ pelicula.url_cartel }}" alt="{{ pelicula.titulo }}" class="miniatura-pelicula img-thumbnail">
                             {% else %}
-                            <img src="{% static 'logo2.png' %}" alt="Sin imagen" class="img-thumbnail"
-                                style="width: 50px; height: 70px; object-fit: cover;">
+                            <img src="{% static 'logo2.png' %}" alt="Sin imagen" class="miniatura-pelicula img-thumbnail">
                             {% endif %}
                         </td>
                         <td class="columna-identificador fw-bold">{{ pelicula.titulo }}</td>
@@ -141,7 +139,7 @@ CINES LEÓN - Peliculas
 <div class="modal fade" id="modalVerEstudio" tabindex="-1" aria-labelledby="modalVerEstudioLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header text-white" style="background-color: #720042;">
+            <div class="fondo-cine modal-header text-white">
                 <h5 class="modal-title fw-bold" id="modalVerEstudioLabel">Película: <span id="modalIdText"
                         class="text-warning"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
@@ -150,8 +148,7 @@ CINES LEÓN - Peliculas
             <div class="modal-body bg-light">
                 <div class="row">
                     <div class="col-md-4 text-center mb-3 mb-md-0">
-                        <img id="m_imagen" src="" alt="Póster" class="img-fluid rounded shadow-sm"
-                            style="max-height: 250px; object-fit: cover;">
+                        <img id="m_imagen" src="" alt="Póster" class="poster-modal img-fluid rounded shadow-sm">
                     </div>
                     <div class="col-md-8">
                         <div class="card shadow-sm border-0 mb-3">
@@ -197,7 +194,7 @@ CINES LEÓN - Peliculas
         <div class="modal-content">
             <form method="post">
                 {% csrf_token %}
-                <div class="modal-header text-white" style="background-color: #720042;">
+                <div class="fondo-cine modal-header text-white">
                     <h5 class="modal-title">Nuevo Género</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Cerrar"></button>
@@ -207,8 +204,7 @@ CINES LEÓN - Peliculas
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="guardar_genero" class="btn text-white btn-sm"
-                        style="background-color: #720042;">Guardar Género</button>
+                    <button type="submit" name="guardar_genero" class="fondo-cine btn text-white btn-sm">Guardar Género</button>
                 </div>
             </form>
         </div>
@@ -221,7 +217,7 @@ CINES LEÓN - Peliculas
         <div class="modal-content">
             <form method="post">
                 {% csrf_token %}
-                <div class="modal-header text-white" style="background-color: #720042;">
+                <div class="fondo-cine modal-header text-white">
                     <h5 class="modal-title">Nuevo Director</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Cerrar"></button>
@@ -231,8 +227,7 @@ CINES LEÓN - Peliculas
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="guardar_director" class="btn text-white btn-sm"
-                        style="background-color: #720042;">Guardar Director</button>
+                    <button type="submit" name="guardar_director" class="fondo-cine btn text-white btn-sm">Guardar Director</button>
                 </div>
             </form>
         </div>

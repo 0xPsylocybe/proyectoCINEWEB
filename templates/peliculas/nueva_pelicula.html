@@ -6,28 +6,20 @@ CINES LEÓN - Nueva Pelicula
 
 {% block contenido %}
 
-<style>
-    .custom-brand-border:focus {
-        border-color: #720042 !important;
-        box-shadow: 0 0 0 0.25rem rgba(114, 0, 66, 0.25) !important;
-    }
-</style>
-
 <div class="container my-4">
-    <h2 class="mb-4" style="color: #720042; font-weight: bold;">Nueva Película</h2>
+    <h2 class="texto-cine fw-bold mb-4">Nueva Película</h2>
 
     {% if hay_clave_tmdb %}
     <!-- Rellenado automático desde TMDB: propone los datos, no los guarda -->
-    <div class="card shadow-sm border-0 mb-4" style="background-color: #fff5f8;">
+    <div class="fondo-cine-claro card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <label class="form-label fw-bold" style="color: #720042;">
+            <label class="texto-cine form-label fw-bold">
                 ¿Rellenamos la ficha desde TMDB?
             </label>
             <div class="input-group">
                 <input type="text" id="tmdb-titulo" class="form-control"
                        placeholder="Título de la película, p. ej. Interstellar">
-                <button type="button" id="tmdb-buscar" class="btn text-white px-4"
-                        style="background-color: #720042;">Buscar en TMDB</button>
+                <button type="button" id="tmdb-buscar" class="fondo-cine btn text-white px-4">Buscar en TMDB</button>
             </div>
             <div id="tmdb-aviso" class="small mt-2 d-none"></div>
             <div class="form-text text-muted small">
@@ -46,8 +38,8 @@ CINES LEÓN - Nueva Pelicula
             <div class="col-md-4 text-center">
                 <div class="card shadow-sm border-0 p-3 bg-light">
                     <h5 class="text-muted small mb-3">Vista previa del póster</h5>
-                    <div id="preview-container" class="mb-3 d-flex justify-content-center align-items-center border rounded bg-white" style="height: 300px; overflow: hidden;">
-                        <img id="img-preview" src="#" alt="Vista previa" class="img-fluid rounded d-none" style="max-height: 100%; object-fit: cover;">
+                    <div id="preview-container" class="marco-vista-previa mb-3 d-flex justify-content-center align-items-center border rounded bg-white">
+                        <img id="img-preview" src="#" alt="Vista previa" class="poster-vista-previa img-fluid rounded d-none">
                         <span id="placeholder-text" class="text-muted small">Sin imagen seleccionada</span>
                     </div>
                     <p class="text-muted small text-start mb-0">Sube una imagen de póster en formato vertical para una mejor visualización en el catálogo.</p>
@@ -62,7 +54,7 @@ CINES LEÓN - Nueva Pelicula
                         <!-- Renderizado personalizado de campos de Django con estilos aplicados -->
                         {% for field in formulario %}
                             <div class="mb-3">
-                                <label class="form-label fw-bold" style="color: #720042;">{{ field.label }}</label>
+                                <label class="texto-cine form-label fw-bold">{{ field.label }}</label>
                                 {{ field }}
                                 {% if field.help_text %}
                                     <div class="form-text text-muted small">{{ field.help_text }}</div>
@@ -75,7 +67,7 @@ CINES LEÓN - Nueva Pelicula
 
                         <!-- Botones de acción -->
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" class="btn text-white px-4" style="background-color: #720042;">
+                            <button type="submit" class="fondo-cine btn text-white px-4">
                                 Guardar
                             </button>
                             <a href="{% url 'lista_peliculas' %}" class="btn btn-outline-secondary px-4">

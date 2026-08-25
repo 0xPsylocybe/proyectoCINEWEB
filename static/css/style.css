@@ -1,3 +1,47 @@
+/* ==========================================================
+   COLORES DE LA CASA
+   Definidos aquí una sola vez para no repetir el #720042 por
+   todas las plantillas.
+   ========================================================== */
+:root {
+    --cine-color: #720042;
+    --cine-color-oscuro: #5a0034;
+    --cine-color-claro: #fff5f8;
+    --cine-gris: #f5f5f5;
+    --cine-gris-borde: #ccc;
+    --cine-gris-texto: #666;
+}
+
+/* Utilidades: sustituyen a los style="color: #720042" y similares */
+.texto-cine {
+    color: var(--cine-color) !important;
+}
+
+.fondo-cine {
+    background-color: var(--cine-color) !important;
+}
+
+.fondo-cine-claro {
+    background-color: var(--cine-color-claro) !important;
+}
+
+/* Botón corporativo. Antes cada uno llevaba su style y ninguno tenía hover. */
+.btn-cine {
+    background-color: var(--cine-color);
+    color: #fff;
+    border: none;
+}
+
+.btn-cine:hover,
+.btn-cine:focus {
+    background-color: var(--cine-color-oscuro);
+    color: #fff;
+}
+
+.btn-cine:disabled {
+    background-color: var(--cine-gris-borde);
+    color: var(--cine-gris-texto);
+}
 
 @keyframes pulse {
     0% { transform: scale(1); opacity: 0.8; }
@@ -38,7 +82,7 @@
 
 /*NAV BAR*/
 .hover-gestor:hover {
-    color: #720042 !important;
+    color: var(--cine-color) !important;
     background-color: #f8f9fa;
 }
 
@@ -136,7 +180,7 @@
     position: relative;
     height: 0;
     border-top: 2px dashed rgba(255, 255, 255, .45);
-    background-color: #720042;
+    background-color: var(--cine-color);
 }
 
 .resguardo-corte::before,
@@ -239,7 +283,7 @@
 
 /* Elegida por el propio comprador */
 .butaca.libre:has(input:checked) {
-    background-color: #720042;
+    background-color: var(--cine-color);
     color: #fff;
 }
 
@@ -270,7 +314,7 @@
 }
 
 .butaca.muestra.elegida {
-    background-color: #720042;
+    background-color: var(--cine-color);
 }
 
 @media (max-width: 576px) {
@@ -285,11 +329,285 @@
 
     /* Estilos de colores corporativos */
     .text-sidebar {
-        color: #720042 !important;
+        color: var(--cine-color) !important;
         transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .nav-pills .text-sidebar:hover {
-        background-color: #720042 !important;
+        background-color: var(--cine-color) !important;
         color: #ffffff !important;
     }
+
+/* ==========================================================
+   DETALLE DE PELÍCULA
+   (venía de un <style> dentro de detalle_cartelera.html)
+   ========================================================== */
+.nav-tabs .nav-link {
+    border: none;
+    background: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--cine-color) !important;
+    border-color: transparent !important;
+    border-bottom: 3px solid var(--cine-color) !important;
+    background: transparent !important;
+}
+
+/* Tarjeta de sesión: se puede pinchar para elegirla */
+.sesion-card {
+    transition: all 0.3s ease;
+    border-width: 2px !important;
+}
+
+.sesion-card:hover {
+    border-color: var(--cine-color) !important;
+    box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.1) !important;
+}
+
+.sesion-card.seleccionada {
+    border-color: var(--cine-color) !important;
+    background-color: var(--cine-color-claro) !important;
+    box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.2) !important;
+}
+
+/* Botón Comprar: apagado hasta que se elige una sesión */
+.btn-comprar {
+    transition: all 0.3s ease;
+    border: 2px solid var(--cine-color) !important;
+}
+
+.btn-comprar:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: var(--cine-gris-borde) !important;
+    border-color: #999 !important;
+    color: var(--cine-gris-texto) !important;
+}
+
+.btn-comprar:not(:disabled) {
+    cursor: pointer;
+    background-color: var(--cine-color) !important;
+    color: #fff !important;
+    box-shadow: 0 0.25rem 0.5rem rgba(114, 0, 66, 0.2);
+}
+
+.btn-comprar:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(114, 0, 66, 0.4);
+    background-color: var(--cine-color-oscuro) !important;
+}
+
+.btn-comprar:not(:disabled):active {
+    transform: translateY(0);
+    box-shadow: 0 0.25rem 0.5rem rgba(114, 0, 66, 0.3);
+}
+
+/* ==========================================================
+   SNACK BAR: rejilla irregular del catálogo
+   (venía de un <style> dentro de catalogo.html)
+   ========================================================== */
+.productos-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-auto-rows: auto;
+}
+
+.producto-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+}
+
+.producto-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(114, 0, 66, 0.2) !important;
+}
+
+/* Alturas distintas para que la rejilla no salga en cuadrícula perfecta */
+.producto-card:nth-child(4n + 1) { grid-row: span 1.3; }
+.producto-card:nth-child(4n + 2) { grid-row: span 1; }
+.producto-card:nth-child(4n + 3) { grid-row: span 1.2; }
+.producto-card:nth-child(4n + 4) { grid-row: span 1.1; }
+
+@media (max-width: 768px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    /* En pantalla pequeña, todas iguales */
+    .producto-card:nth-child(4n + 1),
+    .producto-card:nth-child(4n + 2),
+    .producto-card:nth-child(4n + 3),
+    .producto-card:nth-child(4n + 4) {
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .productos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* ==========================================================
+   FORMULARIOS
+   (venían de <style> en nueva_pelicula.html, login.html y
+   las pantallas de recuperar contraseña)
+   ========================================================== */
+.custom-brand-border:focus,
+.custom-input:focus,
+.card-body input:focus {
+    border-color: var(--cine-color) !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.25rem rgba(114, 0, 66, 0.25) !important;
+}
+
+/* Los campos que Django genera sin clases de Bootstrap */
+.custom-input,
+.formulario-simple .card-body input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+/* ==========================================================
+   PIEZAS CON NOMBRE
+   Antes iban como style="..." repartidos por las plantillas.
+   ========================================================== */
+
+/* --- Pósters y logos --- */
+.poster-marco {              /* hueco fijo de la cuadrícula de cartelera */
+    height: 350px;
+}
+
+.poster-detalle {            /* banner superior del detalle de película */
+    max-height: 450px;
+}
+
+.logo-navbar { max-height: 70px; width: auto; object-fit: contain; }
+.logo-sidebar { height: 38px; width: auto; object-fit: contain; }
+.logo-footer { height: 60px; width: auto; object-fit: contain; }
+.logo-preloader { height: 75px; width: auto; object-fit: contain; }
+.logo-formulario { object-fit: contain; }
+
+.miniatura-pelicula { width: 50px; height: 70px; object-fit: cover; }
+.poster-modal { max-height: 250px; object-fit: cover; }
+.poster-vista-previa { max-height: 100%; object-fit: cover; }
+.marco-vista-previa { height: 300px; overflow: hidden; }
+
+/* --- Estructura --- */
+.banner-pelicula {
+    max-height: 450px;
+    overflow: hidden;
+    background-color: #111;
+}
+
+.navbar-escritorio { height: 85px; z-index: 1020; margin-left: 80px; }
+.navbar-movil { height: 60px; z-index: 1040; }
+.sidebar-offcanvas { z-index: 1050; }
+
+.preloader {
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.spinner-cine { color: var(--cine-color); width: 2rem; height: 2rem; }
+
+/* Pantallas centradas: login, recuperar contraseña, confirmar borrado */
+.pantalla-centrada { min-height: 70vh; }
+.pantalla-centrada-corta { min-height: 60vh; }
+.tarjeta-estrecha { max-width: 450px; width: 100%; }
+.buscador-estrecho { max-width: 350px; }
+
+/* --- Detalle de película --- */
+.titulo-pelicula { color: #212529; font-size: 2rem; }
+.etiqueta-pelicula { font-size: 0.95rem; }
+.texto-menudo { font-size: 0.75rem; }
+
+.badge-clasificacion {
+    background-color: #f8d7da;
+    color: var(--cine-color);
+    font-weight: bold;
+}
+
+/* Botones del filtro por tipo de sala, en su estado apagado */
+.filtro-tipo {
+    border: 1px solid var(--cine-gris-borde);
+    color: var(--cine-gris-texto);
+    background-color: var(--cine-gris);
+}
+
+.filtro-tipo.activo {
+    background-color: var(--cine-color);
+    color: #fff;
+    border-color: var(--cine-color);
+}
+
+.tarjeta-fecha { min-width: 75px; }
+
+.tarjeta-fecha.activa {
+    border-color: var(--cine-color) !important;
+    background-color: var(--cine-color-claro);
+}
+
+.tarjeta-fecha.activa .dia-numero,
+.tarjeta-fecha.activa .dia-semana {
+    color: var(--cine-color);
+}
+
+.dia-numero { color: #6c757d; }
+
+.boton-comprar-ancho { white-space: nowrap; min-width: 120px; }
+
+/* --- Gestión de sesiones: línea de tiempo --- */
+.linea-tiempo {
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.tramo {
+    padding: 8px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.tramo-publicidad { background: #FFE5B4; }
+.tramo-pelicula   { background: #B4E5FF; }
+.tramo-limpieza   { background: #FFB4E5; }
+
+.pagina-actual {
+    background-color: var(--cine-color);
+    border-color: var(--cine-color);
+}
+
+/* --- Resguardo y carrito --- */
+.localizador { font-size: 1.9rem; letter-spacing: .18em; }
+.icono-grande { font-size: 3.5rem; line-height: 1; }
+.icono-aviso { font-size: 1.4rem; }
+.badge-butaca { background-color: var(--cine-color); font-size: .95rem; }
+.resumen-pegajoso { top: 100px; }
+
+/* --- Varios --- */
+.fondo-suave { background-color: #f8f9fa; }
+.badge-categoria { width: fit-content; font-size: 0.8rem; }
+.badge-nota { background-color: rgba(0, 0, 0, .75); font-size: .8rem; }
+.enlace-discreto { text-decoration: none; }
+.texto-secundario { font-size: 0.9rem; }
+
+.marco-sin-portada { height: 300px; }
+
+/* La tarjeta de sesión se puede pinchar */
+.sesion-card {
+    border-color: #dee2e6;
+    cursor: pointer;
+}

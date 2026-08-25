@@ -4,10 +4,10 @@
 
 {% block contenido %}
 <div class="container mt-5">
-    <h1 class="mb-4" style="color: #720042;">📽️ Gestión de Sesiones</h1>
+    <h1 class="texto-cine mb-4">📽️ Gestión de Sesiones</h1>
 
     <div class="mb-4 d-flex gap-2 flex-wrap">
-        <a href="{% url 'sesion_form' %}" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
+        <a href="{% url 'sesion_form' %}" class="btn-cine btn btn-lg fw-bold">
             ➕ Nueva Sesión (Manual)
         </a>
         <a href="{% url 'rellenar_sesiones' %}" class="btn btn-lg btn-outline-dark fw-bold">
@@ -25,12 +25,11 @@
     {% endif %}
 
     <!-- FILTROS -->
-    <div class="card border-0 shadow-sm mb-4" style="background-color: #fff5f8;">
+    <div class="fondo-cine-claro card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="get" class="row g-3 align-items-end">
                 <div class="col-12 col-md-4">
-                    <label for="filtro-pelicula" class="form-label fw-bold small mb-1"
-                           style="color: #720042;">Película</label>
+                    <label for="filtro-pelicula" class="texto-cine form-label fw-bold small mb-1">Película</label>
                     <select name="pelicula" id="filtro-pelicula" class="form-select">
                         <option value="">Todas</option>
                         {% for p in peliculas %}
@@ -42,8 +41,7 @@
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <label for="filtro-sala" class="form-label fw-bold small mb-1"
-                           style="color: #720042;">Sala</label>
+                    <label for="filtro-sala" class="texto-cine form-label fw-bold small mb-1">Sala</label>
                     <select name="sala" id="filtro-sala" class="form-select">
                         <option value="">Todas</option>
                         {% for s in salas %}
@@ -55,22 +53,19 @@
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <label for="filtro-desde" class="form-label fw-bold small mb-1"
-                           style="color: #720042;">Desde</label>
+                    <label for="filtro-desde" class="texto-cine form-label fw-bold small mb-1">Desde</label>
                     <input type="date" name="desde" id="filtro-desde" class="form-control"
                            value="{{ filtro_desde }}">
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <label for="filtro-hasta" class="form-label fw-bold small mb-1"
-                           style="color: #720042;">Hasta</label>
+                    <label for="filtro-hasta" class="texto-cine form-label fw-bold small mb-1">Hasta</label>
                     <input type="date" name="hasta" id="filtro-hasta" class="form-control"
                            value="{{ filtro_hasta }}">
                 </div>
 
                 <div class="col-6 col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn fw-bold flex-grow-1"
-                            style="background-color: #720042; color: white;">Filtrar</button>
+                    <button type="submit" class="btn-cine btn fw-bold flex-grow-1">Filtrar</button>
                     {% if hay_filtros %}
                     <a href="{% url 'sesiones_lista' %}" class="btn btn-outline-secondary"
                        title="Quitar filtros">✕</a>
@@ -106,22 +101,22 @@
                         </div>
                         <div class="card-body">
                             <!-- Timeline -->
-                            <div style="font-family: monospace; font-size: 0.9rem; margin-bottom: 15px;">
+                            <div class="linea-tiempo">
                                 <div class="mb-2">
-                                    <div style="background: #FFE5B4; padding: 8px; border-radius: 3px; text-align: center;">
+                                    <div class="tramo tramo-publicidad">
                                         <strong>📺 Publicidad</strong><br>
                                         {{ sesion.hora_inicio_publicidad|date:"H:i" }} - {{ sesion.hora_inicio_pelicula|date:"H:i" }}
                                     </div>
                                 </div>
                                 <div class="mb-2">
-                                    <div style="background: #B4E5FF; padding: 8px; border-radius: 3px; text-align: center;">
+                                    <div class="tramo tramo-pelicula">
                                         <strong>🎬 Película</strong><br>
                                         {{ sesion.hora_inicio_pelicula|date:"H:i" }} - {{ sesion.hora_fin_pelicula|date:"H:i" }}
                                         <br><small>({{ sesion.pelicula.duracion }} min)</small>
                                     </div>
                                 </div>
                                 <div class="mb-2">
-                                    <div style="background: #FFB4E5; padding: 8px; border-radius: 3px; text-align: center;">
+                                    <div class="tramo tramo-limpieza">
                                         <strong>🧹 Limpieza</strong><br>
                                         {{ sesion.hora_fin_pelicula|date:"H:i" }} - {{ sesion.hora_fin_limpieza|date:"H:i" }}
                                     </div>
@@ -151,29 +146,25 @@
             <ul class="pagination">
                 {% if pagina.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" style="color: #720042;"
-                       href="?pagina=1{% if querystring %}&{{ querystring }}{% endif %}">« Primera</a>
+                    <a class="texto-cine page-link" href="?pagina=1{% if querystring %}&{{ querystring }}{% endif %}">« Primera</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" style="color: #720042;"
-                       href="?pagina={{ pagina.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Anterior</a>
+                    <a class="texto-cine page-link" href="?pagina={{ pagina.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Anterior</a>
                 </li>
                 {% endif %}
 
                 <li class="page-item active">
-                    <span class="page-link" style="background-color: #720042; border-color: #720042;">
+                    <span class="pagina-actual page-link">
                         {{ pagina.number }} de {{ pagina.paginator.num_pages }}
                     </span>
                 </li>
 
                 {% if pagina.has_next %}
                 <li class="page-item">
-                    <a class="page-link" style="color: #720042;"
-                       href="?pagina={{ pagina.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Siguiente</a>
+                    <a class="texto-cine page-link" href="?pagina={{ pagina.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Siguiente</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" style="color: #720042;"
-                       href="?pagina={{ pagina.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}">Última »</a>
+                    <a class="texto-cine page-link" href="?pagina={{ pagina.paginator.num_pages }}{% if querystring %}&{{ querystring }}{% endif %}">Última »</a>
                 </li>
                 {% endif %}
             </ul>

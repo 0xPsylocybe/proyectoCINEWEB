@@ -2,7 +2,7 @@
 {%load auth_extras %}
 
 <!-- Componente Navbar Superior (Escritorio / iPad) -->
-<nav class="navbar navbar-expand-lg bg-white px-4 border-bottom fixed-top d-none d-md-block" style="height: 85px; z-index: 1020; margin-left: 80px;">
+<nav class="navbar-escritorio navbar navbar-expand-lg bg-white px-4 border-bottom fixed-top d-none d-md-block">
     <div class="container-fluid position-relative d-flex align-items-center justify-content-between h-100">
         
         <!-- 1. BLOQUE IZQUIERDA: Visible solo si está autenticado Y el filtro is_gestor devuelve True -->
@@ -16,15 +16,15 @@
         </div>
 
         <!-- 2. BLOQUE CENTRO: Logo perfectamente centrado -->
-        <a class="navbar-brand position-absolute start-50 translate-middle-x m-0 d-flex align-items-center" href="{% url 'inicio' %}" style="height: 100%;">
-            <img src="{% static 'logo2.png' %}" alt="Cines León Logo" style="max-height: 70px; width: auto; object-fit: contain;">
+        <a class="navbar-brand position-absolute start-50 translate-middle-x m-0 d-flex align-items-center h-100" href="{% url 'inicio' %}">
+            <img src="{% static 'logo2.png' %}" alt="Cines León Logo" class="logo-navbar">
         </a>
 
         <!-- 3. BLOQUE DERECHA: Nombre del usuario autenticado -->
         <div class="d-flex align-items-center gap-2">
             {% if user.is_authenticated %}
                 <div class="d-flex align-items-center gap-2 px-3 py-1 bg-light rounded-pill border">
-                    <i class="bi bi-person-fill fs-6" style="color: #720042;"></i>
+                    <i class="texto-cine bi bi-person-fill fs-6"></i>
                     <span class="text-dark fw-semibold small">{{ user.username }}</span>
                 </div>
             {% endif %}

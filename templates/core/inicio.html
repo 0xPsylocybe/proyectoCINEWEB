@@ -38,8 +38,6 @@ CINES LEÓN - Inicio
 </div>
 </div>
 
-
-
 <!--git y columnas-->
 <div class="container my-5">
     <div class="row text-center">
@@ -70,14 +68,14 @@ CINES LEÓN - Inicio
 
 <!--cartelera-->
 <!-- Título principal con estilo y color -->
-<h2 class="fw-bold mb-4" style="color: #720042; font-weight: bold;">Cartelera</h2>
+<h2 class="texto-cine fw-bold mb-4">Cartelera</h2>
 
 <!-- Cuadrícula de películas -->
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 mx-4">
     {% for pelicula in cartelera %}
     <div class="col">
         <a href="{% url 'detalle_cartelera' pelicula.pk %}" class="card-pelicula text-decoration-none d-block h-100">
-            <div class="overflow-hidden rounded shadow-sm bg-dark mb-2" style="height: 350px;">
+            <div class="poster-marco overflow-hidden rounded shadow-sm bg-dark mb-2">
                 {% if pelicula.imagen %}
                 <img src="{{ pelicula.url_cartel }}" class="w-100 h-100 object-fit-cover transition-zoom"
                     alt="{{ pelicula.nombre }}">

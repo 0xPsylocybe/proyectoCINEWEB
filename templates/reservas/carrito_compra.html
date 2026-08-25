@@ -5,12 +5,12 @@
 
 {% block contenido %}
 <div class="container my-5 px-3">
-    <h1 class="mb-5 fw-bold" style="color: #720042;">🎫 Carrito de Compra</h1>
+    <h1 class="texto-cine mb-5 fw-bold">🎫 Carrito de Compra</h1>
 
     <div class="row g-4">
         <!-- COLUMNA IZQUIERDA: Información de sesión (DESTACADA) -->
         <div class="col-lg-5 order-lg-2">
-            <div class="card shadow-lg border-0 mb-4" style="background-color: #720042; color: white;">
+            <div class="btn-cine card shadow-lg border-0 mb-4">
                 <div class="card-body p-4">
                     <h3 class="card-title mb-4">📽️ Tu Sesión</h3>
 
@@ -57,7 +57,7 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <span class="h5 fw-bold">Total</span>
-                        <span class="h5 fw-bold" style="color: #720042;" id="total-compra">€0.00</span>
+                        <span class="texto-cine h5 fw-bold" id="total-compra">€0.00</span>
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold">💺 Elige tus butacas</h5>
-                        <span class="badge rounded-pill" style="background-color: #720042;">
+                        <span class="fondo-cine badge rounded-pill">
                             <span id="contador-butacas">0</span> seleccionadas
                         </span>
                     </div>
@@ -162,7 +162,7 @@
 
                 <!-- BOTONES DE ACCIÓN -->
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
+                    <button type="submit" class="btn-cine btn btn-lg fw-bold">
                         ✓ Confirmar Compra
                     </button>
                     <a href="{% url 'cartelera' %}" class="btn btn-lg btn-outline-secondary">

@@ -1,7 +1,7 @@
 {% load static %}
 
 <!-- Barra superior exclusiva para MÓVILES (Oculta en iPad y PC con d-md-none) -->
-<nav class="navbar navbar-light bg-white d-md-none px-3 shadow-sm fixed-top d-flex justify-content-between align-items-center w-100" style="height: 60px; z-index: 1040;">
+<nav class="navbar-movil navbar navbar-light bg-white d-md-none px-3 shadow-sm fixed-top d-flex justify-content-between align-items-center w-100">
     <!-- Botón hamburguesa (abre el offcanvas en móvil) -->
     <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
         <span class="navbar-toggler-icon"></span>
@@ -9,16 +9,16 @@
 
     <!-- Isologo móvil -->
     <a class="navbar-brand m-0 p-0 d-flex align-items-center" href="{% url 'inicio' %}">
-        <img src="{% static 'isologo.png' %}" alt="Cines León" style="height: 38px; width: auto; object-fit: contain;">
+        <img src="{% static 'isologo.png' %}" alt="Cines León" class="logo-sidebar">
     </a>
 </nav>
 
 <!-- Menú Lateral: Sidebar fijo en Escritorio e iPad / Desplegable en Móvil -->
-<div class="offcanvas-md offcanvas-start sidebar d-flex flex-column flex-shrink-0 bg-white shadow-sm border-end" tabindex="-1" id="mobileSidebar" style="z-index: 1050;">
+<div class="sidebar-offcanvas offcanvas-md offcanvas-start sidebar d-flex flex-column flex-shrink-0 bg-white shadow-sm border-end" tabindex="-1" id="mobileSidebar">
     
     <!-- Encabezado del menú móvil -->
     <div class="offcanvas-header d-md-none border-bottom px-3 py-3">
-        <h5 class="offcanvas-title fw-bold" style="color: #720042;">CINES LEÓN</h5>
+        <h5 class="texto-cine offcanvas-title fw-bold">CINES LEÓN</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#mobileSidebar" aria-label="Close"></button>
     </div>
 

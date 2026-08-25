@@ -5,7 +5,7 @@
 
 {% block contenido %}
 <div class="container my-5 px-3">
-    <h1 class="mb-5 fw-bold" style="color: #720042;">✓ Resumen de tu Compra</h1>
+    <h1 class="texto-cine mb-5 fw-bold">✓ Resumen de tu Compra</h1>
 
     <div class="row g-4">
         <!-- COLUMNA IZQUIERDA: Detalles -->
@@ -50,7 +50,7 @@
                     <small class="text-muted">BUTACAS</small>
                     <div class="d-flex flex-wrap gap-2 mt-1">
                         {% for butaca in butacas %}
-                        <span class="badge rounded-pill px-3 py-2" style="background-color: #720042;">
+                        <span class="fondo-cine badge rounded-pill px-3 py-2">
                             💺 {{ butaca.etiqueta }}
                         </span>
                         {% endfor %}
@@ -60,7 +60,7 @@
 
             <!-- AVISO DE CADUCIDAD -->
             <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
-                <span style="font-size: 1.4rem;">⏳</span>
+                <span class="icono-aviso">⏳</span>
                 <div>
                     Tus butacas están reservadas
                     <strong><span id="cuenta-atras" data-expira="{{ expira_en|date:'c' }}">--:--</span></strong>
@@ -93,7 +93,7 @@
 
         <!-- COLUMNA DERECHA: Total y Pago -->
         <div class="col-lg-5">
-            <div class="card shadow-lg border-0 sticky-top" style="top: 100px;">
+            <div class="resumen-pegajoso card shadow-lg border-0 sticky-top">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4">Método de Pago</h5>
 
@@ -143,11 +143,11 @@
 
                         <div class="d-flex justify-content-between mb-4">
                             <span class="h5 fw-bold">Total</span>
-                            <span class="h4 fw-bold" style="color: #720042;">€{{ total_compra }}</span>
+                            <span class="texto-cine h4 fw-bold">€{{ total_compra }}</span>
                         </div>
 
                         <!-- Botones de acción -->
-                        <button type="submit" class="btn btn-lg w-100 fw-bold mb-2" style="background-color: #720042; color: white;">
+                        <button type="submit" class="btn-cine btn btn-lg w-100 fw-bold mb-2">
                             ✓ Confirmar Compra
                         </button>
                     </form>

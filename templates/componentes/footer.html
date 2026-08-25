@@ -1,14 +1,14 @@
 {% load static %}
 
 <!-- Footer con fondo morado -->
-<footer class="text-white pt-5 pb-3" style="background-color: #720042;">
+<footer class="fondo-cine text-white pt-5 pb-3">
     <div class="container">
         <!-- Fila superior del footer -->
         <div class="row align-items-start mb-4">
             
             <!-- Columna 1: Logo e Inicio / Contacto -->
             <div class="col-md-3 mb-4 mb-md-0 text-start">
-                <img src="{% static 'logo_sinfondo.png' %}" alt="Logo" style="height: 60px; width: auto; object-fit: contain;" class="mb-3">
+                <img src="{% static 'logo_sinfondo.png' %}" alt="Logo" class="logo-footer mb-3">
                 <ul class="list-unstyled">
                     <li><a href="{% url 'inicio' %}" class="text-white text-decoration-none py-1 d-block">Inicio</a></li>
                     <li><a href="{% url 'login' %}" class="text-white text-decoration-none py-1 d-block">Iniciar sesion</a></li>
@@ -36,7 +36,6 @@
 
         <!-- Línea divisoria blanca -->
         <hr class="border-light opacity-50 my-4">
-
 
         <!-- Fila inferior: Todo centrado y en la misma línea en móvil / separado en PC -->
         <div class="row align-items-center">
