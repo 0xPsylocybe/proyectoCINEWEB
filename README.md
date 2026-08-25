@@ -230,6 +230,10 @@ TMDB" del alta de película no aparece.
 
 Si falta alguna variable, Django avisa al arrancar de cuál es.
 
+> En local se trabaja con `DJANGO_DEBUG=True`. Si el proyecto llegara a
+> desplegarse, hay que ponerlo a `False` y rellenar `DJANGO_ALLOWED_HOSTS` con
+> los dominios desde los que se sirva.
+
 ### 7.4 Base de datos
 
 El esquema se crea con las migraciones:
@@ -303,23 +307,6 @@ La web queda en <http://127.0.0.1:8000/> y el panel en
 | `/peliculas/lista_peliculas` | Gestión de películas | Gestores |
 | `/usuarios/` | Acceso de gestores | — |
 | `/admin/` | Django Admin | Superusuario |
-
-### 7.9 Sobre las credenciales ⚠️
-
-Hasta el 25/08 la contraseña de Supabase y la `SECRET_KEY` estaban escritas en
-`config/settings.py`, que sí se sube al repositorio. Ya no: se leen del `.env`.
-
-**Pero siguen en el historial de Git.** Quitarlas del fichero no las borra de
-los commits anteriores, así que cualquiera con acceso al repositorio puede
-recuperarlas. Por eso hay que:
-
-1. **Rotar la contraseña** de la base de datos en el panel de Supabase.
-2. Generar una **`SECRET_KEY` nueva** (ver 7.3). Ojo: al cambiarla se cierran
-   las sesiones abiertas, hay que volver a entrar al admin.
-3. Actualizar el `.env` de cada equipo con los valores nuevos.
-
-Y si esto llegara a desplegarse, poner `DJANGO_DEBUG=False` y rellenar
-`DJANGO_ALLOWED_HOSTS`.
 
 ---
 
@@ -477,8 +464,6 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 ### ⏳ Pendiente
 - **Snack Bar:** el botón ➕ del catálogo todavía no añade nada al carrito
   (aparcado: es un extra, se hará al final)
-- ⚠️ **Rotar la contraseña de Supabase y la `SECRET_KEY`**: ya no están en el
-  código, pero sí en el historial de Git (ver 7.9)
 - **Búsqueda por título y filtrado por género** en películas (estaba previsto y
   no está implementado)
 - **`detalle_pelicula`**: la vista existe pero no tiene URL ni plantilla

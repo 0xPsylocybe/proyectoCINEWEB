@@ -77,7 +77,7 @@ convendría repasar:
 | 2026-08-25 | **cartelera**: filtros y paginación en `/cartelera/sesiones/` | 🔵 | Por película, sala y rango de fechas |
 | 2026-08-25 | **reservas**: resguardo de compra con localizador | 🔵 | Imprimible |
 | 2026-08-25 | Documentación: README de puesta en marcha | 🔵 | Sección 7 |
-| 2026-08-25 | Credenciales fuera del código, en `.env` | 🔵 | Falta rotarlas: ver 29c |
+| 2026-08-25 | Configuración por `.env` (BBDD, SECRET_KEY, TMDB) | 🔵 | Con `.env.example` de plantilla |
 
 ---
 
@@ -132,10 +132,7 @@ Marcad con quién lo coge y su estado.
 
 ### ✅ Cierre
 29. ✅ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
-29b. ✅ Credenciales fuera de `config/settings.py`: ahora se leen del `.env`.
-29c. ⬜ ⚠️ **Rotar la contraseña de Supabase y la `SECRET_KEY`**: siguen en el
-     historial de Git, y quitarlas del fichero no las borra de los commits
-     anteriores. Al cambiar la SECRET_KEY hay que volver a entrar al admin.
+29b. ✅ Configuración por `.env`, con `.env.example` como plantilla.
 30. ⬜ Pruebas de instalación desde cero siguiendo el README.
 31. ⬜ Revisión cruzada del código del compañero.
 32. ⬜ Tests unitarios y de integración.
