@@ -1,44 +1,116 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}¡Compra Exitosa!{% endblock %}
+{% block title %}¡Compra realizada!{% endblock %}
 
 {% block contenido %}
 <div class="container my-5 px-3">
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <!-- Icono de éxito -->
-            <div class="mb-4" style="font-size: 4rem;">✅</div>
+        <div class="col-lg-7">
 
-            <h1 class="fw-bold mb-3" style="color: #720042;">¡Compra Confirmada!</h1>
-
-            <p class="text-muted mb-4">
-                Tu compra ha sido procesada correctamente.
-                <br>
-                Disfruta de tu película y tus productos.
-            </p>
-
-            <!-- Información útil -->
-            <div class="alert alert-light border mb-4">
-                <p class="mb-2">
-                    <strong>💡 Próximos pasos:</strong>
-                </p>
-                <ul class="text-start small mb-0">
-                    <li>Presenta tu confirmación en la taquilla</li>
-                    <li>Recoge tus productos en el snack bar</li>
-                    <li>¡Que disfrutes la película!</li>
-                </ul>
+            <div class="text-center mb-4">
+                <div style="font-size: 3.5rem; line-height: 1;">✅</div>
+                <h1 class="fw-bold mb-1" style="color: #720042;">¡Compra realizada!</h1>
+                <p class="text-muted">Guarda este resguardo, lo necesitas en la taquilla.</p>
             </div>
 
-            <!-- Botones de acción -->
-            <div class="d-grid gap-2">
-                <a href="{% url 'cartelera' %}" class="btn btn-lg fw-bold" style="background-color: #720042; color: white;">
-                    ← Volver a Cartelera
-                </a>
-                <a href="{% url 'restauracion:catalogo' %}" class="btn btn-lg btn-outline-secondary">
-                    🍿 Ver más productos
+            <!-- RESGUARDO -->
+            <div class="card border-0 shadow resguardo mb-4">
+                <!-- Cabecera con el localizador -->
+                <div class="card-body text-center py-4" style="background-color: #720042; color: white;">
+                    <div class="text-white-50 small text-uppercase">Localizador</div>
+                    <div class="fw-bold" style="font-size: 1.9rem; letter-spacing: .18em;">
+                        {{ localizador }}
+                    </div>
+                </div>
+
+                <!-- Perforación, como en las entradas de verdad -->
+                <div class="resguardo-corte"></div>
+
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-1">{{ sesion.pelicula.titulo }}</h4>
+                    <p class="text-muted small mb-4">
+                        {{ sesion.pelicula.duracion }} · {{ sesion.pelicula.genero.nombre }}
+                    </p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small text-uppercase">Día</div>
+                            <div class="fw-bold">{{ sesion.horario|date:"j \d\e F" }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small text-uppercase">Hora</div>
+                            <div class="fw-bold">{{ sesion.horario|date:"H:i" }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small text-uppercase">Sala</div>
+                            <div class="fw-bold">{{ sesion.sala.identificador }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="text-muted small text-uppercase">Formato</div>
+                            <div class="fw-bold">{{ sesion.sala.tipo }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small text-uppercase mb-2">
+                            {{ butacas|length }} butaca{{ butacas|length|pluralize }}
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for butaca in butacas %}
+                            <span class="badge rounded-pill px-3 py-2"
+                                  style="background-color: #720042; font-size: .95rem;">
+                                💺 {{ butaca.etiqueta }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="text-muted small">
+                        La sala abre a las {{ sesion.hora_inicio_publicidad|date:"H:i" }} y la
+                        película empieza a las {{ sesion.hora_inicio_pelicula|date:"H:i" }}.
+                    </div>
+                </div>
+
+                <!-- Desglose -->
+                <div class="card-footer bg-light p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ venta.cantidad }} entrada{{ venta.cantidad|pluralize }}
+                              × €{{ venta.precio_unitario }}</span>
+                        <span class="fw-bold">€{{ venta.total_venta }}</span>
+                    </div>
+
+                    {% for linea in productos %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ linea.cantidad }} × {{ linea.producto.nombre }}</span>
+                        <span class="fw-bold">€{{ linea.total_venta }}</span>
+                    </div>
+                    {% endfor %}
+
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="h5 fw-bold mb-0">Total</span>
+                        <span class="h5 fw-bold mb-0" style="color: #720042;">€{{ total }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if productos %}
+            <div class="alert alert-light border small">
+                🍿 Recoge tus productos en el <strong>Snack Bar</strong> enseñando el localizador.
+            </div>
+            {% endif %}
+
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <button type="button" class="btn btn-lg fw-bold px-4" onclick="window.print()"
+                        style="background-color: #720042; color: white;">
+                    🖨️ Imprimir
+                </button>
+                <a href="{% url 'cartelera' %}" class="btn btn-lg btn-outline-secondary px-4">
+                    Volver a la cartelera
                 </a>
             </div>
+
         </div>
     </div>
 </div>

@@ -124,6 +124,53 @@
 }
 
 /* ==========================================================
+   RESGUARDO DE COMPRA
+   ========================================================== */
+.resguardo {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* Línea de perforación entre el localizador y los datos */
+.resguardo-corte {
+    position: relative;
+    height: 0;
+    border-top: 2px dashed rgba(255, 255, 255, .45);
+    background-color: #720042;
+}
+
+.resguardo-corte::before,
+.resguardo-corte::after {
+    content: "";
+    position: absolute;
+    top: -11px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+.resguardo-corte::before { left: -11px; }
+.resguardo-corte::after { right: -11px; }
+
+/* Al imprimir, solo el resguardo */
+@media print {
+    .sidebar, .navbar, footer, .btn, #preloader, .alert {
+        display: none !important;
+    }
+
+    body, main {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .resguardo {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* ==========================================================
    CARRITO: mapa de butacas
    ========================================================== */
 .pantalla-cine {

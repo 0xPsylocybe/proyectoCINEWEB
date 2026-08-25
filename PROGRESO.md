@@ -75,6 +75,9 @@ convendría repasar:
 | 2026-08-25 | **peliculas**: carteles guardados en la BBDD (`CartelPelicula`) | 🔵 | La carpeta `media/` no se comparte y las imágenes salían rotas |
 | 2026-08-25 | Lógica de la BBDD: **trigger de recaudación** | 🔵 | `reservas/0005_trigger_recaudacion` |
 | 2026-08-25 | **cartelera**: filtros y paginación en `/cartelera/sesiones/` | 🔵 | Por película, sala y rango de fechas |
+| 2026-08-25 | **reservas**: resguardo de compra con localizador | 🔵 | Imprimible |
+| 2026-08-25 | Documentación: README de puesta en marcha | 🔵 | Sección 7 |
+| 2026-08-25 | Credenciales fuera del código, en `.env` | 🔵 | Falta rotarlas: ver 29c |
 
 ---
 
@@ -117,8 +120,9 @@ Marcad con quién lo coge y su estado.
 ### 🎟️ Venta (David)
 21. ✅ Carrito, confirmación y compra realizada.
 22. ✅ Butacas con reserva temporal de 30 minutos.
-23. ⬜ Que el botón ➕ del Snack Bar añada el producto al carrito.
-24. ⬜ Mostrar en "compra realizada" qué se ha comprado (con las butacas).
+23. ⬜ Que el botón ➕ del Snack Bar añada el producto al carrito. *(aparcado:
+    es un extra, se hará al final)*
+24. ✅ Resguardo de compra con localizador, butacas y desglose de lo pagado.
 25. ✅ Trigger de recaudación, con el `DELETE` contemplado para las anulaciones.
 
 ### 🗂️ Gestión de sesiones (David)
@@ -127,7 +131,11 @@ Marcad con quién lo coge y su estado.
 28. ✅ Mostrar la fecha de la sesión en la tarjeta, más paginación de 24 en 24.
 
 ### ✅ Cierre
-29. ⬜ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
+29. ✅ Completar el README (instalación, BBDD, migraciones, permisos, ejecución).
+29b. ✅ Credenciales fuera de `config/settings.py`: ahora se leen del `.env`.
+29c. ⬜ ⚠️ **Rotar la contraseña de Supabase y la `SECRET_KEY`**: siguen en el
+     historial de Git, y quitarlas del fichero no las borra de los commits
+     anteriores. Al cambiar la SECRET_KEY hay que volver a entrar al admin.
 30. ⬜ Pruebas de instalación desde cero siguiendo el README.
 31. ⬜ Revisión cruzada del código del compañero.
 32. ⬜ Tests unitarios y de integración.

@@ -146,27 +146,180 @@ Reparto orientativo por responsabilidades, con revisión cruzada del código.
 
 ---
 
-## 7. Próximos pasos
+## 7. Puesta en marcha
 
-Estas secciones se completarán cuando exista código:
+### 7.1 Requisitos
 
-- Instalación y entorno virtual.
-- Dependencias (`requirements.txt`).
-- Configuración de PostgreSQL.
-- Migraciones.
-- Creación de usuarios y configuración de permisos.
-- Ejecución del servidor.
+- **Python 3.11 o superior**
+- Acceso a la base de datos **PostgreSQL** del proyecto (está en Supabase, así
+  no hace falta instalar Postgres en cada equipo)
+- Git
 
-algunas anotaciones:
-- creé un entorno virtual: para que funcionara tuve que ;
-1.Presiona las teclas Ctrl + Shift + P para abrir la paleta de comandos.
-2.Escribe y selecciona: Python: Select Interpreter (Python: Seleccionar intérprete).
-3.Busca y elige la opción que apunta a tu entorno virtual local: ./venv/bin/python.
+### 7.2 Instalación
 
-- la base de datos esta en supabase: me parecio mejor asi dado que cada quien esta en su ordenador
-- ~~no agregue el campo recaudacion, lo agregmos cuando tengamos esa app lista~~
-  (hecho el 25/08: campo `recaudacion` + trigger, ver sección 8)
-- superuser admin 123456hola
+```bash
+git clone https://github.com/0xPsylocybe/proyectoCINEWEB.git
+cd proyectoCINEWEB
+```
+
+Entorno virtual:
+
+```bash
+python -m venv venv
+```
+
+Activarlo — **Windows (PowerShell)**:
+
+```bash
+.\venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux**:
+
+```bash
+source venv/bin/activate
+```
+
+Dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+> 💡 **En VS Code**, si no reconoce el entorno: `Ctrl+Shift+P` →
+> *Python: Select Interpreter* → elegir el de `./venv`.
+
+### 7.3 Variables de entorno
+
+**Este paso es obligatorio: sin él la aplicación no arranca.** Las credenciales
+no están en el código, se leen de un fichero `.env` que no se sube al
+repositorio, así que **cada equipo necesita el suyo**.
+
+Copia la plantilla:
+
+```bash
+copy .env.example .env
+```
+
+En macOS o Linux:
+
+```bash
+cp .env.example .env
+```
+
+Y rellena los valores:
+
+| Variable | Para qué | De dónde sale |
+|----------|----------|---------------|
+| `DJANGO_SECRET_KEY` | Firma de sesiones y cookies | Se genera (ver abajo) |
+| `DJANGO_DEBUG` | Modo desarrollo | `True` en local |
+| `DB_USER`, `DB_PASSWORD`, `DB_HOST` | Conexión a Supabase | Pídeselos a tu compañero |
+| `TMDB_API_KEY` | Carteles y fichas | Tu cuenta de TMDB (opcional) |
+
+Para generar una `SECRET_KEY`:
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+La clave de TMDB se saca gratis en
+[themoviedb.org/settings/api](https://www.themoviedb.org/settings/api); vale
+tanto la *API Key* (v3) como el *Read Access Token* (v4). **Es la única
+opcional**: sin ella la aplicación funciona igual, solo que el botón "Buscar en
+TMDB" del alta de película no aparece.
+
+Si falta alguna variable, Django avisa al arrancar de cuál es.
+
+### 7.4 Base de datos
+
+El esquema se crea con las migraciones:
+
+```bash
+python manage.py migrate
+```
+
+Esto incluye el **trigger de recaudación**, que se instala desde la migración
+`reservas/0005_trigger_recaudacion`.
+
+> ⚠️ La base de datos es **compartida** entre los dos. Al hacer `migrate` estás
+> tocando el esquema que usa también el otro: avisa antes si la migración borra
+> o cambia columnas.
+
+### 7.5 Usuario administrador y gestores
+
+```bash
+python manage.py createsuperuser
+```
+
+Los **gestores** no se registran desde la web: se crean en el Django Admin
+(`/admin/`) y se añaden al grupo **`Gestores`**. Un usuario es gestor si es
+superusuario o pertenece a ese grupo (ver `usuarios/decorators.py`).
+
+Si el grupo no existe, se crea desde el admin en *Grupos* → *Añadir*, con los
+permisos de `peliculas`, `cartelera` y `restauracion`.
+
+### 7.6 Datos de prueba
+
+Los datos ya están cargados en la base compartida. Si hicieran falta de nuevo:
+
+```bash
+# Corrige fichas de películas (títulos, directores, sinopsis, duraciones)
+python manage.py corregir_peliculas --dry-run    # ensayo, no toca nada
+python manage.py corregir_peliculas
+
+# Carteles y fichas desde TMDB (necesita el .env)
+python manage.py importar_tmdb --conservar-titulos
+
+# Programación de sesiones de los próximos 14 días
+python manage.py regenerar_sesiones --dry-run --borrar   # ensayo
+python manage.py regenerar_sesiones --dias 14 --borrar
+```
+
+Todos admiten `--dry-run`, que enseña lo que harían sin guardar nada.
+
+> Si las **imágenes salen rotas**, es que a esa película le falta el cartel en
+> la BBDD. Se recuperan con:
+> `python manage.py importar_tmdb --conservar-titulos --solo-carteles`
+
+### 7.7 Arrancar
+
+```bash
+python manage.py runserver
+```
+
+La web queda en <http://127.0.0.1:8000/> y el panel en
+<http://127.0.0.1:8000/admin/>.
+
+### 7.8 Rutas principales
+
+| Ruta | Qué es | Quién entra |
+|------|--------|-------------|
+| `/` | Portada | Cualquiera |
+| `/cartelera/` | Cartelera y próximos estrenos | Cualquiera |
+| `/cartelera/detalle/<id>/` | Detalle de película con sus horarios | Cualquiera |
+| `/restauracion/` | Snack Bar | Cualquiera |
+| `/reservas/carrito/` | Compra: butacas y productos | Cualquiera |
+| `/cartelera/sesiones/` | Gestión de sesiones | Gestores |
+| `/peliculas/lista_peliculas` | Gestión de películas | Gestores |
+| `/usuarios/` | Acceso de gestores | — |
+| `/admin/` | Django Admin | Superusuario |
+
+### 7.9 Sobre las credenciales ⚠️
+
+Hasta el 25/08 la contraseña de Supabase y la `SECRET_KEY` estaban escritas en
+`config/settings.py`, que sí se sube al repositorio. Ya no: se leen del `.env`.
+
+**Pero siguen en el historial de Git.** Quitarlas del fichero no las borra de
+los commits anteriores, así que cualquiera con acceso al repositorio puede
+recuperarlas. Por eso hay que:
+
+1. **Rotar la contraseña** de la base de datos en el panel de Supabase.
+2. Generar una **`SECRET_KEY` nueva** (ver 7.3). Ojo: al cambiarla se cierran
+   las sesiones abiertas, hay que volver a entrar al admin.
+3. Actualizar el `.env` de cada equipo con los valores nuevos.
+
+Y si esto llegara a desplegarse, poner `DJANGO_DEBUG=False` y rellenar
+`DJANGO_ALLOWED_HOSTS`.
 
 ---
 
@@ -306,6 +459,9 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 - ✅ Formulario de pago con validación de tarjeta (algoritmo de Luhn, caducidad
   y CVC). **No se guarda ningún dato de la tarjeta**: no hay pasarela de pago,
   es solo la simulación del proceso
+- ✅ **Resguardo de compra** con localizador (`CL-000014`), película, día, hora,
+  sala, formato, butacas y el desglose de lo pagado. Se puede imprimir, y el
+  CSS de impresión deja solo el resguardo
 
 #### **UI/UX**
 - ✅ Detalle de película con tabs (Horarios / Detalles)
@@ -320,8 +476,9 @@ BBDD y solo toma de TMDB el cartel, la sinopsis, la duración y el año.
 
 ### ⏳ Pendiente
 - **Snack Bar:** el botón ➕ del catálogo todavía no añade nada al carrito
-- **Compra realizada:** mostrar el resumen de lo comprado (película, hora, sala
-  y butacas), que ahora solo dice que la compra fue bien
+  (aparcado: es un extra, se hará al final)
+- ⚠️ **Rotar la contraseña de Supabase y la `SECRET_KEY`**: ya no están en el
+  código, pero sí en el historial de Git (ver 7.9)
 - **Búsqueda por título y filtrado por género** en películas (estaba previsto y
   no está implementado)
 - **`detalle_pelicula`**: la vista existe pero no tiene URL ni plantilla

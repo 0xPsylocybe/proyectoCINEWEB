@@ -14,20 +14,28 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 
+from .entorno import booleana, cargar_env, obligatoria
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Las credenciales se leen del .env, que no se sube al repositorio.
+# La plantilla con las claves necesarias está en .env.example
+cargar_env(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l07%=$l&q)^httc6%jsw_v6lx(w^*9zzq#@p%1i90qpfc46f-_'
+SECRET_KEY = obligatoria("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = booleana("DJANGO_DEBUG", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if h.strip()
+]
 
 
 # Application definition
@@ -87,12 +95,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'PASSWORD': 'Naranja*2000D',
-        'USER':'postgres.xfmpfmxkcotatauumisr',
-        'HOST': 'aws-1-eu-west-1.pooler.supabase.com',
-        'PORT':'6543',
-
+        'NAME': obligatoria('DB_NAME', 'postgres'),
+        'USER': obligatoria('DB_USER'),
+        'PASSWORD': obligatoria('DB_PASSWORD'),
+        'HOST': obligatoria('DB_HOST'),
+        'PORT': obligatoria('DB_PORT', '6543'),
     }
 }
 

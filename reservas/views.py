@@ -160,22 +160,24 @@ def confirmacion_compra(request):
             )
             return redirect(_url_carrito(None, sesion.id))
 
+        ventas_productos = []
         for producto_id, datos in productos_data.items():
             producto = get_object_or_404(Producto, id=producto_id)
-            VentaProducto.objects.create(
+            ventas_productos.append(VentaProducto.objects.create(
                 producto=producto,
                 cantidad=datos['cantidad'],
                 total_venta=Decimal(datos['total'])
-            )
+            ))
 
-        # Limpiar sesión
+        # Limpiar el carrito y dejar el resguardo para la pantalla final
         request.session.pop('carrito_sesion_id', None)
         request.session.pop('carrito_productos', None)
+        request.session['ultima_compra'] = {
+            'venta_id': venta_entrada.id,
+            'productos_ids': [v.id for v in ventas_productos],
+            'total': str(total_compra),
+        }
 
-        messages.success(
-            request,
-            f'✓ ¡Compra confirmada! Total: €{total_compra:.2f}'
-        )
         return redirect('reservas:compra_exitosa')
 
     contexto = {
@@ -194,5 +196,38 @@ def confirmacion_compra(request):
 
 
 def compra_exitosa(request):
-    """Página de confirmación de compra exitosa."""
-    return render(request, 'reservas/compra_exitosa.html')
+    """Resguardo de la compra: qué se ha comprado y con qué localizador.
+
+    Los datos se recuperan de lo que dejó `confirmacion_compra` en la sesión.
+    Se conservan ahí para que recargar la página siga mostrando el resguardo.
+    """
+    resumen = request.session.get('ultima_compra')
+    if not resumen:
+        messages.info(request, 'No hay ninguna compra reciente que mostrar.')
+        return redirect('cartelera')
+
+    venta = (VentaEntrada.objects
+             .select_related('sesion__pelicula', 'sesion__sala')
+             .prefetch_related('butacas')
+             .filter(pk=resumen['venta_id'])
+             .first())
+    if not venta:
+        request.session.pop('ultima_compra', None)
+        messages.info(request, 'Esa compra ya no existe.')
+        return redirect('cartelera')
+
+    productos = (VentaProducto.objects
+                 .select_related('producto')
+                 .filter(pk__in=resumen.get('productos_ids', [])))
+
+    contexto = {
+        'venta': venta,
+        'sesion': venta.sesion,
+        'butacas': venta.butacas.all(),
+        'productos': productos,
+        'total_productos': sum(v.total_venta for v in productos),
+        'total': Decimal(resumen['total']),
+        # Un localizador con pinta de entrada de cine
+        'localizador': 'CL-%06d' % venta.id,
+    }
+    return render(request, 'reservas/compra_exitosa.html', contexto)
